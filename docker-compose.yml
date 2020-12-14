@@ -1,0 +1,22 @@
+version: '3'
+services:
+  gimoveisapi:
+    build: .
+    command: npm start
+    container_name: gimoveisapi
+    ports:
+      - "3000:3000"
+    volumes:
+      - . :/var/www
+  gimoveisfront:
+    build:
+      context: .
+      dockerfile: ../gimoveisfront/Dockerfile
+    command: npm run serve
+    container_name: gimoveisfront
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../gimoveisfront/:/var/www
+
+
