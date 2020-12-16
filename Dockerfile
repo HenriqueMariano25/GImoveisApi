@@ -1,7 +1,8 @@
-FROM node:latest
-MAINTAINER Henrique Mariano
-COPY . /var/www
-WORKDIR /var/www
+FROM node:alpine
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+COPY package*.json ./
 RUN npm install
-ENTRYPOINT npm start
+COPY . .
 EXPOSE 3000
+CMD ["npm", "start"]
