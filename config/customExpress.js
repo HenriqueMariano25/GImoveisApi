@@ -3,6 +3,8 @@ const consign = require('consign')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 
+const { estragiasAutenticacao } = require('../config/estrategiasAutenticacao')
+
 module.exports = () => {
     const app = express()
 

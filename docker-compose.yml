@@ -23,7 +23,7 @@ services:
       - "8080:8080"
     volumes:
       - ../gimoveisfront/:/usr/src/app
-      - /usr/src/app/node_modules
+      - /usr/src/app/node_modules/
     networks:
       - develop-network
 
