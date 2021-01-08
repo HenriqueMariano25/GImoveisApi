@@ -1,5 +1,6 @@
 const clienteDao = require('../dao/clienteDao')
 const dayjs = require('dayjs')
+const axios = require('axios')
 
 class ClienteController {
     async visualizarTodos(res) {
@@ -42,6 +43,22 @@ class ClienteController {
             clienteDao.editarTelefone(dadosTelefone)
         }
         res.status(200).json(consulta)
+    }
+
+    async deletar(req, res){
+        let idCliente = req.params.id
+        console.log(idCliente)
+        await clienteDao.deletarTelefoneCliente(idCliente)
+        await clienteDao.deletarCliente(idCliente).then(
+            res.status(200).json('Deu mack')
+        )
+    }
+
+    async consultarCep(req, res){
+        let cep = req.params.cep
+        axios.get(`https://viacep.com.br/ws/${cep}/json/`).then(response => {
+            res.status(200).json(response.data)
+        })
     }
 }
 

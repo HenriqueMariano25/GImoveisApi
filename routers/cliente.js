@@ -13,4 +13,10 @@ module.exports = app => {
     app.post('/cliente/editar/:id',(req, res) => {
         ClienteController.editar(req,res)
     })
+    app.delete('/cliente/deletar/:id',(req, res) => {
+        ClienteController.deletar(req,res)
+    })
+    app.get('/cliente/consultar_cep/:cep', (req, res) => {
+        ClienteController.consultarCep(req,res)
+    })
 }

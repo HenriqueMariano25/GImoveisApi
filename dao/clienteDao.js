@@ -76,6 +76,19 @@ module.exports = {
           })
       })
     },
+
+    deletarCliente: idCliente => {
+      return new Promise((resolve, reject) => {
+          db.query(`DELETE FROM cliente WHERE id = ${idCliente}`,(erro,resultado) => {
+              if(erro){
+                  console.log(erro)
+                  return reject(erro)
+              }
+              return resolve(resultado)
+          })
+      })
+    },
+
     editarTelefone:(dadosTelefone) => {
         return new Promise((resolve, reject) => {
             db.query(`UPDATE telefone
@@ -91,9 +104,6 @@ module.exports = {
     },
 
     cadastrarTelefone: (idCliente, numeroTelefone, tipoTelefone) => {
-        console.log(idCliente)
-        console.log(numeroTelefone)
-        console.log(tipoTelefone)
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO telefone(  
             id_cliente,numero,id_tipo_telefone
@@ -107,5 +117,18 @@ module.exports = {
                 return resolve(resultado.rows)
             })
         })
+    },
+
+    deletarTelefoneCliente: (idCliente) => {
+        return new Promise((resolve, reject) => {
+            db.query(`DELETE FROM telefone WHERE id_cliente = ${idCliente}`, (erro, resultado) =>{
+                if(erro){
+                    console.log(erro)
+                    return reject(erro)
+                }
+                return resolve(resultado.rows)
+            })
+        })
     }
+
 }
