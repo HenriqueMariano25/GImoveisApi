@@ -19,4 +19,7 @@ module.exports = app => {
     app.get('/cliente/consultar_cep/:cep', (req, res) => {
         ClienteController.consultarCep(req,res)
     })
+    app.get('/cliente/tipos_status', (req, res) => {
+        ClienteController.tipoStatus(res)
+    })
 }
