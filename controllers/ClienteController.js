@@ -5,28 +5,21 @@ const axios = require('axios')
 class ClienteController {
     async visualizarTodos(res) {
         const consulta = await clienteDao.visualizarTodos()
-        console.log(consulta)
         res.json(consulta)
     }
 
     async visualizar(req, res) {
         let idCliente = req.query.idCliente
-        console.log(idCliente)
         const consulta = await clienteDao.visualizar(idCliente)
-        console.log(consulta)
-
         consulta.data_nascimento = dayjs(consulta.data_nascimento).format('YYYY-MM-DD')
-        console.log(consulta)
         res.json(consulta)
     }
 
     async cadastrar(req, res) {
         const dadosCliente = req.body.data
         let telefones = req.body.telefones
-        console.log(dadosCliente)
         const consulta = await clienteDao.cadastrar(dadosCliente)
         let idCliente = consulta[0].id
-        console.log(telefones)
         for (let index in telefones) {
             if (telefones[index].numero != "" && telefones[index].tipo != "") {
                 let numeroTelefone = telefones[index].numero
@@ -34,7 +27,6 @@ class ClienteController {
                 await clienteDao.cadastrarTelefone(idCliente, numeroTelefone, tipoTelefone)
             }
         }
-
         res.json(consulta)
     }
 
@@ -42,17 +34,24 @@ class ClienteController {
         let idCliente = req.params.id
         let dadosCliente = req.body.data
         let telefones = req.body.telefones
-        const consulta = await clienteDao.editar(idCliente, dadosCliente)
-        for (let index in telefones) {
-            let dadosTelefone = telefones[index]
-            clienteDao.editarTelefone(dadosTelefone)
-        }
-        res.status(200).json(consulta)
+        console.log("Editando clienteeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+        await clienteDao.editar(idCliente, dadosCliente).then(consulta => {
+            for (let index in telefones) {
+                let numeroTelefone = telefones[index].numero
+                let tipoTelefone = telefones[index].tipo
+                let idTelefone = telefones[index].id
+                if(idTelefone == null){
+                    clienteDao.cadastrarTelefone(idCliente, numeroTelefone, tipoTelefone)
+                }else {
+                    clienteDao.editarTelefone(telefones[index])
+                }
+            }
+            res.status(200).json(consulta)
+        })
     }
 
     async deletar(req, res) {
         let idCliente = req.params.id
-        console.log(idCliente)
         await clienteDao.deletarTelefoneCliente(idCliente)
         await clienteDao.deletarCliente(idCliente).then(
             res.status(200).json('Deu mack')
@@ -68,7 +67,6 @@ class ClienteController {
 
     async tipoStatus(res){
         await clienteDao.tipoStatus().then(response => {
-            console.log(response)
             res.status(200).json(response)
         })
     }

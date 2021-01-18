@@ -72,7 +72,8 @@ module.exports = {
           cidade = '${dadosCliente.cidade}', estado = '${dadosCliente.estado}', complemento = '${dadosCliente.complemento}',
           identidade = ${dadosCliente.identidade}, email = '${dadosCliente.email}', referencia = '${dadosCliente.referencia}',
           id_estado_civil = ${dadosCliente.estado_civil}, cpf_cnpj = ${dadosCliente.cpf_cnpj}, cep = ${dadosCliente.cep},
-          data_nascimento = '${dadosCliente.data_nascimento}',numero = ${dadosCliente.numero}, id_status = '${dadosCliente.status}'
+          data_nascimento = '${dadosCliente.data_nascimento}',numero = ${dadosCliente.numero}, 
+          id_status = ${dadosCliente.status}, observacao = '${dadosCliente.observacao}'
           WHERE id = ${idCliente} RETURNING nome, id`,(erro, resultado) => {
               if(erro){
                   console.log(erro)
