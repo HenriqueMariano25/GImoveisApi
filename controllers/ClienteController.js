@@ -34,7 +34,6 @@ class ClienteController {
         let idCliente = req.params.id
         let dadosCliente = req.body.data
         let telefones = req.body.telefones
-        console.log("Editando clienteeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
         await clienteDao.editar(idCliente, dadosCliente).then(consulta => {
             for (let index in telefones) {
                 let numeroTelefone = telefones[index].numero
