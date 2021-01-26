@@ -25,7 +25,9 @@ module.exports = {
 
     visualizarTodos: () => {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT imo.nome, imo.rua, imo.id FROM imovel imo ORDER BY imo.nome`, (erro, resultado) => {
+            db.query(`SELECT imo.nome, imo.rua, imo.id,sta_imo.descricao status FROM imovel imo 
+                    LEFT OUTER JOIN status_imovel sta_imo ON imo.id_status_imovel = sta_imo.id
+                    ORDER BY imo.nome`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
                     return reject(erro)
@@ -96,7 +98,8 @@ module.exports = {
              met_quadrada_construida = '${imovel.area_construida}', inscricao_municipal = '${imovel.inscricao_municipal}',
              funesbom = '${imovel.funesbom}', num_cliente_luz = '${imovel.numero_cliente_luz}',
              num_cliente_agua = '${imovel.numero_cliente_agua}', valor_aquisicao = '${imovel.valor_aquisicao}',
-             valor_venda = '${imovel.valor_atua}', data_aquisicao = '${imovel.data_aquisicao}', data_venda = '${imovel.data_venda}',
+             valor_venda = '${imovel.valor_atua}', data_aquisicao = '${imovel.data_aquisicao}', da
+             ta_venda = '${imovel.data_venda}',
              valor_atual = '${imovel.valor_atual}', id_status_imovel = ${imovel.status}, id_tipo_imovel = '${imovel.tipo_imovel}',
              proprietario = '${imovel.proprietario}', numero = '${imovel.numero}', cidade = '${imovel.cidade}', cep = ${imovel.cep} 
              WHERE id = ${id} RETURNING nome, id, data_venda` , (erro, resultado) => {

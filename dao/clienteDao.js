@@ -9,7 +9,7 @@ module.exports = {
                  sta.descricao status, cli.observacao
                 FROM telefone tel  
                 FULL OUTER JOIN cliente cli ON tel.id_cliente = cli.id
-                FULL OUTER JOIN status sta ON sta.id = cli.id_status 
+                LEFT OUTER JOIN status sta ON sta.id = cli.id_status 
                 GROUP BY cli.nome, cli.email, cli.rua, cli.bairro, cli.cidade, cli.estado, cli.complemento, cli.cpf_cnpj,
                  cli.identidade, cli.data_nascimento, cli.referencia, cli.numero, cli.id, status, cli.observacao
                  ORDER BY nome`,
@@ -51,13 +51,12 @@ module.exports = {
             nome,rua,cep,bairro,cidade,estado,complemento,cpf_cnpj,identidade,email,referencia,data_nascimento, id_estado_civil,
             numero, id_status, observacao
             ) VALUES (
-            '${cliente.nome}','${cliente.rua}',${cliente.cep},'${cliente.bairro}','${cliente.cidade}',
+            '${cliente.nome}','${cliente.rua}','${cliente.cep}','${cliente.bairro}','${cliente.cidade}',
             '${cliente.estado}','${cliente.complemento}',${cliente.cpf_cnpj},${cliente.identidade},
             '${cliente.email}','${cliente.referencia}','${cliente.data_nascimento}',${cliente.estado_civil}, 
             '${cliente.numero}', ${cliente.status}, '${cliente.observacao}'
             ) RETURNING nome, id`, (erro, resultado) => {
                 if (erro) {
-                    console.log(erro)
                     return reject(erro)
                 }
                 return resolve(resultado.rows)

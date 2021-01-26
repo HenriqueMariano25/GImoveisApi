@@ -12,22 +12,28 @@ class ClienteController {
         let idCliente = req.query.idCliente
         const consulta = await clienteDao.visualizar(idCliente)
         consulta.data_nascimento = dayjs(consulta.data_nascimento).format('YYYY-MM-DD')
+        console.log(consulta)
         res.json(consulta)
     }
 
     async cadastrar(req, res) {
         const dadosCliente = req.body.data
         let telefones = req.body.telefones
-        const consulta = await clienteDao.cadastrar(dadosCliente)
-        let idCliente = consulta[0].id
-        for (let index in telefones) {
-            if (telefones[index].numero != "" && telefones[index].tipo != "") {
-                let numeroTelefone = telefones[index].numero
-                let tipoTelefone = telefones[index].tipo
-                await clienteDao.cadastrarTelefone(idCliente, numeroTelefone, tipoTelefone)
+        await clienteDao.cadastrar(dadosCliente).then(consulta => {
+            let idCliente = consulta[0].id
+            for (let index in telefones) {
+                if (telefones[index].numero != "" && telefones[index].tipo != "") {
+                    let numeroTelefone = telefones[index].numero
+                    let tipoTelefone = telefones[index].tipo
+                    clienteDao.cadastrarTelefone(idCliente, numeroTelefone, tipoTelefone)
+                }
             }
-        }
-        res.json(consulta)
+            res.json(consulta)
+        }).catch(erro => {
+            if(erro.code == "23505"){
+                res.status('500').json({erro:"Nome ou Email duplicado"})
+            }
+        })
     }
 
     async editar(req, res) {
@@ -46,6 +52,10 @@ class ClienteController {
                 }
             }
             res.status(200).json(consulta)
+        }).catch(erro => {
+            if(erro.code == "23505"){
+                res.status('500').json({erro:"Nome ou Email duplicado"})
+            }
         })
     }
 
