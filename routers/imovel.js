@@ -22,5 +22,7 @@ module.exports = app => {
     app.post('/imovel/editar/:id', (req,res) => {
         ImovelController.editarImovel(req,res)
     })
-
+    app.get('/imoveis/tipo_comodo', (req, res) => {
+        ImovelController.tiposComodos(res)
+    })
 }
