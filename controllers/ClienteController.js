@@ -12,7 +12,6 @@ class ClienteController {
         let idCliente = req.query.idCliente
         const consulta = await clienteDao.visualizar(idCliente)
         consulta.data_nascimento = dayjs(consulta.data_nascimento).format('YYYY-MM-DD')
-        console.log(consulta)
         res.json(consulta)
     }
 
