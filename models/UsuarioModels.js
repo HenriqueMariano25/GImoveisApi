@@ -1,4 +1,4 @@
-const usuariosDao = require('../DAO/usuarioDao')
+const autenticacaoDao = require('../dao/autenticacaoDao')
 
 class Usuario{
     constructor(usuario) {
@@ -10,7 +10,7 @@ class Usuario{
     }
 
     static async buscaPorUsuario(user){
-        const usuario = await usuariosDao.buscaPorUsuario(user)
+        const usuario = await autenticacaoDao.buscaPorUsuario(user)
         if(!usuario){
             return null
         }
@@ -18,7 +18,7 @@ class Usuario{
     }
 
     static async buscaPorId(id){
-        const usuario = await usuariosDao.buscaPorId(id)
+        const usuario = await autenticacaoDao.buscaPorId(id)
         if(!usuario){
             return null
         }

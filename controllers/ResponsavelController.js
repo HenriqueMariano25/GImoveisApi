@@ -20,6 +20,7 @@ class ResponsavelController {
     }
     async editar(req,res){
         let responsavel = req.body.responsavel
+        console.log(responsavel)
         await responsavelDao.editar(responsavel).then(response => {
             res.status(200).json(response)
         })

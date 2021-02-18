@@ -11,12 +11,10 @@ class ImovelController {
                     let quantidadeComodo = comodos[index].quantidade
                     let tipoComodo = comodos[index].tipo
                     imovelDao.cadastrarComodo(idImovel, quantidadeComodo, tipoComodo).then(response => {
-                        console.log(response)
                     })
                 }
             }
             res.status(200).json(response)
-            console.log(response)
         })
     }
 
@@ -27,7 +25,6 @@ class ImovelController {
     }
 
     async deletarImovel(req, res) {
-        console.log(req.params.id)
         const idImovel = req.params.id
         await imovelDao.deletarImovel(idImovel).then(response => {
             res.status(200).json(response)
@@ -37,7 +34,6 @@ class ImovelController {
     async visualizar(req,res) {
         const id = req.query.id
         await imovelDao.visualizar(id).then(resultado => {
-            console.log(resultado)
             res.status(200).json(resultado)
         })
     }
@@ -47,7 +43,6 @@ class ImovelController {
         const imovel = req.body.data
         const comodos = req.body.comodos
         await imovelDao.editarImovel(id, imovel).then(response => {
-            console.log(response.data)
             for (let index in comodos) {
                 let quantidadeComodo = comodos[index].quantidade
                 let tipoComodo = comodos[index].tipo

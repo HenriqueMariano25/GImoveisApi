@@ -34,8 +34,6 @@ class UsuarioController {
         })
     }
 
-
-
     async tiposPermissao(res){
         await usuarioDao.tiposPermissao().then(response => {
             res.status(200).json(response)

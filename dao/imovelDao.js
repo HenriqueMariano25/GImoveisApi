@@ -6,13 +6,13 @@ module.exports = {
             db.query(`INSERT INTO imovel(
                 nome, rua , cep, bairro,cidade,estado,complemento,met_quadrada,met_quadrada_construida, inscricao_municipal, 
                 funesbom, num_cliente_luz,num_cliente_agua, valor_aquisicao, valor_venda,data_aquisicao, data_venda, 
-                valor_atual, id_status_imovel, id_tipo_imovel, proprietario, numero
+                valor_atual, id_status_imovel, id_tipo_imovel, proprietario, numero, valor_aquisicao_dolar
                 ) VALUES (
                 '${imovel.nome}', '${imovel.rua}', '${imovel.cep}', '${imovel.bairro}', '${imovel.cidade}','${imovel.estado}', 
                 '${imovel.complemento}','${imovel.area}', '${imovel.area_construida}', '${imovel.inscricao_municipal}',
                 '${imovel.funesbom}', '${imovel.numero_cliente_luz}', '${imovel.numero_cliente_agua}', '${imovel.valor_aquisicao}',
                 '${imovel.valor_atual}', '${imovel.data_aquisicao}', '${imovel.data_venda}', '${imovel.valor_atual}', 
-                ${imovel.id_status}, ${imovel.tipo_imovel}, '${imovel.proprietario}', '${imovel.numero}'
+                ${imovel.id_status}, ${imovel.tipo_imovel}, '${imovel.proprietario}', '${imovel.numero}', '${imovel.valor_aquisicao_dolar}'
                 ) RETURNING id, nome`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
@@ -55,7 +55,7 @@ GROUP BY imo.nome, imo.rua, imo.id,sta_imo.descricao
                     imo.met_quadrada area, imo.met_quadrada_construida area_construida, imo.valor_atual, 
                     imo.valor_aquisicao,imo.num_cliente_luz numero_cliente_luz, imo.num_cliente_agua numero_cliente_agua,
                     imo.data_venda,ARRAY_AGG(com.quantidade) quantidade, ARRAY_AGG(tip_com.descricao) descricao,
-                    ARRAY_AGG(com.id_tipo_comodo) tipo_comodo, ARRAY_AGG(com.id) id_comodo
+                    ARRAY_AGG(com.id_tipo_comodo) tipo_comodo, ARRAY_AGG(com.id) id_comodo, valor_aquisicao_dolar
                     FROM comodo com
                     FULL OUTER JOIN imovel imo ON imo.id = com.id_imovel
                     LEFT OUTER JOIN tipo_comodo tip_com ON com.id_tipo_comodo = tip_com.id
@@ -65,7 +65,7 @@ GROUP BY imo.nome, imo.rua, imo.id,sta_imo.descricao
                     tipo_imovel,id_status ,status,
                     imo.cep, imo.rua,imo.numero, imo.complemento, imo.bairro, imo.cidade, imo.estado,imo.data_aquisicao,
                     area,area_construida, imo.valor_atual, imo.valor_aquisicao,numero_cliente_luz,numero_cliente_agua,
-                    imo.data_venda
+                    imo.data_venda,valor_aquisicao_dolar
             `, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
@@ -87,9 +87,7 @@ GROUP BY imo.nome, imo.rua, imo.id,sta_imo.descricao
              data_venda = '${imovel.data_venda}',valor_atual = '${imovel.valor_atual}', 
              id_status_imovel = ${imovel.id_status}, id_tipo_imovel = '${imovel.tipo_imovel}',
              proprietario = '${imovel.proprietario}', numero = '${imovel.numero}', cidade = '${imovel.cidade}', 
-             cep = ${imovel.cep} 
-             
-             
+             cep = ${imovel.cep} , valor_aquisicao_dolar = '${imovel.valor_aquisicao_dolar}'
              WHERE id = ${id} RETURNING nome, id, data_venda` , (erro, resultado) => {
                 if(erro){
                     console.log(erro)

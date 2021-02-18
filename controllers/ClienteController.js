@@ -4,8 +4,12 @@ const axios = require('axios')
 
 class ClienteController {
     async visualizarTodos(res) {
-        const consulta = await clienteDao.visualizarTodos()
-        res.json(consulta)
+        await clienteDao.visualizarTodos().then(consulta => {
+            for(let x = 0; x < consulta.length; x++){
+                consulta[x].data_formatada = dayjs(consulta[x].data_nascimento).format('DD/MM/YYYY')
+            }
+            res.json(consulta)
+        })
     }
 
     async visualizar(req, res) {
