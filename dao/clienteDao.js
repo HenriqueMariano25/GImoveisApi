@@ -28,13 +28,13 @@ module.exports = {
                  cli.nome, cli.email, cli.rua, cli.bairro, cli.cidade, cli.estado, cli.complemento , cli.cpf_cnpj,
                  cli.identidade,cli.data_nascimento, cli.referencia , cli.numero, sta.id status,
                  cli.id, cli.cep,cli.id_estado_civil estado_civil,ARRAY_AGG(tel.id) id_telefone, 
-                 ARRAY_AGG(tel.numero) numero_telefone, ARRAY_AGG(tel.id_tipo_telefone) tipo_telefone, cli.observacao
+                 ARRAY_AGG(tel.numero) numero_telefone, ARRAY_AGG(tel.id_tipo_telefone) tipo_telefone, cli.observacao, cli.tipo_cliente
                 FROM cliente cli
                 FULL OUTER JOIN telefone tel ON tel.id_cliente = cli.id
                 FULL OUTER JOIN status_cliente sta ON sta.id = cli.id_status_cliente
                 WHERE cli.id = ${idCliente}
                 GROUP BY cli.nome, cli.email, cli.rua, cli.bairro, cli.cidade, cli.estado, cli.complemento, cli.cpf_cnpj,
-                cli.identidade, cli.data_nascimento, cli.referencia, cli.numero, cli.id, status, cli.observacao`,
+                cli.identidade, cli.data_nascimento, cli.referencia, cli.numero, cli.id, status, cli.observacao, cli.tipo_cliente`,
                 (erro, resultado) => {
                     if (erro) {
                         console.log(erro)
@@ -49,12 +49,12 @@ module.exports = {
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO cliente(
             nome,rua,cep,bairro,cidade,estado,complemento,cpf_cnpj,identidade,email,referencia,data_nascimento, id_estado_civil,
-            numero, id_status_cliente, observacao
+            numero, id_status_cliente, observacao, tipo_cliente
             ) VALUES (
             '${cliente.nome}','${cliente.rua}','${cliente.cep}','${cliente.bairro}','${cliente.cidade}',
             '${cliente.estado}','${cliente.complemento}',${cliente.cpf_cnpj},${cliente.identidade},
             '${cliente.email}','${cliente.referencia}','${cliente.data_nascimento}',${cliente.estado_civil}, 
-            '${cliente.numero}', ${cliente.status}, '${cliente.observacao}'
+            '${cliente.numero}', ${cliente.status}, '${cliente.observacao}', '${cliente.tipo_cliente}'
             ) RETURNING nome, id`, (erro, resultado) => {
                 if (erro) {
                     return reject(erro)
@@ -72,7 +72,7 @@ module.exports = {
           identidade = ${dadosCliente.identidade}, email = '${dadosCliente.email}', referencia = '${dadosCliente.referencia}',
           id_estado_civil = ${dadosCliente.estado_civil}, cpf_cnpj = ${dadosCliente.cpf_cnpj}, cep = ${dadosCliente.cep},
           data_nascimento = '${dadosCliente.data_nascimento}',numero = ${dadosCliente.numero}, 
-          id_status_cliente = ${dadosCliente.status}, observacao = '${dadosCliente.observacao}'
+          id_status_cliente = ${dadosCliente.status}, observacao = '${dadosCliente.observacao}', tipo_cliente = '${dadosCliente.tipo_cliente}'
           WHERE id = ${idCliente} RETURNING nome, id`,(erro, resultado) => {
               if(erro){
                   console.log(erro)

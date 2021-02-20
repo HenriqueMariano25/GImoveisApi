@@ -16,8 +16,8 @@ module.exports = {
 
     cadastrar:(usuario) => {
         return new Promise((resolve, reject) => {
-            db.query(`INSERT INTO usuario(nome,email,senha,usuario,id_permissao) 
-            VALUES ('${usuario.nome}', '${usuario.email}', '123456', '${usuario.usuario}',
+            db.query(`INSERT INTO usuario(nome,email,senha,usuario,id_permissao, senha) 
+            VALUES ('${usuario.nome}', '${usuario.email}', '${usuario.senha}', '${usuario.usuario}',
              ${usuario.permissao}) RETURNING nome, id`, (erro, resultado) => {
                 if(erro){
                     console.log(erro)
@@ -47,7 +47,7 @@ module.exports = {
         return new Promise((resolve, reject) => {
             db.query(`UPDATE usuario
           SET nome = '${usuario.nome}', email = '${usuario.email}', usuario = '${usuario.usuario}',
-           id_permissao = ${usuario.permissao}
+           id_permissao = ${usuario.permissao}, senha = '${usuario.senha}'
            WHERE id = ${idUsuario} RETURNING nome,id`, (erro, resultado) => {
                 if(erro){
                     console.log(erro)
