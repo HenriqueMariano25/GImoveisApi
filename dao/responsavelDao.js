@@ -19,7 +19,8 @@ module.exports = {
     },
     visualizarTodos: () => {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT res.nome, res.id, res.cpf_cnpj FROM responsavel res ORDER BY res.nome`, (erro, resultado) => {
+            db.query(`SELECT res.nome, res.id, res.cpf_cnpj, res.rua, res.numero, res.cidade, res.bairro, res.estado, res.complemento
+                FROM responsavel res ORDER BY res.nome`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
                     return reject(erro)
