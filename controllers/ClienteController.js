@@ -20,9 +20,14 @@ class ClienteController {
     }
 
     async cadastrar(req, res) {
-        const dadosCliente = req.body.data
+        const cliente = req.body.data
+        console.log(cliente)
         let telefones = req.body.telefones
-        await clienteDao.cadastrar(dadosCliente).then(consulta => {
+        let cpf_cnpj = cliente.cpf_cnpj
+        let cep = cliente.cep
+        cliente.cpf_cnpj = cpf_cnpj.normalize("NFD").replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '')
+        cliente.cep = cep.normalize("NFD").replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '')
+        await clienteDao.cadastrar(cliente).then(consulta => {
             let idCliente = consulta[0].id
             for (let index in telefones) {
                 if (telefones[index].numero != "" && telefones[index].tipo != "") {
@@ -41,17 +46,24 @@ class ClienteController {
 
     async editar(req, res) {
         let idCliente = req.params.id
-        let dadosCliente = req.body.data
+        let cliente = req.body.data
         let telefones = req.body.telefones
-        await clienteDao.editar(idCliente, dadosCliente).then(consulta => {
+        let cpf_cnpj = cliente.cpf_cnpj
+        let cep = cliente.cep
+        cliente.cpf_cnpj = cpf_cnpj.normalize("NFD").replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '')
+        cliente.cep = cep.normalize("NFD").replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '')
+        await clienteDao.editar(idCliente, cliente).then(consulta => {
             for (let index in telefones) {
                 let numeroTelefone = telefones[index].numero
                 let tipoTelefone = telefones[index].tipo
                 let idTelefone = telefones[index].id
-                if(idTelefone == null){
-                    clienteDao.cadastrarTelefone(idCliente, numeroTelefone, tipoTelefone)
-                }else {
-                    clienteDao.editarTelefone(telefones[index])
+                if(numeroTelefone != "" && tipoTelefone != null) {
+                    if (idTelefone == null) {
+
+                        clienteDao.cadastrarTelefone(idCliente, numeroTelefone, tipoTelefone)
+                    } else {
+                        clienteDao.editarTelefone(telefones[index])
+                    }
                 }
             }
             res.status(200).json(consulta)
@@ -80,6 +92,13 @@ class ClienteController {
     async tipoStatus(res){
         await clienteDao.tipoStatus().then(response => {
             res.status(200).json(response)
+        })
+    }
+
+    async deletarTelefone(req,res){
+        let idTelefone = req.body.idTelefone
+        await clienteDao.deletarTelefone(idTelefone).then(() => {
+            res.status(200).json()
         })
     }
 }

@@ -22,4 +22,7 @@ module.exports = app => {
     app.get('/cliente/tipos_status', (req, res) => {
         ClienteController.tipoStatus(res)
     })
+    app.post('/cliente/deletar/telefone', (req, res) => {
+        ClienteController.deletarTelefone(req,res)
+    })
 }
