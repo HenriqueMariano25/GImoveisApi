@@ -26,18 +26,18 @@ module.exports = {
     visualizarTodos: () => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT imo.id, imo.nome, imo.proprietario, imo.inscricao_municipal, imo.funesbom, 
-imo.id_tipo_imovel tipo_imovel,imo.id_status_imovel id_status ,sta_imo.descricao status,imo.cep, imo.rua,imo.numero, imo.complemento, 
-imo.bairro, imo.cidade, imo.estado,imo.data_aquisicao, imo.met_quadrada area, 
-imo.met_quadrada_construida area_construida, imo.valor_atual, imo.valor_aquisicao,
-imo.num_cliente_luz numero_cliente_luz, imo.num_cliente_agua numero_cliente_agua, imo.data_venda,
-ARRAY_AGG(com.quantidade) quantidade, ARRAY_AGG(tip_com.descricao) descricao,
-ARRAY_AGG(com.id_tipo_comodo)
-FROM comodo com
-FULL OUTER JOIN imovel imo ON imo.id = com.id_imovel
-LEFT OUTER JOIN tipo_comodo tip_com ON com.id_tipo_comodo = tip_com.id
-LEFT OUTER JOIN status_imovel sta_imo ON imo.id_status_imovel = sta_imo.id
-GROUP BY imo.nome, imo.rua, imo.id,sta_imo.descricao
-                    ORDER BY imo.nome`, (erro, resultado) => {
+            imo.id_tipo_imovel tipo_imovel,imo.id_status_imovel id_status ,sta_imo.descricao status,imo.cep, imo.rua,imo.numero, imo.complemento, 
+            imo.bairro, imo.cidade, imo.estado,imo.data_aquisicao, imo.met_quadrada area, 
+            imo.met_quadrada_construida area_construida, imo.valor_atual, imo.valor_aquisicao,
+            imo.num_cliente_luz numero_cliente_luz, imo.num_cliente_agua numero_cliente_agua, imo.data_venda,
+            ARRAY_AGG(com.quantidade) quantidade, ARRAY_AGG(tip_com.descricao) descricao,
+            ARRAY_AGG(com.id_tipo_comodo)
+            FROM comodo com
+            FULL OUTER JOIN imovel imo ON imo.id = com.id_imovel
+            LEFT OUTER JOIN tipo_comodo tip_com ON com.id_tipo_comodo = tip_com.id
+            LEFT OUTER JOIN status_imovel sta_imo ON imo.id_status_imovel = sta_imo.id
+            GROUP BY imo.nome, imo.rua, imo.id,sta_imo.descricao
+                                ORDER BY imo.nome`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
                     return reject(erro)
@@ -87,7 +87,7 @@ GROUP BY imo.nome, imo.rua, imo.id,sta_imo.descricao
              data_venda = '${imovel.data_venda}',valor_atual = '${imovel.valor_atual}', 
              id_status_imovel = ${imovel.id_status}, id_tipo_imovel = '${imovel.tipo_imovel}',
              proprietario = '${imovel.proprietario}', numero = '${imovel.numero}', cidade = '${imovel.cidade}', 
-             cep = ${imovel.cep} , valor_aquisicao_dolar = '${imovel.valor_aquisicao_dolar}'
+             cep = '${imovel.cep}' , valor_aquisicao_dolar = '${imovel.valor_aquisicao_dolar}'
              WHERE id = ${id} RETURNING nome, id, data_venda` , (erro, resultado) => {
                 if(erro){
                     console.log(erro)
@@ -102,6 +102,30 @@ GROUP BY imo.nome, imo.rua, imo.id,sta_imo.descricao
         return new Promise((resolve, reject) => {
             db.query(`DELETE FROM imovel WHERE id = ${idImovel} RETURNING id, nome`, (erro, resultado) => {
                 if (erro) {
+                    console.log(erro)
+                    return reject(erro)
+                }
+                return resolve(resultado.rows)
+            })
+        })
+    },
+
+    deletarComodosImovel: idImovel => {
+        return new Promise((resolve, reject) => {
+            db.query(`DELETE FROM comodo WHERE id_imovel = ${idImovel} RETURNING id` , (erro,resultado) => {
+                if(erro){
+                    console.log(erro)
+                    return reject(erro)
+                }
+                return resolve(resultado.rows)
+            })
+        })
+    },
+
+    deletarComodo: idComodo => {
+        return new Promise((resolve, reject) => {
+            db.query(`DELETE FROM comodo WHERE id = ${idComodo} RETURNING id` , (erro,resultado) => {
+                if(erro){
                     console.log(erro)
                     return reject(erro)
                 }

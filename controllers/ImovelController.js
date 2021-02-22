@@ -26,6 +26,7 @@ class ImovelController {
 
     async deletarImovel(req, res) {
         const idImovel = req.params.id
+        await imovelDao.deletarComodosImovel(idImovel)
         await imovelDao.deletarImovel(idImovel).then(response => {
             res.status(200).json(response)
         })
@@ -47,10 +48,12 @@ class ImovelController {
                 let quantidadeComodo = comodos[index].quantidade
                 let tipoComodo = comodos[index].tipo
                 let idComodo = comodos[index].id
-                if(idComodo == null){
-                    imovelDao.cadastrarComodo(id, quantidadeComodo, tipoComodo)
-                }else {
-                    imovelDao.editarComodo(comodos[index])
+                if (comodos[index].quantidade != 0 && comodos[index].tipo != null) {
+                    if (idComodo == null) {
+                        imovelDao.cadastrarComodo(id, quantidadeComodo, tipoComodo)
+                    } else {
+                        imovelDao.editarComodo(comodos[index])
+                    }
                 }
             }
             res.status(200).json(response)
@@ -72,6 +75,13 @@ class ImovelController {
     async tiposComodos(res){
         await imovelDao.tiposComodos().then(response => {
             res.status(200).json(response)
+        })
+    }
+
+    async deletarComodo(req,res){
+        let idComodo = req.body.idComodo
+        await imovelDao.deletarComodo(idComodo).then(() => {
+            res.status(200).json()
         })
     }
 }

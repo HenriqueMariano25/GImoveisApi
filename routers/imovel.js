@@ -25,4 +25,7 @@ module.exports = app => {
     app.get('/imoveis/tipo_comodo', (req, res) => {
         ImovelController.tiposComodos(res)
     })
+    app.post('/imoveis/deletar/comodo', (req,res) => {
+        ImovelController.deletarComodo(req,res)
+    })
 }
