@@ -106,4 +106,4 @@ dist
 #Adicionado pelo proprio projeto
 .idea
 package-lock.json
-.pdf
+*.pdf

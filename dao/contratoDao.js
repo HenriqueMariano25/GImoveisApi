@@ -4,12 +4,13 @@ module.exports = {
     visualizarTodos: () => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT DISTINCT con.id,cli.nome nome_cliente,imo.nome nome_imovel,
-                res.nome nome_responsavel, pdf.url 
+                res.nome nome_responsavel, pdf.url, pdf.nome nome_pdf
                     FROM contrato con
                     INNER JOIN cliente cli ON con.id_cliente = cli.id
                     INNER JOIN imovel imo ON con.id_imovel = imo.id
                     INNER JOIN responsavel res ON con.id_responsavel = res.id
-                    FULL JOIN pdf_contrato pdf on pdf.id_contrato = con.id
+                    LEFT OUTER JOIN pdf_contrato pdf on pdf.id_contrato = con.id
+                    WHERE deletado = 'false'
                     ORDER BY con.id`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
@@ -22,8 +23,9 @@ module.exports = {
     visualizar: (idContrato) => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT con.id, con.id_responsavel, con.id_cliente, con.id_imovel, con.data_inicio, con.data_fim,
-            con.vigencia, con.data_vencimento, con.valor_boleto, con.carencia
+            con.vigencia, con.data_vencimento, con.valor_boleto, con.carencia, pdf.nome nome_pdf
             FROM contrato con
+            LEFT OUTER JOIN pdf_contrato pdf on pdf.id_contrato = con.id
             WHERE con.id = ${idContrato}`,
                 (erro, resultado) => {
                     if (erro) {
@@ -37,9 +39,9 @@ module.exports = {
     cadastrar: (contrato) => {
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO contrato(id_responsavel,id_cliente,id_imovel,data_inicio,data_fim,data_vencimento,
-            valor_boleto,carencia) VALUES(${contrato.id_responsavel}, ${contrato.id_cliente},${contrato.id_imovel},
+            valor_boleto,carencia, deletado) VALUES(${contrato.id_responsavel}, ${contrato.id_cliente},${contrato.id_imovel},
             '${contrato.data_inicio}','${contrato.data_fim}','${contrato.data_vencimento}','${contrato.valor_boleto}',
-            '${contrato.carencia}') RETURNING id`, (erro, resultado) => {
+            '${contrato.carencia}', 'false') RETURNING id`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
                     return reject(erro)
@@ -85,6 +87,17 @@ module.exports = {
                 }
                 return resolve(resultado)
             })
+        })
+    },
+    deletarContrato: idContrato => {
+        return new Promise((resolve, reject) => {
+            db.query(`UPDATE contrato SET deletado = ${true} WHERE id = ${idContrato} RETURNING id`, (erro,resultado) => {
+                if(erro){
+                    console.log(erro)
+                    return reject(erro)
+                }
+                return resolve(resultado.rows)
+            } )
         })
     },
     deletarBoletos: (idContrato) => {
@@ -184,7 +197,7 @@ module.exports = {
     },
     importarPDF: (url,contrato, nome) => {
         return new Promise((resolve, reject) => {
-            db.query(`INSERT INTO pdf_contrato(url, id_contrato, nome) VALUES('${url}', ${contrato}, '${nome}') RETURNING id`, (erro, resultado) => {
+            db.query(`INSERT INTO pdf_contrato(url, id_contrato, nome) VALUES('${url}', ${contrato}, '${nome}') RETURNING id, nome`, (erro, resultado) => {
                 if(erro){
                     console.log(erro)
                     return reject(erro)
