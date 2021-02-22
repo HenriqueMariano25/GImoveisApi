@@ -3,7 +3,7 @@ module.exports = {
     visualizarTodos: () => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT usu.id, usu.nome, usu.email, usu.usuario, per.descricao permissao FROM usuario usu
-                   FULL OUTER JOIN permissao per ON per.id = usu.id_permissao
+                   LEFT OUTER JOIN permissao per ON per.id = usu.id_permissao
                     ORDER BY nome`, (erro, resultado) => {
                 if(erro){
                     console.log(erro)
@@ -16,7 +16,7 @@ module.exports = {
 
     cadastrar:(usuario) => {
         return new Promise((resolve, reject) => {
-            db.query(`INSERT INTO usuario(nome,email,senha,usuario,id_permissao, senha) 
+            db.query(`INSERT INTO usuario(nome,email,senha,usuario,id_permissao) 
             VALUES ('${usuario.nome}', '${usuario.email}', '${usuario.senha}', '${usuario.usuario}',
              ${usuario.permissao}) RETURNING nome, id`, (erro, resultado) => {
                 if(erro){
@@ -30,7 +30,7 @@ module.exports = {
 
     visualizar: (idUsusario) => {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT usu.id, usu.nome, usu.email, usu.usuario, per.id permissao FROM usuario usu
+            db.query(`SELECT usu.id, usu.nome, usu.email, usu.usuario, per.id permissao, usu.senha FROM usuario usu
                    FULL OUTER JOIN permissao per ON per.id = usu.id_permissao
                    WHERE usu.id = ${idUsusario}
                     ORDER BY nome`, (erro, resultado) => {
