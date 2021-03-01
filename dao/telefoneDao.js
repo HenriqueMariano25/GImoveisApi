@@ -13,4 +13,19 @@ module.exports = {
                 })
         })
     },
+    telefones: (idCliente) => {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT tel.id, tel.id_tipo_telefone , tel.numero, tel.id_cliente, tel.observacao, tip_tel.descricao
+            FROM telefone tel
+            LEFT JOIN tipo_telefone tip_tel ON tel.id_tipo_telefone = tip_tel.id
+            WHERE id_cliente = ${idCliente}`,
+                (erro, resultado) => {
+                    if(erro){
+                        console.log(erro)
+                        return reject(erro)
+                    }
+                    return resolve(resultado.rows)
+                })
+        })
+    }
 }

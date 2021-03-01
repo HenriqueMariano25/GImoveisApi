@@ -14,14 +14,14 @@ class ClienteController {
 
     async visualizar(req, res) {
         let idCliente = req.query.idCliente
-        const consulta = await clienteDao.visualizar(idCliente)
-        consulta.data_nascimento = dayjs(consulta.data_nascimento).format('YYYY-MM-DD')
-        res.json(consulta)
+        await clienteDao.visualizar(idCliente).then(consulta => {
+            consulta.data_nascimento = dayjs(consulta.data_nascimento).format('YYYY-MM-DD')
+            res.json(consulta)
+        })
     }
 
     async cadastrar(req, res) {
         const cliente = req.body.data
-        console.log(cliente)
         let telefones = req.body.telefones
         let cpf_cnpj = cliente.cpf_cnpj
         let cep = cliente.cep
@@ -32,8 +32,9 @@ class ClienteController {
             for (let index in telefones) {
                 if (telefones[index].numero != "" && telefones[index].tipo != "") {
                     let numeroTelefone = telefones[index].numero
-                    let tipoTelefone = telefones[index].tipo
-                    clienteDao.cadastrarTelefone(idCliente, numeroTelefone, tipoTelefone)
+                    let tipoTelefone = telefones[index].id_tipo
+                    let observacaoTelefone = telefones[index].observao
+                    clienteDao.cadastrarTelefone(idCliente, numeroTelefone, tipoTelefone, observacaoTelefone)
                 }
             }
             res.json(consulta)
@@ -55,12 +56,12 @@ class ClienteController {
         await clienteDao.editar(idCliente, cliente).then(consulta => {
             for (let index in telefones) {
                 let numeroTelefone = telefones[index].numero
-                let tipoTelefone = telefones[index].tipo
+                let tipoTelefone = telefones[index].id_tipo
+                let observacaoTelefone = telefones[index].observacao
                 let idTelefone = telefones[index].id
                 if(numeroTelefone != "" && tipoTelefone != null) {
                     if (idTelefone == null) {
-
-                        clienteDao.cadastrarTelefone(idCliente, numeroTelefone, tipoTelefone)
+                        clienteDao.cadastrarTelefone(idCliente, numeroTelefone, tipoTelefone, observacaoTelefone)
                     } else {
                         clienteDao.editarTelefone(telefones[index])
                     }
@@ -99,6 +100,20 @@ class ClienteController {
         let idTelefone = req.body.idTelefone
         await clienteDao.deletarTelefone(idTelefone).then(() => {
             res.status(200).json()
+        })
+    }
+
+    async contratos(req,res){
+        let idCliente = req.query.idCliente
+        await clienteDao.contratos(idCliente).then(consulta => {
+            res.status(200).json(consulta)
+        })
+    }
+
+    async boletos(req,res){
+        let idContrato = req.query.idContrato
+        await clienteDao.boletos(idContrato).then(response => {
+            res.status(200).json(response)
         })
     }
 }

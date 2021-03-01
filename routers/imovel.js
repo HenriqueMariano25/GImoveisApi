@@ -28,4 +28,22 @@ module.exports = app => {
     app.post('/imoveis/deletar/comodo', (req,res) => {
         ImovelController.deletarComodo(req,res)
     })
+    app.get('/imoveis/contratos', (req,res) => {
+        ImovelController.contratos(req,res)
+    })
+    app.get('/imoveis/despesas/tipo_despesas', (req, res) => {
+        ImovelController.tiposDespesas(req, res)
+    })
+    app.post('/imoveis/despesas/cadastrar', (req,res) => {
+        ImovelController.cadastrarDespesa(req, res)
+    })
+    app.get('/imoveis/despesas', (req, res) => {
+        ImovelController.despesas(req,res)
+    })
+    app.post('/imoveis/despesas/editar', (req, res) => {
+        ImovelController.editarDespesa(req,res)
+    })
+    app.delete('/imoveis/despesa/:id/deletar', (req, res) => {
+        ImovelController.deletarDespesa(req, res)
+    })
 }

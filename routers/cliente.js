@@ -25,4 +25,10 @@ module.exports = app => {
     app.post('/cliente/deletar/telefone', (req, res) => {
         ClienteController.deletarTelefone(req,res)
     })
+    app.get('/cliente/contratos', (req,res) => {
+        ClienteController.contratos(req,res)
+    })
+    app.get('/cliente/contrato/boletos', (req,res) => {
+        ClienteController.boletos(req, res)
+    })
 }

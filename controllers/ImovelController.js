@@ -84,6 +84,50 @@ class ImovelController {
             res.status(200).json()
         })
     }
+
+    async contratos(req,res){
+        let idImovel = req.query.idContrato
+        await imovelDao.contratos(idImovel).then(response => {
+            res.status(200).json(response)
+        })
+    }
+
+    async tiposDespesas(req,res){
+        await imovelDao.tiposDespesas().then(consulta => {
+            res.status(200).json(consulta)
+        })
+    }
+
+    async cadastrarDespesa(req,res){
+        let despesa = req.body.despesa
+        console.log(despesa)
+        let idImovel = req.body.idImovel
+        await imovelDao.cadastrarDespesa(despesa, idImovel).then(response => {
+            res.status(200).json(response)
+        })
+    }
+
+    async despesas(req,res){
+        let idImovel = req.query.idImovel
+        await imovelDao.despesas(idImovel).then(consulta => {
+            res.status(200).json(consulta)
+        })
+    }
+
+    async editarDespesa(req, res){
+        let despesa = req.body.despesa
+        console.log(despesa)
+        await imovelDao.editarDespesa(despesa).then(response => {
+            res.status(200).json(response)
+        })
+    }
+
+    async deletarDespesa(req, res){
+        let idDespesa = req.params.id
+        await imovelDao.deletarDespesa(idDespesa).then(response => {
+            res.status(200).json(response)
+        })
+    }
 }
 
 module.exports = new ImovelController

@@ -4,11 +4,12 @@ module.exports = {
     visualizarTodos: () => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT DISTINCT con.id,cli.nome nome_cliente,imo.nome nome_imovel,
-                res.nome nome_responsavel, pdf.url, pdf.nome nome_pdf
+                res.nome nome_responsavel, pdf.url, pdf.nome nome_pdf, sta_con.descricao status
                     FROM contrato con
                     INNER JOIN cliente cli ON con.id_cliente = cli.id
                     INNER JOIN imovel imo ON con.id_imovel = imo.id
                     INNER JOIN responsavel res ON con.id_responsavel = res.id
+                    LEFT JOIN status_contrato sta_con ON con.id_status_contrato = sta_con.id
                     LEFT OUTER JOIN pdf_contrato pdf on pdf.id_contrato = con.id
                     WHERE deletado = 'false'
                     ORDER BY con.id`, (erro, resultado) => {
@@ -39,9 +40,9 @@ module.exports = {
     cadastrar: (contrato) => {
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO contrato(id_responsavel,id_cliente,id_imovel,data_inicio,data_fim,data_vencimento,
-            valor_boleto,carencia, deletado) VALUES(${contrato.id_responsavel}, ${contrato.id_cliente},${contrato.id_imovel},
+            valor_boleto,carencia, deletado, id_status_contrato) VALUES(${contrato.id_responsavel}, ${contrato.id_cliente},${contrato.id_imovel},
             '${contrato.data_inicio}','${contrato.data_fim}','${contrato.data_vencimento}','${contrato.valor_boleto}',
-            '${contrato.carencia}', 'false') RETURNING id`, (erro, resultado) => {
+            '${contrato.carencia}', 'false', 1) RETURNING id`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
                     return reject(erro)
@@ -53,7 +54,8 @@ module.exports = {
     editar: (contrato) => {
         return new Promise((resolve, reject) => {
             db.query(`UPDATE contrato SET id_responsavel = ${contrato.id_responsavel}, id_cliente = ${contrato.id_cliente},
-            id_imovel = ${contrato.id_imovel}
+            id_imovel = ${contrato.id_imovel}, data_inicio = '${contrato.data_inicio}', valor_boleto = '${contrato.valor_boleto}',
+            carencia = '${contrato.carencia}'
              WHERE id = ${contrato.id} RETURNING id`,
                 (erro, resultado) => {
                     if (erro) {

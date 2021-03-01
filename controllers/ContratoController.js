@@ -28,7 +28,6 @@ class ContratoController {
     async editar(req,res){
         let contrato = req.body.contrato
         await contratoDao.editar(contrato).then(response => {
-
             res.status(200).json(response)
         })
     }
