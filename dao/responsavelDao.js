@@ -1,13 +1,16 @@
 const db = require('../db/conexao')
+const dayjs = require('dayjs')
 
 module.exports = {
-    cadastrar: responsavel => {
+    cadastrar: (responsavel, idUsuario) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO responsavel(nome, data_nascimento, cpf_cnpj, identidade, id_estado_civil,cep,rua,
-                    numero,bairro,cidade,estado, complemento) 
+                    numero,bairro,cidade,estado, complemento, criado_em, alterado_em, criado_por, alterado_por) 
                     VALUES ('${responsavel.nome}','${responsavel.data_nascimento}','${responsavel.cpf_cnpj}',
                     '${responsavel.identidade}',${responsavel.id_estado_civil},'${responsavel.cep}','${responsavel.rua}',
-                    '${responsavel.numero}','${responsavel.bairro}','${responsavel.cidade}','${responsavel.estado}','${responsavel.complemento}')
+                    '${responsavel.numero}','${responsavel.bairro}','${responsavel.cidade}','${responsavel.estado}',
+                    '${responsavel.complemento}', '${agora}', '${agora}', ${idUsuario}, ${idUsuario})
                     RETURNING nome, id`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
@@ -43,12 +46,14 @@ module.exports = {
             })
         })
     },
-    editar: (responsavel) => {
+    editar: (responsavel, idUsuario) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`UPDATE responsavel SET nome = '${responsavel.nome}' , data_nascimento = '${responsavel.data_nascimento}',
             id_estado_civil = ${responsavel.id_estado_civil}, cpf_cnpj = '${responsavel.cpf_cnpj}', identidade = '${responsavel.identidade}',
             cep = '${responsavel.cep}', rua = '${responsavel.rua}', bairro = '${responsavel.bairro}', cidade = '${responsavel.cidade}',
-            estado = '${responsavel.estado}', numero = '${responsavel.numero}', complemento = '${responsavel.complemento}'
+            estado = '${responsavel.estado}', numero = '${responsavel.numero}', complemento = '${responsavel.complemento}',
+            alterado_em = '${agora}', alterado_por = ${idUsuario}
             WHERE id = ${responsavel.id} RETURNING nome, id`,
                 (erro, resultado) => {
                     if (erro) {

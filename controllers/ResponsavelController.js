@@ -3,7 +3,8 @@ const responsavelDao = require('../dao/responsavelDao')
 class ResponsavelController {
     async cadastrar(req, res) {
         let responsavel = req.body.responsavel
-        await responsavelDao.cadastrar(responsavel).then(response => {
+        let idUsuario = req.body.idUsuario
+        await responsavelDao.cadastrar(responsavel, idUsuario).then(response => {
             res.status(200).json(response)
         })
     }
@@ -20,8 +21,8 @@ class ResponsavelController {
     }
     async editar(req,res){
         let responsavel = req.body.responsavel
-        console.log(responsavel)
-        await responsavelDao.editar(responsavel).then(response => {
+        let idUsuario = req.body.idUsuario
+        await responsavelDao.editar(responsavel, idUsuario).then(response => {
             res.status(200).json(response)
         })
     }

@@ -1,18 +1,22 @@
 const db = require('../db/conexao')
+const dayjs = require('dayjs')
 
 module.exports = {
-    cadastrar: imovel => {
+    cadastrar: (imovel, idUsuario) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO imovel(
                 nome, rua , cep, bairro,cidade,estado,complemento,met_quadrada,met_quadrada_construida, inscricao_municipal, 
                 funesbom, num_cliente_luz,num_cliente_agua, valor_aquisicao, valor_venda,data_aquisicao, data_venda, 
-                valor_atual, id_status_imovel, id_tipo_imovel, proprietario, numero, valor_aquisicao_dolar
+                valor_atual, id_status_imovel, id_tipo_imovel, proprietario, numero, valor_aquisicao_dolar, criado_em, alterado_em,
+                criado_por, alterado_por
                 ) VALUES (
                 '${imovel.nome}', '${imovel.rua}', '${imovel.cep}', '${imovel.bairro}', '${imovel.cidade}','${imovel.estado}', 
                 '${imovel.complemento}','${imovel.area}', '${imovel.area_construida}', '${imovel.inscricao_municipal}',
                 '${imovel.funesbom}', '${imovel.numero_cliente_luz}', '${imovel.numero_cliente_agua}', '${imovel.valor_aquisicao}',
                 '${imovel.valor_atual}', '${imovel.data_aquisicao}', '${imovel.data_venda}', '${imovel.valor_atual}', 
-                ${imovel.id_status}, ${imovel.tipo_imovel}, '${imovel.proprietario}', '${imovel.numero}', '${imovel.valor_aquisicao_dolar}'
+                ${imovel.id_status}, ${imovel.tipo_imovel}, '${imovel.proprietario}', '${imovel.numero}', '${imovel.valor_aquisicao_dolar}',
+                '${agora}', '${agora}', ${idUsuario}, ${idUsuario}
                 ) RETURNING id, nome`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
@@ -76,7 +80,8 @@ module.exports = {
         })
     },
 
-    editarImovel: (id, imovel) => {
+    editarImovel: (id, imovel, idUsuario) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss ')
         return new Promise((resolve, reject) => {
             db.query(`UPDATE imovel SET nome = '${imovel.nome}', rua = '${imovel.rua}', bairro = '${imovel.bairro}',
              estado = '${imovel.estado}', complemento = '${imovel.complemento}', met_quadrada = '${imovel.area}',
@@ -87,7 +92,8 @@ module.exports = {
              data_venda = '${imovel.data_venda}',valor_atual = '${imovel.valor_atual}', 
              id_status_imovel = ${imovel.id_status}, id_tipo_imovel = '${imovel.tipo_imovel}',
              proprietario = '${imovel.proprietario}', numero = '${imovel.numero}', cidade = '${imovel.cidade}', 
-             cep = '${imovel.cep}' , valor_aquisicao_dolar = '${imovel.valor_aquisicao_dolar}'
+             cep = '${imovel.cep}' , valor_aquisicao_dolar = '${imovel.valor_aquisicao_dolar}',
+             alterado_em = '${agora}', alterado_por = ${idUsuario}
              WHERE id = ${id} RETURNING nome, id, data_venda` , (erro, resultado) => {
                 if(erro){
                     console.log(erro)

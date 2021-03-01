@@ -25,9 +25,10 @@ class ClienteController {
         let telefones = req.body.telefones
         let cpf_cnpj = cliente.cpf_cnpj
         let cep = cliente.cep
+        let idUsuario = req.body.idUsuario
         cliente.cpf_cnpj = cpf_cnpj.normalize("NFD").replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '')
         cliente.cep = cep.normalize("NFD").replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '')
-        await clienteDao.cadastrar(cliente).then(consulta => {
+        await clienteDao.cadastrar(cliente, idUsuario).then(consulta => {
             let idCliente = consulta[0].id
             for (let index in telefones) {
                 if (telefones[index].numero != "" && telefones[index].tipo != "") {
@@ -51,9 +52,10 @@ class ClienteController {
         let telefones = req.body.telefones
         let cpf_cnpj = cliente.cpf_cnpj
         let cep = cliente.cep
+        let idUsuario  = req.body.idUsuario
         cliente.cpf_cnpj = cpf_cnpj.normalize("NFD").replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '')
         cliente.cep = cep.normalize("NFD").replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '')
-        await clienteDao.editar(idCliente, cliente).then(consulta => {
+        await clienteDao.editar(idCliente, cliente, idUsuario).then(consulta => {
             for (let index in telefones) {
                 let numeroTelefone = telefones[index].numero
                 let tipoTelefone = telefones[index].id_tipo

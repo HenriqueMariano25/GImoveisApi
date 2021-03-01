@@ -1,4 +1,5 @@
 const db = require('../db/conexao')
+const dayjs = require('dayjs')
 
 module.exports = {
     visualizarTodos: () => {
@@ -37,12 +38,16 @@ module.exports = {
                 })
         })
     },
-    cadastrar: (contrato) => {
+    cadastrar: (contrato, idUsuario) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO contrato(id_responsavel,id_cliente,id_imovel,data_inicio,data_fim,data_vencimento,
-            valor_boleto,carencia, deletado, id_status_contrato) VALUES(${contrato.id_responsavel}, ${contrato.id_cliente},${contrato.id_imovel},
+            valor_boleto,carencia, deletado, id_status_contrato, criado_em, alterado_em, criado_por, alterado_por) 
+            VALUES(
+            ${contrato.id_responsavel}, ${contrato.id_cliente},${contrato.id_imovel},
             '${contrato.data_inicio}','${contrato.data_fim}','${contrato.data_vencimento}','${contrato.valor_boleto}',
-            '${contrato.carencia}', 'false', 1) RETURNING id`, (erro, resultado) => {
+            '${contrato.carencia}', 'false', 1,'${agora}', '${agora}', ${idUsuario}, ${idUsuario}
+            ) RETURNING id`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
                     return reject(erro)
@@ -51,11 +56,12 @@ module.exports = {
             })
         })
     },
-    editar: (contrato) => {
+    editar: (contrato, idUsuario) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`UPDATE contrato SET id_responsavel = ${contrato.id_responsavel}, id_cliente = ${contrato.id_cliente},
             id_imovel = ${contrato.id_imovel}, data_inicio = '${contrato.data_inicio}', valor_boleto = '${contrato.valor_boleto}',
-            carencia = '${contrato.carencia}'
+            carencia = '${contrato.carencia}', alterado_em = '${agora}', alterado_por = ${idUsuario}
              WHERE id = ${contrato.id} RETURNING id`,
                 (erro, resultado) => {
                     if (erro) {

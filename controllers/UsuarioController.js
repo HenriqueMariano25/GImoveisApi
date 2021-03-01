@@ -8,8 +8,10 @@ class UsuarioController {
 
     async cadastrar(req,res) {
         const usuario = req.body.data
-        const consulta = await usuarioDao.cadastrar(usuario)
-        res.status(200).json(consulta)
+        const idUsuario = req.body.idUsuario
+        await usuarioDao.cadastrar(usuario, idUsuario).then(consulta => {
+            res.status(200).json(consulta)
+        })
     }
 
     async visualizar(req,res){
@@ -22,7 +24,8 @@ class UsuarioController {
     async editar(req,res){
         const idUsuario = req.params.id
         const usuario = req.body.data
-        await usuarioDao.editar(idUsuario, usuario).then(response => {
+        const alteradoPor = req.body.idUsuario
+        await usuarioDao.editar(idUsuario, usuario, alteradoPor).then(response => {
             res.status(200).json(response)
         })
     }

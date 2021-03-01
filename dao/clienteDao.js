@@ -1,4 +1,5 @@
 const db = require('../db/conexao')
+const dayjs = require('dayjs')
 
 module.exports = {
     visualizarTodos: () => {
@@ -48,17 +49,18 @@ module.exports = {
         })
     },
 
-    cadastrar: cliente => {
-        console.log(cliente)
+    cadastrar: (cliente, idUsuario) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO cliente(
             nome,rua,cep,bairro,cidade,estado,complemento,cpf_cnpj,identidade,email,referencia,data_nascimento, id_estado_civil,
-            numero, id_status_cliente, observacao, tipo_cliente
+            numero, id_status_cliente, observacao, tipo_cliente, criado_em, alterado_em, criado_por, alterado_por
             ) VALUES (
             '${cliente.nome}','${cliente.rua}','${cliente.cep}','${cliente.bairro}','${cliente.cidade}',
             '${cliente.estado}','${cliente.complemento}','${cliente.cpf_cnpj}','${cliente.identidade}',
-            '${cliente.email}','${cliente.referencia}','${cliente.data_nascimento}',${cliente.estado_civil}, 
-            '${cliente.numero}', ${cliente.status}, '${cliente.observacao}', '${cliente.tipo_cliente}'
+            '${cliente.email}','${cliente.referencia}','${cliente.data_nascimento}',${cliente.estado_civil},
+            '${cliente.numero}', ${cliente.status}, '${cliente.observacao}', '${cliente.tipo_cliente}',
+            '${agora}', '${agora}', ${idUsuario}, ${idUsuario}
             ) RETURNING nome, id`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
@@ -69,7 +71,8 @@ module.exports = {
         })
     },
 
-    editar: (idCliente, dadosCliente) => {
+    editar: (idCliente, dadosCliente, idUsuario) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) =>{
             db.query(`UPDATE cliente
             SET nome = '${dadosCliente.nome}', rua = '${dadosCliente.rua}',bairro = '${dadosCliente.bairro}', 
@@ -77,7 +80,9 @@ module.exports = {
             identidade = '${dadosCliente.identidade}', email = '${dadosCliente.email}', referencia = '${dadosCliente.referencia}',
             id_estado_civil = ${dadosCliente.estado_civil}, cpf_cnpj = '${dadosCliente.cpf_cnpj}', cep = '${dadosCliente.cep}',
             data_nascimento = '${dadosCliente.data_nascimento}',numero = '${dadosCliente.numero}', 
-            id_status_cliente = ${dadosCliente.status}, observacao = '${dadosCliente.observacao}', tipo_cliente = '${dadosCliente.tipo_cliente}'
+            id_status_cliente = ${dadosCliente.status}, observacao = '${dadosCliente.observacao}', 
+            tipo_cliente = '${dadosCliente.tipo_cliente}', alterado_em = "${agora}",
+            alterado_por = ${idUsuario}
             WHERE id = ${idCliente} RETURNING nome, id`,(erro, resultado) => {
                 if(erro){
                     console.log(erro)

@@ -1,4 +1,6 @@
 const db = require('../db/conexao')
+const dayjs = require('dayjs')
+
 module.exports = {
     visualizarTodos: () => {
         return new Promise((resolve, reject) => {
@@ -14,11 +16,13 @@ module.exports = {
         })
     },
 
-    cadastrar:(usuario) => {
+    cadastrar:(usuario, idUsuario) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
-            db.query(`INSERT INTO usuario(nome,email,senha,usuario,id_permissao) 
-            VALUES ('${usuario.nome}', '${usuario.email}', '${usuario.senha}', '${usuario.usuario}',
-             ${usuario.permissao}) RETURNING nome, id`, (erro, resultado) => {
+            db.query(`INSERT INTO usuario(nome,email,senha,usuario,id_permissao, criado_em, alterado_em, criado_por, alterado_por) 
+            VALUES ('${usuario.nome}', '${usuario.email}', '${usuario.senha}', '${usuario.usuario}',${usuario.permissao},
+            '${agora}', '${agora}', ${idUsuario}, ${idUsuario}
+             ) RETURNING nome, id`, (erro, resultado) => {
                 if(erro){
                     console.log(erro)
                     return reject(erro)
@@ -43,11 +47,12 @@ module.exports = {
         })
     },
 
-    editar: (idUsuario, usuario) => {
+    editar: (idUsuario, usuario, alteradoPor) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`UPDATE usuario
           SET nome = '${usuario.nome}', email = '${usuario.email}', usuario = '${usuario.usuario}',
-           id_permissao = ${usuario.permissao}, senha = '${usuario.senha}'
+           id_permissao = ${usuario.permissao}, senha = '${usuario.senha}',  alterado_em = '${agora}', alterado_por = ${alteradoPor}
            WHERE id = ${idUsuario} RETURNING nome,id`, (erro, resultado) => {
                 if(erro){
                     console.log(erro)

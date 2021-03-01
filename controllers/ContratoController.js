@@ -16,7 +16,8 @@ class ContratoController {
     }
     async cadastrar(req,res){
         let contrato = req.body.contrato
-        await contratoDao.cadastrar(contrato).then(response => {
+        let idUsuario = req.body.idUsuario
+        await contratoDao.cadastrar(contrato, idUsuario).then(response => {
             for(let x = 0;x < contrato.vigencia;x++){
                 let idContrato = response[0].id
                 let data_vencimento = dayjs(contrato.data_vencimento).add(x, 'month').format('YYYY-MM-DD')
@@ -27,7 +28,8 @@ class ContratoController {
     }
     async editar(req,res){
         let contrato = req.body.contrato
-        await contratoDao.editar(contrato).then(response => {
+        let idUsuario = req.body.idUsuario
+        await contratoDao.editar(contrato, idUsuario).then(response => {
             res.status(200).json(response)
         })
     }

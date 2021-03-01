@@ -4,7 +4,8 @@ class ImovelController {
     async cadastrar(req, res) {
         const dadosImovel = req.body.data
         let comodos = req.body.comodos
-        await imovelDao.cadastrar(dadosImovel).then(response => {
+        let idUsuario = req.body.idUsuario
+        await imovelDao.cadastrar(dadosImovel, idUsuario).then(response => {
             let idImovel = response[0].id
             for (let index in comodos) {
                 if (comodos[index].quantidade != 0 && comodos[index].tipo != null) {
@@ -43,7 +44,8 @@ class ImovelController {
         const id = req.params.id
         const imovel = req.body.data
         const comodos = req.body.comodos
-        await imovelDao.editarImovel(id, imovel).then(response => {
+        const idUsuario = req.body.idUsuario
+        await imovelDao.editarImovel(id, imovel, idUsuario).then(response => {
             for (let index in comodos) {
                 let quantidadeComodo = comodos[index].quantidade
                 let tipoComodo = comodos[index].tipo
