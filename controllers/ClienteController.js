@@ -29,15 +29,15 @@ class ClienteController {
         cliente.cpf_cnpj = cpf_cnpj.normalize("NFD").replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '')
         cliente.cep = cep.normalize("NFD").replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '')
         await clienteDao.cadastrar(cliente, idUsuario).then(consulta => {
-            let idCliente = consulta[0].id
-            for (let index in telefones) {
-                if (telefones[index].numero != "" && telefones[index].tipo != "") {
-                    let numeroTelefone = telefones[index].numero
-                    let tipoTelefone = telefones[index].id_tipo
-                    let observacaoTelefone = telefones[index].observao
-                    clienteDao.cadastrarTelefone(idCliente, numeroTelefone, tipoTelefone, observacaoTelefone)
-                }
-            }
+            // let idCliente = consulta[0].id
+            // for (let index in telefones) {
+            //     if (telefones[index].numero != "" && telefones[index].tipo != "") {
+            //         let numeroTelefone = telefones[index].numero
+            //         let tipoTelefone = telefones[index].id_tipo
+            //         let observacaoTelefone = telefones[index].observao
+            //         clienteDao.cadastrarTelefone(idCliente, numeroTelefone, tipoTelefone, observacaoTelefone)
+            //     }
+            // }
             res.json(consulta)
         }).catch(erro => {
             if(erro.code == "23505"){
@@ -56,19 +56,19 @@ class ClienteController {
         cliente.cpf_cnpj = cpf_cnpj.normalize("NFD").replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '')
         cliente.cep = cep.normalize("NFD").replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '')
         await clienteDao.editar(idCliente, cliente, idUsuario).then(consulta => {
-            for (let index in telefones) {
-                let numeroTelefone = telefones[index].numero
-                let tipoTelefone = telefones[index].id_tipo
-                let observacaoTelefone = telefones[index].observacao
-                let idTelefone = telefones[index].id
-                if(numeroTelefone != "" && tipoTelefone != null) {
-                    if (idTelefone == null) {
-                        clienteDao.cadastrarTelefone(idCliente, numeroTelefone, tipoTelefone, observacaoTelefone)
-                    } else {
-                        clienteDao.editarTelefone(telefones[index])
-                    }
-                }
-            }
+            // for (let index in telefones) {
+            //     let numeroTelefone = telefones[index].numero
+            //     let tipoTelefone = telefones[index].id_tipo
+            //     let observacaoTelefone = telefones[index].observacao
+            //     let idTelefone = telefones[index].id
+            //     if(numeroTelefone != "" && tipoTelefone != null) {
+            //         if (idTelefone == null) {
+            //             clienteDao.cadastrarTelefone(idCliente, numeroTelefone, tipoTelefone, observacaoTelefone)
+            //         } else {
+            //             clienteDao.editarTelefone(telefones[index])
+            //         }
+            //     }
+            // }
             res.status(200).json(consulta)
         }).catch(erro => {
             if(erro.code == "23505"){
@@ -98,8 +98,23 @@ class ClienteController {
         })
     }
 
+    async cadastrarTelefone(req, res){
+        let telefone = req.body.telefone
+        let idCliente = req.body.idCliente
+        await clienteDao.cadastrarTelefone(idCliente, telefone).then(response => {
+            res.status(200).json(response)
+        })
+    }
+
+    async editarTelefone(req, res){
+        let telefone = req.body.telefone
+        await clienteDao.editarTelefone(telefone).then(response => {
+            res.status(200).json(response)
+        })
+    }
+
     async deletarTelefone(req,res){
-        let idTelefone = req.body.idTelefone
+        let idTelefone = req.query.idTelefone
         await clienteDao.deletarTelefone(idTelefone).then(() => {
             res.status(200).json()
         })

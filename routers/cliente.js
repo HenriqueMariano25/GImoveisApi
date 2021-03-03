@@ -22,13 +22,19 @@ module.exports = app => {
     app.get('/cliente/tipos_status', (req, res) => {
         ClienteController.tipoStatus(res)
     })
-    app.post('/cliente/deletar/telefone', (req, res) => {
-        ClienteController.deletarTelefone(req,res)
-    })
     app.get('/cliente/contratos', (req,res) => {
         ClienteController.contratos(req,res)
     })
     app.get('/cliente/contrato/boletos', (req,res) => {
         ClienteController.boletos(req, res)
+    })
+    app.post('/cliente/telefone/cadastrar', (req, res) => {
+        ClienteController.cadastrarTelefone(req,res)
+    })
+    app.post('/cliente/telefone/editar', (req, res) => {
+        ClienteController.editarTelefone(req, res)
+    })
+    app.delete('/cliente/telefone/deletar', (req, res) => {
+        ClienteController.deletarTelefone(req,res)
     })
 }

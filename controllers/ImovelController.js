@@ -6,15 +6,15 @@ class ImovelController {
         let comodos = req.body.comodos
         let idUsuario = req.body.idUsuario
         await imovelDao.cadastrar(dadosImovel, idUsuario).then(response => {
-            let idImovel = response[0].id
-            for (let index in comodos) {
-                if (comodos[index].quantidade != 0 && comodos[index].tipo != null) {
-                    let quantidadeComodo = comodos[index].quantidade
-                    let tipoComodo = comodos[index].tipo
-                    imovelDao.cadastrarComodo(idImovel, quantidadeComodo, tipoComodo).then(response => {
-                    })
-                }
-            }
+            // let idImovel = response[0].id
+            // for (let index in comodos) {
+            //     if (comodos[index].quantidade != 0 && comodos[index].tipo != null) {
+            //         let quantidadeComodo = comodos[index].quantidade
+            //         let tipoComodo = comodos[index].tipo
+            //         imovelDao.cadastrarComodo(idImovel, quantidadeComodo, tipoComodo).then(response => {
+            //         })
+            //     }
+            // }
             res.status(200).json(response)
         })
     }
@@ -46,18 +46,18 @@ class ImovelController {
         const comodos = req.body.comodos
         const idUsuario = req.body.idUsuario
         await imovelDao.editarImovel(id, imovel, idUsuario).then(response => {
-            for (let index in comodos) {
-                let quantidadeComodo = comodos[index].quantidade
-                let tipoComodo = comodos[index].tipo
-                let idComodo = comodos[index].id
-                if (comodos[index].quantidade != 0 && comodos[index].tipo != null) {
-                    if (idComodo == null) {
-                        imovelDao.cadastrarComodo(id, quantidadeComodo, tipoComodo)
-                    } else {
-                        imovelDao.editarComodo(comodos[index])
-                    }
-                }
-            }
+            // for (let index in comodos) {
+            //     let quantidadeComodo = comodos[index].quantidade
+            //     let tipoComodo = comodos[index].tipo
+            //     let idComodo = comodos[index].id
+            //     if (comodos[index].quantidade != 0 && comodos[index].tipo != null) {
+            //         if (idComodo == null) {
+            //             imovelDao.cadastrarComodo(id, quantidadeComodo, tipoComodo)
+            //         } else {
+            //             imovelDao.editarComodo(comodos[index])
+            //         }
+            //     }
+            // }
             res.status(200).json(response)
         })
     }
@@ -80,8 +80,32 @@ class ImovelController {
         })
     }
 
+    async comodos(req, res){
+        let idImovel = req.query.idImovel
+        await imovelDao.comodos(idImovel).then(consulta => {
+            res.status(200).json(consulta)
+        })
+    }
+
+    async cadastrarComodo(req, res){
+        let comodo = req.body.comodo
+        let idImovel = req.body.idImovel
+        await imovelDao.cadastrarComodo(idImovel, comodo).then(response => {
+            res.status(200).json(response)
+        })
+    }
+
+    async editarComodo(req, res){
+        let comodo = req.body.comodo
+        await imovelDao.editarComodo(comodo).then(response => {
+            console.log(response)
+            res.status(200).json({mensagem: "ok"})
+        })
+    }
+
     async deletarComodo(req,res){
-        let idComodo = req.body.idComodo
+        let idComodo = req.query.idComodo
+        console.log(idComodo)
         await imovelDao.deletarComodo(idComodo).then(() => {
             res.status(200).json()
         })

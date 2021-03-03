@@ -8,7 +8,6 @@ class TelefoneController {
     async telefones(req,res){
         const idCliente = req.query.idCliente
         await telefoneDao.telefones(idCliente).then(consulta => {
-            console.log(consulta)
             res.status(200).json(consulta)
         })
     }

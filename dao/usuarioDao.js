@@ -51,7 +51,7 @@ module.exports = {
         let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`UPDATE usuario
-          SET nome = '${usuario.nome}', email = '${usuario.email}', usuario = '${usuario.usuario}',
+          SET nome = '${usuario.nome}', email = '${usuario.email}', usuqrio = '${usuario.usuario}',
            id_permissao = ${usuario.permissao}, senha = '${usuario.senha}',  alterado_em = '${agora}', alterado_por = ${alteradoPor}
            WHERE id = ${idUsuario} RETURNING nome,id`, (erro, resultado) => {
                 if(erro){

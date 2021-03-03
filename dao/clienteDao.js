@@ -105,11 +105,11 @@ module.exports = {
         })
     },
 
-    editarTelefone:(dadosTelefone) => {
+    editarTelefone:(telefone) => {
         return new Promise((resolve, reject) => {
             db.query(`UPDATE telefone
-            SET numero = '${dadosTelefone.numero}', id_tipo_telefone = ${dadosTelefone.id_tipo}, observacao = '${dadosTelefone.observacao}'
-            WHERE id = ${dadosTelefone.id}`, (erro, resultado) => {
+            SET numero = '${telefone.numero}', id_tipo_telefone = ${telefone.id_tipo_telefone}, observacao = '${telefone.observacao}'
+            WHERE id = ${telefone.id} RETURNING id`, (erro, resultado) => {
                 if(erro){
                     console.log(erro)
                     return reject(erro)
@@ -119,12 +119,12 @@ module.exports = {
         })
     },
 
-    cadastrarTelefone: (idCliente, numeroTelefone, tipoTelefone,observacaoTelefone) => {
+    cadastrarTelefone: (idCliente, telefone) => {
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO telefone(  
             id_cliente,numero,id_tipo_telefone,observacao
             ) VALUES (
-            ${idCliente}, '${numeroTelefone}',${tipoTelefone}, '${observacaoTelefone}'
+            ${idCliente}, '${telefone.numero}',${telefone.id_tipo_telefone}, '${telefone.observacao}'
             ) RETURNING id`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
@@ -173,10 +173,11 @@ module.exports = {
 
     contratos: (idCliente) => {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT con.id, con.data_inicio, con.data_fim, imo.nome, sta_con.descricao status
+            db.query(`SELECT con.id, con.data_inicio, con.data_fim, imo.nome, sta_con.descricao status, pdf.nome nome_pdf
              FROM contrato con 
              LEFT JOIN imovel imo ON con.id_imovel = imo.id
              LEFT JOIN status_contrato sta_con ON con.id_status_contrato = sta_con.id
+             LEFT JOIN pdf_contrato pdf ON pdf.id_contrato = con.id
              WHERE id_cliente = ${idCliente} AND deletado = 'false'`, (erro, resultado) => {
                 if(erro){
                     console.log(erro)

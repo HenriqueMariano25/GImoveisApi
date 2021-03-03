@@ -94,8 +94,8 @@ module.exports = {
              proprietario = '${imovel.proprietario}', numero = '${imovel.numero}', cidade = '${imovel.cidade}', 
              cep = '${imovel.cep}' , valor_aquisicao_dolar = '${imovel.valor_aquisicao_dolar}',
              alterado_em = '${agora}', alterado_por = ${idUsuario}
-             WHERE id = ${id} RETURNING nome, id, data_venda` , (erro, resultado) => {
-                if(erro){
+             WHERE id = ${id} RETURNING nome, id, data_venda`, (erro, resultado) => {
+                if (erro) {
                     console.log(erro)
                     return reject(erro)
                 }
@@ -118,8 +118,8 @@ module.exports = {
 
     deletarComodosImovel: idImovel => {
         return new Promise((resolve, reject) => {
-            db.query(`DELETE FROM comodo WHERE id_imovel = ${idImovel} RETURNING id` , (erro,resultado) => {
-                if(erro){
+            db.query(`DELETE FROM comodo WHERE id_imovel = ${idImovel} RETURNING id`, (erro, resultado) => {
+                if (erro) {
                     console.log(erro)
                     return reject(erro)
                 }
@@ -130,8 +130,8 @@ module.exports = {
 
     deletarComodo: idComodo => {
         return new Promise((resolve, reject) => {
-            db.query(`DELETE FROM comodo WHERE id = ${idComodo} RETURNING id` , (erro,resultado) => {
-                if(erro){
+            db.query(`DELETE FROM comodo WHERE id = ${idComodo} RETURNING id`, (erro, resultado) => {
+                if (erro) {
                     console.log(erro)
                     return reject(erro)
                 }
@@ -167,21 +167,6 @@ module.exports = {
     tiposComodos: () => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT * FROM tipo_comodo ORDER BY descricao`, (erro, resultado) => {
-                if(erro){
-                    console.log(erro)
-                    return reject(erro)
-                }
-                return resolve(resultado.rows)
-            })
-        })
-    },
-    cadastrarComodo: (idImovel, quantidadeComodo, tipoComodo) => {
-        return new Promise((resolve, reject) => {
-            db.query(`INSERT INTO comodo(  
-            id_imovel,quantidade,id_tipo_comodo
-            ) VALUES (
-            ${idImovel}, ${quantidadeComodo},${tipoComodo}
-            ) RETURNING id`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
                     return reject(erro)
@@ -190,12 +175,59 @@ module.exports = {
             })
         })
     },
-    editarComodo:(comodo) => {
+    comodos: (idImovel) => {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT com.id, com.descricao, com.id_tipo_comodo, tip_com.descricao tipo_comodo, com.quantidade
+              FROM comodo com
+              LEFT JOIN tipo_comodo tip_com ON com.id_tipo_comodo = tip_com.id
+              WHERE id_imovel = ${idImovel} ORDER BY tipo_comodo`, (erro, resultado) => {
+                if (erro) {
+                    console.log(erro)
+                    return reject(erro)
+                }
+                return resolve(resultado.rows)
+            })
+        })
+    },
+    // cadastrarComodo: (idImovel, quantidadeComodo, tipoComodo) => {
+    //     return new Promise((resolve, reject) => {
+    //         db.query(`INSERT INTO comodo(
+    //         id_imovel,quantidade,id_tipo_comodo
+    //         ) VALUES (
+    //         ${idImovel}, ${quantidadeComodo},${tipoComodo}
+    //         ) RETURNING id`, (erro, resultado) => {
+    //             if (erro) {
+    //                 console.log(erro)
+    //                 return reject(erro)
+    //             }
+    //             return resolve(resultado.rows)
+    //         })
+    //     })
+    // },
+    cadastrarComodo: (idImovel, comodo) => {
+        console.log(idImovel)
+        console.log(comodo)
+        return new Promise((resolve, reject) => {
+            db.query(`INSERT INTO comodo(  
+            id_imovel,quantidade,id_tipo_comodo, descricao
+            ) VALUES(
+            ${idImovel}, ${comodo.quantidade}, ${comodo.id_tipo_comodo}, '${comodo.descricao}'
+            ) RETURNING id`, (erro, resultado) => {
+                if(erro) {
+                    console.log(erro)
+                    return reject(erro)
+                }
+                return resolve(resultado.rows)
+            })
+        })
+    },
+
+    editarComodo: (comodo) => {
         return new Promise((resolve, reject) => {
             db.query(`UPDATE comodo
-            SET quantidade = ${comodo.quantidade}, id_tipo_comodo = ${comodo.tipo}
+            SET quantidade = ${comodo.quantidade}, id_tipo_comodo = ${comodo.id_tipo_comodo}, descricao = '${comodo.descricao}'
             WHERE id = ${comodo.id}`, (erro, resultado) => {
-                if(erro){
+                if (erro) {
                     console.log(erro)
                     return reject(erro)
                 }
@@ -206,12 +238,14 @@ module.exports = {
 
     contratos: (idImovel) => {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT con.id contrato, cli.nome cliente, con.data_inicio, con.data_fim, sta_con.descricao status
+            db.query(`SELECT con.id contrato, cli.nome cliente, con.data_inicio, con.data_fim, sta_con.descricao status,
+            pdf.nome nome_pdf
             FROM contrato con
             LEFT JOIN cliente cli ON con.id_cliente = cli.id
             LEFT JOIN status_contrato sta_con ON con.id_status_contrato = sta_con.id
-            WHERE id_imovel = ${idImovel} AND deletado = 'false'`,(erro, resultado) => {
-                if(erro){
+            LEFT JOIN pdf_contrato pdf ON pdf.id_contrato = con.id
+            WHERE id_imovel = ${idImovel} AND deletado = 'false'`, (erro, resultado) => {
+                if (erro) {
                     console.log(erro)
                     return reject(erro)
                 }
@@ -223,7 +257,7 @@ module.exports = {
     tiposDespesas: () => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT tip_des.id, tip_des.descricao FROM tipo_despesa tip_des ORDER BY descricao`, (erro, resultado) => {
-                if(erro){
+                if (erro) {
                     console.log(erro)
                     return reject(erro)
                 }
@@ -237,8 +271,8 @@ module.exports = {
             db.query(`INSERT INTO despesa(valor, data,data_vencimento, id_tipo_despesa, fixa_variavel, descricao, id_imovel) 
             VALUES 
             ('${despesa.valor}', '${despesa.data}', '${despesa.data_vencimento}', ${despesa.tipo_despesa},
-            '${despesa.fixa_variavel}', '${despesa.descricao}', ${idImovel})`, (erro , resultado) => {
-                if(erro){
+            '${despesa.fixa_variavel}', '${despesa.descricao}', ${idImovel})`, (erro, resultado) => {
+                if (erro) {
                     console.log(erro)
                     return reject(erro)
                 }
@@ -254,7 +288,7 @@ module.exports = {
                 FROM despesa des
                 LEFT JOIN tipo_despesa tip_des ON des.id_tipo_despesa = tip_des.id
                 WHERE id_imovel = ${idImovel} ORDER BY data, data_vencimento`, (erro, resultado) => {
-                if(erro){
+                if (erro) {
                     console.log(erro)
                     return reject(erro)
                 }
@@ -267,8 +301,8 @@ module.exports = {
         return new Promise((resolve, reject) => {
             db.query(`UPDATE despesa SET descricao = '${despesa.descricao}', data = '${despesa.data}',
              data_vencimento = '${despesa.data_vencimento}', valor = '${despesa.valor}', id_tipo_despesa = ${despesa.tipo_despesa} ,
-             fixa_variavel = '${despesa.fixa_variavel}' WHERE id = ${despesa.id}`,(erro, resultado) => {
-                if(erro){
+             fixa_variavel = '${despesa.fixa_variavel}' WHERE id = ${despesa.id}`, (erro, resultado) => {
+                if (erro) {
                     console.log(erro)
                     return reject(erro)
                 }
@@ -280,7 +314,7 @@ module.exports = {
     deletarDespesa: (idDespesa) => {
         return new Promise((resolve, reject) => {
             db.query(`DELETE FROM despesa WHERE id = ${idDespesa} RETURNING id`, (erro, resultado) => {
-                if(erro){
+                if (erro) {
                     console.log(erro)
                     return reject(erro)
                 }
