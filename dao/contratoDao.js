@@ -158,7 +158,7 @@ module.exports = {
             db.query(`SELECT bol.id, bol.data_vencimento, sta.descricao status, bol.valor, bol.data_quitacao
         FROM boleto bol
         INNER JOIN status_boleto sta ON bol.id_status_boleto = sta.id
-        WHERE bol.id_contrato = ${idContrato} ORDER BY id`, (erro, resultado) => {
+        WHERE bol.id_contrato = ${idContrato} ORDER BY data_vencimento`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
                     return reject(erro)
@@ -191,9 +191,9 @@ module.exports = {
             })
         })
     },
-    editarBoleto: (boleto, data_vencimento) => {
+    editarBoleto: (boleto) => {
         return new Promise((resolve, reject) => {
-            db.query(`UPDATE boleto SET data_vencimento = '${data_vencimento}', data_quitacao = '${boleto.data_quitacao}',
+            db.query(`UPDATE boleto SET data_vencimento = '${boleto.data_vencimento}', data_quitacao = '${boleto.data_quitacao}',
             valor = '${boleto.valor}', id_status_boleto = ${boleto.id_status_boleto} WHERE id = ${boleto.id} 
             RETURNING id, id_contrato`, (erro, resultado) => {
                 if (erro) {
@@ -203,6 +203,32 @@ module.exports = {
                 return resolve(resultado.rows)
             })
         })
+    },
+    cadastrarBoleto: (boleto, idContrato) => {
+        return new Promise((resolve, reject) => {
+            db.query(`INSERT INTO boleto
+            (id_contrato, data_vencimento, data_quitacao, valor, id_status_boleto) 
+            VALUES 
+            (${idContrato}, '${boleto.data_vencimento}', '${boleto.data_quitacao}', '${boleto.valor}', ${boleto.id_status_boleto}) 
+            RETURNING id`, (erro, resultado) => {
+                if(erro){
+                    console.log(erro)
+                    return reject(erro)
+                }
+                return resolve(resultado.rows)
+            })
+        })
+    },
+    deletarBoleto: (idBoleto) => {
+      return new Promise((resolve, reject) => {
+          db.query(`DELETE FROM boleto WHERE id = ${idBoleto} RETURNING id`, (erro, resultado) => {
+              if(erro){
+                  console.log(erro)
+                  return reject(erro)
+              }
+              return resolve(resultado.rows)
+          })
+      })
     },
     importarPDF: (url,contrato, nome) => {
         return new Promise((resolve, reject) => {

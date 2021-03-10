@@ -6,6 +6,10 @@ class ResponsavelController {
         let idUsuario = req.body.idUsuario
         await responsavelDao.cadastrar(responsavel, idUsuario).then(response => {
             res.status(200).json(response)
+        }).catch(erro => {
+            if(erro.code == "23505"){
+                res.status('500').json({erro:"Nome ou CPF/CNPJ duplicado"})
+            }
         })
     }
     async visualizarTodos(res){

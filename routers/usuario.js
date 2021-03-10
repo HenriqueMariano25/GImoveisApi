@@ -16,8 +16,6 @@ module.exports = app => {
     app.delete('/usuario/deletar/:id', (req, res) => {
         UsuarioController.deletar(req,res)
     })
-
-
     app.get('/usuarios/tipos_permissao', (req, res) => {
         UsuarioController.tiposPermissao(res)
     })

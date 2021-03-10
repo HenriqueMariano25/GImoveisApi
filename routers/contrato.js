@@ -38,8 +38,13 @@ module.exports = app => {
     app.post('/contrato/boleto/editar', (req, res) => {
         ContratoController.editarBoleto(req,res)
     })
+    app.post('/contrato/boleto/cadastrar', (req, res) => {
+        ContratoController.cadastrarBoleto(req, res)
+    })
+    app.delete('/contrato/boleto/deletar', (req, res) => {
+        ContratoController.deletarBoleto(req, res)
+    })
     app.post('/contrato/:id/importar/pdf', upload.single('files'),(req,res) => {
-        // console.log(req.body, req.file)
         ContratoController.importarPDF(req,res)
     })
 }

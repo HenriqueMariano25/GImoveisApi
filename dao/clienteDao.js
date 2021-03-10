@@ -71,18 +71,17 @@ module.exports = {
         })
     },
 
-    editar: (idCliente, dadosCliente, idUsuario) => {
+    editar: (idCliente, cliente, idUsuario) => {
         let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
+        console.log(cliente)
         return new Promise((resolve, reject) =>{
             db.query(`UPDATE cliente
-            SET nome = '${dadosCliente.nome}', rua = '${dadosCliente.rua}',bairro = '${dadosCliente.bairro}', 
-            cidade = '${dadosCliente.cidade}', estado = '${dadosCliente.estado}', complemento = '${dadosCliente.complemento}',
-            identidade = '${dadosCliente.identidade}', email = '${dadosCliente.email}', referencia = '${dadosCliente.referencia}',
-            id_estado_civil = ${dadosCliente.estado_civil}, cpf_cnpj = '${dadosCliente.cpf_cnpj}', cep = '${dadosCliente.cep}',
-            data_nascimento = '${dadosCliente.data_nascimento}',numero = '${dadosCliente.numero}', 
-            id_status_cliente = ${dadosCliente.status}, observacao = '${dadosCliente.observacao}', 
-            tipo_cliente = '${dadosCliente.tipo_cliente}', alterado_em = "${agora}",
-            alterado_por = ${idUsuario}
+            SET nome = '${cliente.nome}', rua = '${cliente.rua}', bairro = '${cliente.bairro}', estado = '${cliente.estado}',
+            cidade = '${cliente.cidade}',  complemento = '${cliente.complemento}',identidade = '${cliente.identidade}', 
+            email = '${cliente.email}', referencia = '${cliente.referencia}',id_estado_civil = ${cliente.estado_civil}, 
+            cpf_cnpj = '${cliente.cpf_cnpj}', cep = '${cliente.cep}',data_nascimento = '${cliente.data_nascimento}',
+            numero = '${cliente.numero}', id_status_cliente = ${cliente.status}, observacao = '${cliente.observacao}', 
+            tipo_cliente = '${cliente.tipo_cliente}', alterado_em = '${agora}', alterado_por = ${idUsuario}
             WHERE id = ${idCliente} RETURNING nome, id`,(erro, resultado) => {
                 if(erro){
                     console.log(erro)

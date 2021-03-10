@@ -3,18 +3,8 @@ const imovelDao = require('../dao/imovelDao')
 class ImovelController {
     async cadastrar(req, res) {
         const dadosImovel = req.body.data
-        let comodos = req.body.comodos
         let idUsuario = req.body.idUsuario
         await imovelDao.cadastrar(dadosImovel, idUsuario).then(response => {
-            // let idImovel = response[0].id
-            // for (let index in comodos) {
-            //     if (comodos[index].quantidade != 0 && comodos[index].tipo != null) {
-            //         let quantidadeComodo = comodos[index].quantidade
-            //         let tipoComodo = comodos[index].tipo
-            //         imovelDao.cadastrarComodo(idImovel, quantidadeComodo, tipoComodo).then(response => {
-            //         })
-            //     }
-            // }
             res.status(200).json(response)
         })
     }

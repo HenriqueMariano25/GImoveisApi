@@ -77,8 +77,21 @@ class ContratoController {
     }
     async editarBoleto(req, res){
         let boleto = req.body.boleto
-        let data_vencimento = dayjs(boleto.data_vencimento).format('MM-DD-YYYY')
-        await contratoDao.editarBoleto(boleto,data_vencimento).then(response => {
+        // let data_vencimento = dayjs(boleto.data_vencimento).format('YYYY-MM-DD')
+        await contratoDao.editarBoleto(boleto).then(response => {
+            res.status(200).json(response)
+        })
+    }
+    async cadastrarBoleto(req, res){
+        let boleto = req.body.boleto
+        let idContrato = req.body.idContrato
+        await contratoDao.cadastrarBoleto(boleto, idContrato).then(response => {
+            res.status(200).json(response)
+        })
+    }
+    async deletarBoleto(req, res){
+        let idBoleto = req.query.idBoleto
+        contratoDao.deletarBoleto(idBoleto).then(response => {
             res.status(200).json(response)
         })
     }
