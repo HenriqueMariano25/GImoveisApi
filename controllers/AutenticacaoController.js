@@ -18,7 +18,8 @@ function criarTokenJWT(usuario){
         id: usuario.id
     }
 
-    const token = jwt.sign(payload, process.env.CHAVE_JWT)
+    const token = jwt.sign(payload, "B+AGiLydKFtOnVbQAzL1cWhqLoqy+WtpQnPOYouWiKSYMpM9Qi05+x7vu9n2XvaveVNw3amYjuG95vWqccLEf/NlWynW5pM94/eDEFOqLsVnq65zTbpgk4yjrYl5q8aqZK2uJSx6+lDIL4DE3cp5KywhnnOyemz296Lve86v6zAMamBfbDX4YE7WJdfc7\n" +
+        "p7slLIBlw0tm52mFaxuAgKbaDDDhswiqQ2gwq5W8DgeR4xw0mat7NmR+J2PLd//JTaSsZPcyO3kOwc+E6QN4NHU3HVaVhk0aYFGzihDzQbSct9A/KNTF8JZjWIN8jYZHR9fsxVgBLhfGoDoC+Q85KaKRQ==")
     return token
 }
 
