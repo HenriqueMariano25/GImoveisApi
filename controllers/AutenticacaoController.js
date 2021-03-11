@@ -18,7 +18,9 @@ function criarTokenJWT(usuario){
         id: usuario.id
     }
 
-    const token = jwt.sign(payload, process.env.CHAVE_JWT)
+    console.log(process.env.NODE_ENV)
+
+    const token = jwt.sign(payload, process.env.NODE_ENV === "production" ? ".env.production" : ".env")
     return token
 }
 
