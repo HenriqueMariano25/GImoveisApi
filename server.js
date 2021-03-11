@@ -1,5 +1,7 @@
 const customExpress = require('./config/customExpress')
 require('dotenv').config()
 
+const port = process.env.PORT || 3000
+
 const app = customExpress()
-app.listen(3000, () => {console.log('Aplicação rodando na porta 3000')})
+app.listen(port, () => {console.log('Aplicação rodando na porta 3000')})
