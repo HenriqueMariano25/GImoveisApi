@@ -2,8 +2,10 @@ const usuarioDao = require('../dao/usuarioDao')
 
 class UsuarioController {
     async visualizarTodos(res) {
-        const consulta = await usuarioDao.visualizarTodos()
-        res.status(200).json(consulta)
+        await usuarioDao.visualizarTodos().then(consulta => {
+            res.status(200).json(consulta)
+        })
+
     }
 
     async cadastrar(req,res) {

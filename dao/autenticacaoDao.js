@@ -10,7 +10,7 @@ module.exports = {
             usuario.id_permissao ,
             usuario.senha
             FROM usuario 
-            WHERE usuario = '${usuario}'`,
+            WHERE usuario = '${usuario}' AND usuario.deletado = ${false}`,
                 (erro, resultado) => {
                     if (erro) {
                         return reject('Não foi possivel encontrar o usuario')

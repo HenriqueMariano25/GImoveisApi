@@ -4,8 +4,9 @@ const dayjs = require('dayjs')
 module.exports = {
     visualizarTodos: () => {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT usu.id, usu.nome, usu.email, usu.usuario, per.descricao permissao FROM usuario usu
+            db.query(`SELECT usu.id, usu.nome, usu.email, usu.usuario, per.descricao permissao,usu.deletado FROM usuario usu
                    LEFT OUTER JOIN permissao per ON per.id = usu.id_permissao
+                   WHERE deletado = ${false}
                     ORDER BY nome`, (erro, resultado) => {
                 if(erro){
                     console.log(erro)
@@ -19,9 +20,9 @@ module.exports = {
     cadastrar:(usuario, idUsuario) => {
         let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
-            db.query(`INSERT INTO usuario(nome,email,senha,usuario,id_permissao, criado_em, alterado_em, criado_por, alterado_por) 
+            db.query(`INSERT INTO usuario(nome,email,senha,usuario,id_permissao, criado_em, alterado_em, criado_por, alterado_por, deletado) 
             VALUES ('${usuario.nome}', '${usuario.email}', '${usuario.senha}', '${usuario.usuario}',${usuario.permissao},
-            '${agora}', '${agora}', ${idUsuario}, ${idUsuario}
+            '${agora}', '${agora}', ${idUsuario}, ${idUsuario}, ${false}
              ) RETURNING nome, id`, (erro, resultado) => {
                 if(erro){
                     console.log(erro)
@@ -65,7 +66,7 @@ module.exports = {
 
     deletar: (idUsuario) => {
         return new Promise((resolve, reject) => {
-            db.query(`DELETE FROM usuario WHERE id = ${idUsuario} RETURNING nome, id`, (erro, resultado) => {
+            db.query(`UPDATE usuario SET deletado = ${true} WHERE id = ${idUsuario} RETURNING nome, id`, (erro, resultado) => {
                 if(erro){
                     console.log(erro)
                     return reject(erro)

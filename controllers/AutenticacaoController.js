@@ -11,16 +11,12 @@ class AutenticacaoController {
     }
 }
 
-
-
 function criarTokenJWT(usuario){
     const payload = {
         id: usuario.id
     }
 
-    console.log(process.env.NODE_ENV)
-
-    const token = jwt.sign(payload, process.env.NODE_ENV === "production" ? ".env.production" : ".env")
+    const token = jwt.sign(payload, process.env.NODE_ENV === "production" ? ".env.production.CHAVE_JWT" : ".env.CHAVE_JWT")
     return token
 }
 
