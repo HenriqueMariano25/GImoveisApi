@@ -35,10 +35,13 @@ class ImovelController {
     }
 
     async editarImovel(req, res){
+        console.log('EDITANDO IMOVEL')
         const id = req.params.id
+        console.log('Id: '+id)
         const imovel = req.body.data
-        const comodos = req.body.comodos
+        console.log(imovel)
         const idUsuario = req.body.idUsuario
+        console.log('id_usuario: '+idUsuario)
         await imovelDao.editarImovel(id, imovel, idUsuario).then(response => {
             res.status(200).json(response)
         }).catch(erro => {
@@ -114,6 +117,7 @@ class ImovelController {
         let despesa = req.body.despesa
         console.log(despesa)
         let idImovel = req.body.idImovel
+        console.log(idImovel)
         await imovelDao.cadastrarDespesa(despesa, idImovel).then(response => {
             res.status(200).json(response)
         })
