@@ -6,6 +6,10 @@ class ImovelController {
         let idUsuario = req.body.idUsuario
         await imovelDao.cadastrar(dadosImovel, idUsuario).then(response => {
             res.status(200).json(response)
+        }).catch(erro => {
+            if(erro.code == "23505"){
+                res.status('500').json({erro:"Nome do imóvel duplicado"})
+            }
         })
     }
 
@@ -36,19 +40,11 @@ class ImovelController {
         const comodos = req.body.comodos
         const idUsuario = req.body.idUsuario
         await imovelDao.editarImovel(id, imovel, idUsuario).then(response => {
-            // for (let index in comodos) {
-            //     let quantidadeComodo = comodos[index].quantidade
-            //     let tipoComodo = comodos[index].tipo
-            //     let idComodo = comodos[index].id
-            //     if (comodos[index].quantidade != 0 && comodos[index].tipo != null) {
-            //         if (idComodo == null) {
-            //             imovelDao.cadastrarComodo(id, quantidadeComodo, tipoComodo)
-            //         } else {
-            //             imovelDao.editarComodo(comodos[index])
-            //         }
-            //     }
-            // }
             res.status(200).json(response)
+        }).catch(erro => {
+            if(erro.code == "23505"){
+                res.status('500').json({erro:"Nome do imóvel duplicado"})
+            }
         })
     }
 

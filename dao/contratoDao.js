@@ -25,7 +25,8 @@ module.exports = {
     visualizar: (idContrato) => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT con.id, con.id_responsavel, con.id_cliente, con.id_imovel, con.data_inicio, con.data_fim,
-            con.vigencia, con.data_vencimento, con.valor_boleto, con.carencia, pdf.nome nome_pdf, con.observacao
+            con.vigencia, con.data_vencimento, con.valor_boleto, con.carencia, pdf.nome nome_pdf, con.observacao, 
+            id_id_fiador fiador
             FROM contrato con
             LEFT OUTER JOIN pdf_contrato pdf on pdf.id_contrato = con.id
             WHERE con.id = ${idContrato}`,
@@ -43,11 +44,12 @@ module.exports = {
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO contrato(id_responsavel,id_cliente,id_imovel,data_inicio,data_fim,data_vencimento,
             valor_boleto,carencia, deletado, id_status_contrato, criado_em, alterado_em, criado_por, alterado_por, 
-            observacao) 
+            observacao, id_id_fiador) 
             VALUES(
             ${contrato.id_responsavel}, ${contrato.id_cliente},${contrato.id_imovel},
             '${contrato.data_inicio}','${contrato.data_fim}','${contrato.data_vencimento}','${contrato.valor_boleto_convertido}',
-            '${contrato.carencia}', 'false', 1,'${agora}', '${agora}', ${idUsuario}, ${idUsuario}, '${contrato.observacao}'
+            '${contrato.carencia}', 'false', 1,'${agora}', '${agora}', ${idUsuario}, ${idUsuario}, '${contrato.observacao}',
+             ${contrato.fiador}
             ) RETURNING id`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
@@ -62,7 +64,8 @@ module.exports = {
         return new Promise((resolve, reject) => {
             db.query(`UPDATE contrato SET id_responsavel = ${contrato.id_responsavel}, id_cliente = ${contrato.id_cliente},
             id_imovel = ${contrato.id_imovel}, data_inicio = '${contrato.data_inicio}', valor_boleto = '${contrato.valor_boleto_convertido}',
-            carencia = '${contrato.carencia}', alterado_em = '${agora}', alterado_por = ${idUsuario}, observacao = '${contrato.observacao}'
+            carencia = '${contrato.carencia}', alterado_em = '${agora}', alterado_por = ${idUsuario}, 
+            observacao = '${contrato.observacao}', id_id_fiador = ${contrato.fiador}
              WHERE id = ${contrato.id} RETURNING id`,
                 (erro, resultado) => {
                     if (erro) {
@@ -145,6 +148,17 @@ module.exports = {
     imoveis: () => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT id,nome FROM imovel ORDER BY nome`, (erro, resultado) => {
+                if (erro) {
+                    console.log(erro)
+                    return reject(erro)
+                }
+                return resolve(resultado.rows)
+            })
+        })
+    },
+    idFiador: () => {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT id,descricao FROM id_fiador ORDER BY descricao`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
                     return reject(erro)

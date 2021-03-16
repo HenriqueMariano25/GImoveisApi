@@ -58,6 +58,11 @@ class ContratoController {
             res.status(200).json(consulta)
         })
     }
+    async idFiador(res){
+        await contratoDao.idFiador().then(consulta => {
+            res.status(200).json(consulta)
+        })
+    }
     async boletos(req,res){
         let idContrato = req.query.idContrato
         await contratoDao.boletos(idContrato).then(consulta => {

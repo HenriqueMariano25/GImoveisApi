@@ -26,6 +26,9 @@ module.exports = app => {
     app.get('/contrato/imoveis', (req, res) => {
         ContratoController.imoveis(res)
     })
+    app.get('/contrato/id_fiador', (req, res) => {
+        ContratoController.idFiador(res)
+    })
     app.get('/contrato/boletos', (req,res) => {
         ContratoController.boletos(req,res)
     })
