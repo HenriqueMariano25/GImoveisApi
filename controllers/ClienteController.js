@@ -24,12 +24,10 @@ class ClienteController {
         console.log('CADASTRANDO CLIENTE')
         const cliente = req.body.data
         console.log(cliente)
-        // let cpf_cnpj = cliente.cpf_cnpj
         let cep = cliente.cep
         console.log('cep: '+cep)
         let idUsuario = req.body.idUsuario
         console.log('id_usuario: '+idUsuario)
-        // cliente.cpf_cnpj = cpf_cnpj.normalize("NFD").replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '')
         cliente.cep = cep.normalize("NFD").replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '')
         await clienteDao.cadastrar(cliente, idUsuario).then(consulta => {
             res.json(consulta)

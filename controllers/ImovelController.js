@@ -114,10 +114,11 @@ class ImovelController {
     }
 
     async cadastrarDespesa(req,res){
+        console.log('CADASTRAR DESPESA')
         let despesa = req.body.despesa
         console.log(despesa)
         let idImovel = req.body.idImovel
-        console.log(idImovel)
+        console.log('idImovel :'+idImovel)
         await imovelDao.cadastrarDespesa(despesa, idImovel).then(response => {
             res.status(200).json(response)
         })
@@ -131,6 +132,7 @@ class ImovelController {
     }
 
     async editarDespesa(req, res){
+        console.log('EDITANDO DESPESA')
         let despesa = req.body.despesa
         console.log(despesa)
         await imovelDao.editarDespesa(despesa).then(response => {
