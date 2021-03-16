@@ -108,5 +108,3 @@ dist
 .idea
 package-lock.json
 *.pdf
-
-public
