@@ -1,6 +1,10 @@
 const contratoDao = require('../dao/contratoDao')
 const dayjs = require('dayjs')
-let fs = require('fs')
+const fs = require('fs')
+const path = require('path')
+const aws = require('aws-sdk')
+
+const s3 = new aws.S3()
 
 class ContratoController {
     async visualizarTodos(res){
@@ -102,18 +106,34 @@ class ContratoController {
     }
     async importarPDF(req,res){
         const idContrato = req.params.id
-        const reqFiles = []
-        const url = req.protocol + '://' + req.get('host')
-        reqFiles.push(url + '/uploads/' + req.file.filename)
+        const filename = req.file.key
+        console.log(filename)
+        let url = req.file.location
+        console.log(req.file.location)
+        if(!url){
+            url = `${req.protocol}://${req.get('host')}/files/${filename}`
+        }
         await contratoDao.deletarPDF(idContrato).then(response => {
-            if(response.length != 0){
-                fs.unlink(`public/uploads/${response[0].nome}`, function(err) {
-                    if (err) throw err;
-                })
+            let arquivoDeletado = response[0]
+            console.log(arquivoDeletado)
+            if(response.length != 0) {
+                if (process.env.STORAGE_TYPE === "s3") {
+                    return s3.deleteObject({
+                        Bucket: process.env.BUCKET_NAME,
+                        Key: arquivoDeletado.nome
+                    }).promise()
+                } else {
+                    console.log('to aqui')
+                    fs.unlink((path.resolve(__dirname, '..', 'tmp', 'uploads', arquivoDeletado.nome)),
+                    function(err) {
+                            if (err) throw err;
+                            console.log(err)
+                        })
+                }
             }
-            contratoDao.importarPDF(reqFiles[0],idContrato, req.file.filename).then(response => {
-                res.status(200).json(response)
-            })
+        })
+        await contratoDao.importarPDF(url, idContrato, filename).then(response => {
+            res.status(200).json(response)
         })
 
     }

@@ -1,28 +1,55 @@
-const multer = require('multer');
-const DIR = './public/uploads/';
-const dayjs = require('dayjs')
+const multer = require('multer')
+const path = require('path')
+const crypto = require('crypto')
+const aws = require('aws-sdk')
+const multerS3 = require('multer-s3')
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, DIR);
-    },
-    filename: (req, file, cb) => {
-        let extensao = file.originalname.split('.').slice(-1)[0]
-        const fileName = `${dayjs().format('DDMMYYYYHHmmssSSS')}.${extensao}`
-        cb(null, fileName)
-    }
-});
+const storageType = {
+    local: multer.diskStorage({
+        destination: (req, file, callback) =>{
+            callback(null, path.resolve(__dirname, '..', 'tmp', 'uploads'))
+        },
+        filename: (req, file, callback)=>{
+            crypto.randomBytes(16, (erro, hash) => {
+                if(erro) callback(erro)
+                file.key = `${hash.toString('hex')}-${file.originalname}`
 
-var upload = multer({
-    storage: storage,
-    fileFilter: (req, file, cb) => {
-        if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg" || file.mimetype == "application/pdf") {
-            cb(null, true);
-        } else {
-            cb(null, false);
-            return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+                callback(null, file.key)
+            })
+        }
+    }),
+    s3: multerS3({
+        s3: new aws.S3(),
+        bucket: 'gimoveis',
+        contentType: multerS3.AUTO_CONTENT_TYPE,
+        acl: 'public-read',
+        key: (req, file, callback) => {
+            crypto.randomBytes(16, (erro, hash) => {
+                if(erro) callback(erro)
+                const fileName = `${hash.toString('hex')}-${file.originalname}`
+
+                callback(null, fileName)
+            })
+        }
+    })
+}
+
+module.exports = {
+    dest: path.resolve(__dirname, '..', 'tmp', 'uploads'),
+    storage: storageType[process.env.STORAGE_TYPE],
+    fileFilter: (req, file, callback)=>{
+        const allowedMimes =[
+            'image/jpeg',
+            'image/pjpeg',
+            'image/png',
+            'image/gif',
+            'application/pdf'
+        ]
+
+        if(allowedMimes.includes(file.mimetype)){
+            callback(null, true)
+        }else{
+            callback(new Error('Invalid file type.'))
         }
     }
-});
-
-module.exports = upload;
+}

@@ -1,5 +1,6 @@
 const ContratoController = require('../controllers/ContratoController')
-const upload = require('../config/multer')
+const multer = require('multer')
+const multerConfig = require('../config/multer')
 
 module.exports = app => {
     app.get('/contratos',(req,res) => {
@@ -47,7 +48,10 @@ module.exports = app => {
     app.delete('/contrato/boleto/deletar', (req, res) => {
         ContratoController.deletarBoleto(req, res)
     })
-    app.post('/contrato/:id/importar/pdf', upload.single('files'),(req,res) => {
+    // app.post('/contrato/:id/importar/pdf', upload.single('files'),(req,res) => {
+    //     ContratoController.importarPDF(req,res)
+    // })
+    app.post('/contrato/:id/importar/pdf', multer(multerConfig).single('files'),(req,res) => {
         ContratoController.importarPDF(req,res)
     })
 }

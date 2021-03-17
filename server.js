@@ -1,7 +1,5 @@
-// require('dotenv').config()
-require('dotenv').config({
-    path: process.env.NODE_ENV === "production" ? './.env.production' : './.env'
-})
+require('dotenv').config()
+
 const customExpress = require('./config/customExpress')
 
 const port = process.env.PORT || 3000

@@ -245,6 +245,7 @@ module.exports = {
       })
     },
     importarPDF: (url,contrato, nome) => {
+        console.log(url)
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO pdf_contrato(url, id_contrato, nome) VALUES('${url}', ${contrato}, '${nome}') RETURNING id, nome`, (erro, resultado) => {
                 if(erro){
@@ -257,7 +258,7 @@ module.exports = {
     },
     deletarPDF: (idContrato) => {
         return new Promise((resolve, reject) => {
-            db.query(`DELETE FROM pdf_contrato WHERE id_contrato = ${idContrato} RETURNING id, nome`,
+            db.query(`DELETE FROM pdf_contrato WHERE id_contrato = ${idContrato} RETURNING id, nome, url`,
                 (erro, resultado) => {
                 if(erro){
                     console.log(erro)

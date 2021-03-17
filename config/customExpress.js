@@ -11,7 +11,7 @@ module.exports = () => {
 
     app.use(bodyParser.json())
     app.use(cors())
-    app.use(express.static('public'));
+    app.use("/files", express.static(path.resolve(__dirname, "..", "tmp", "uploads")));
 
     consign()
         .include('routers')
