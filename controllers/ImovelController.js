@@ -87,14 +87,12 @@ class ImovelController {
     async editarComodo(req, res){
         let comodo = req.body.comodo
         await imovelDao.editarComodo(comodo).then(response => {
-            console.log(response)
             res.status(200).json({mensagem: "ok"})
         })
     }
 
     async deletarComodo(req,res){
         let idComodo = req.query.idComodo
-        console.log(idComodo)
         await imovelDao.deletarComodo(idComodo).then(() => {
             res.status(200).json()
         })
@@ -114,11 +112,8 @@ class ImovelController {
     }
 
     async cadastrarDespesa(req,res){
-        console.log('CADASTRAR DESPESA')
         let despesa = req.body.despesa
-        console.log(despesa)
         let idImovel = req.body.idImovel
-        console.log('idImovel :'+idImovel)
         await imovelDao.cadastrarDespesa(despesa, idImovel).then(response => {
             res.status(200).json(response)
         })
@@ -132,9 +127,7 @@ class ImovelController {
     }
 
     async editarDespesa(req, res){
-        console.log('EDITANDO DESPESA')
         let despesa = req.body.despesa
-        console.log(despesa)
         await imovelDao.editarDespesa(despesa).then(response => {
             res.status(200).json(response)
         })
