@@ -56,10 +56,10 @@ module.exports = {
             nome,rua,cep,bairro,cidade,estado,complemento,cpf_cnpj,identidade,email,referencia,data_nascimento, id_estado_civil,
             numero, id_status_cliente, observacao, tipo_cliente, criado_em, alterado_em, criado_por, alterado_por
             ) VALUES (
-            '${cliente.nome}','${cliente.rua}','${cliente.cep}','${cliente.bairro}','${cliente.cidade}',
+            '${cliente.nome.trim()}','${cliente.rua}','${cliente.cep}','${cliente.bairro}','${cliente.cidade}',
             '${cliente.estado}','${cliente.complemento}','${cliente.cpf_cnpj}','${cliente.identidade}',
-            '${cliente.email}','${cliente.referencia}','${cliente.data_nascimento}',${cliente.estado_civil},
-            '${cliente.numero}', ${cliente.status}, '${cliente.observacao}', '${cliente.tipo_cliente}',
+            '${cliente.email.trim()}','${cliente.referencia}','${cliente.data_nascimento}',${cliente.estado_civil},
+            '${cliente.numero}', ${cliente.status}, '${cliente.observacao.trim()}', '${cliente.tipo_cliente}',
             '${agora}', '${agora}', ${idUsuario}, ${idUsuario}
             ) RETURNING nome, id`, (erro, resultado) => {
                 if (erro) {
@@ -76,9 +76,9 @@ module.exports = {
         console.log(cliente)
         return new Promise((resolve, reject) =>{
             db.query(`UPDATE cliente
-            SET nome = '${cliente.nome}', rua = '${cliente.rua}', bairro = '${cliente.bairro}', estado = '${cliente.estado}',
+            SET nome = '${cliente.nome.trim()}', rua = '${cliente.rua}', bairro = '${cliente.bairro}', estado = '${cliente.estado}',
             cidade = '${cliente.cidade}',  complemento = '${cliente.complemento}',identidade = '${cliente.identidade}', 
-            email = '${cliente.email}', referencia = '${cliente.referencia}',id_estado_civil = ${cliente.estado_civil}, 
+            email = '${cliente.email.trim()}', referencia = '${cliente.referencia}',id_estado_civil = ${cliente.estado_civil}, 
             cpf_cnpj = '${cliente.cpf_cnpj}', cep = '${cliente.cep}',data_nascimento = '${cliente.data_nascimento}',
             numero = '${cliente.numero}', id_status_cliente = ${cliente.status}, observacao = '${cliente.observacao}', 
             tipo_cliente = '${cliente.tipo_cliente}', alterado_em = '${agora}', alterado_por = ${idUsuario}
@@ -107,7 +107,8 @@ module.exports = {
     editarTelefone:(telefone) => {
         return new Promise((resolve, reject) => {
             db.query(`UPDATE telefone
-            SET numero = '${telefone.numero}', id_tipo_telefone = ${telefone.id_tipo_telefone}, observacao = '${telefone.observacao}'
+            SET numero = '${telefone.numero.trim()}', id_tipo_telefone = ${telefone.id_tipo_telefone}, 
+            observacao = '${telefone.observacao.trim()}'
             WHERE id = ${telefone.id} RETURNING id`, (erro, resultado) => {
                 if(erro){
                     console.log(erro)
@@ -123,7 +124,7 @@ module.exports = {
             db.query(`INSERT INTO telefone(  
             id_cliente,numero,id_tipo_telefone,observacao
             ) VALUES (
-            ${idCliente}, '${telefone.numero}',${telefone.id_tipo_telefone}, '${telefone.observacao}'
+            ${idCliente}, '${telefone.numero.trim()}',${telefone.id_tipo_telefone}, '${telefone.observacao.trim()}'
             ) RETURNING id`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)

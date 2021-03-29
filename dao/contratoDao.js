@@ -4,7 +4,7 @@ const dayjs = require('dayjs')
 module.exports = {
     visualizarTodos: () => {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT DISTINCT con.id,cli.nome nome_cliente,imo.nome nome_imovel,
+            db.query(`SELECT con.id,cli.nome nome_cliente,imo.nome nome_imovel,
                 res.nome nome_responsavel, pdf.url, pdf.nome nome_pdf, sta_con.descricao status
                     FROM contrato con
                     INNER JOIN cliente cli ON con.id_cliente = cli.id
@@ -48,7 +48,7 @@ module.exports = {
             VALUES(
             ${contrato.id_responsavel}, ${contrato.id_cliente},${contrato.id_imovel},
             '${contrato.data_inicio}','${contrato.data_fim}','${contrato.data_vencimento}','${contrato.valor_boleto_convertido}',
-            '${contrato.carencia}', 'false', 1,'${agora}', '${agora}', ${idUsuario}, ${idUsuario}, '${contrato.observacao}',
+            '${contrato.carencia}', 'false', 1,'${agora}', '${agora}', ${idUsuario}, ${idUsuario}, '${contrato.observacao.trim()}',
              ${contrato.fiador}
             ) RETURNING id`, (erro, resultado) => {
                 if (erro) {
@@ -65,7 +65,7 @@ module.exports = {
             db.query(`UPDATE contrato SET id_responsavel = ${contrato.id_responsavel}, id_cliente = ${contrato.id_cliente},
             id_imovel = ${contrato.id_imovel}, data_inicio = '${contrato.data_inicio}', valor_boleto = '${contrato.valor_boleto_convertido}',
             carencia = '${contrato.carencia}', alterado_em = '${agora}', alterado_por = ${idUsuario}, 
-            observacao = '${contrato.observacao}', id_id_fiador = ${contrato.fiador}
+            observacao = '${contrato.observacao.trim()}', id_id_fiador = ${contrato.fiador}
              WHERE id = ${contrato.id} RETURNING id`,
                 (erro, resultado) => {
                     if (erro) {

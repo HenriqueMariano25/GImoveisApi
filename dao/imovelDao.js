@@ -11,7 +11,7 @@ module.exports = {
                 valor_atual, id_status_imovel, id_tipo_imovel, id_responsavel, numero, valor_aquisicao_dolar, criado_em, alterado_em,
                 criado_por, alterado_por, observacao
                 ) VALUES (
-                '${imovel.nome}', '${imovel.rua}', '${imovel.cep}', '${imovel.bairro}', '${imovel.cidade}','${imovel.estado}', 
+                '${imovel.nome.trim()}', '${imovel.rua}', '${imovel.cep}', '${imovel.bairro}', '${imovel.cidade}','${imovel.estado}', 
                 '${imovel.complemento}','${imovel.area}', '${imovel.area_construida}', '${imovel.inscricao_municipal}',
                 '${imovel.funesbom}', '${imovel.numero_cliente_luz}', '${imovel.numero_cliente_agua}', '${imovel.valor_aquisicao}',
                 '${imovel.valor_atual}', '${imovel.data_aquisicao}', '${imovel.data_venda}', '${imovel.valor_atual}', 
@@ -83,8 +83,8 @@ module.exports = {
     editarImovel: (id, imovel, idUsuario) => {
         let agora = dayjs().format('DD/MM/YYYY HH:mm:ss ')
         return new Promise((resolve, reject) => {
-            db.query(`UPDATE imovel SET nome = '${imovel.nome}', rua = '${imovel.rua}', bairro = '${imovel.bairro}',
-             estado = '${imovel.estado}', complemento = '${imovel.complemento}', met_quadrada = '${imovel.area}',
+            db.query(`UPDATE imovel SET nome = '${imovel.nome.trim()}', rua = '${imovel.rua}', bairro = '${imovel.bairro}',
+             estado = '${imovel.estado}', complemento = '${imovel.complemento.trim()}', met_quadrada = '${imovel.area}',
              met_quadrada_construida = '${imovel.area_construida}', inscricao_municipal = '${imovel.inscricao_municipal}',
              funesbom = '${imovel.funesbom}', num_cliente_luz = '${imovel.numero_cliente_luz}',
              num_cliente_agua = '${imovel.numero_cliente_agua}', valor_aquisicao = '${imovel.valor_aquisicao}',
@@ -205,8 +205,6 @@ module.exports = {
     //     })
     // },
     cadastrarComodo: (idImovel, comodo) => {
-        console.log(idImovel)
-        console.log(comodo)
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO comodo(  
             id_imovel,quantidade,id_tipo_comodo, descricao
@@ -271,7 +269,7 @@ module.exports = {
             db.query(`INSERT INTO despesa(valor, data,data_vencimento, id_tipo_despesa, fixa_variavel, descricao, id_imovel) 
             VALUES 
             ('${despesa.valor}', '${despesa.data}', '${despesa.data_vencimento}', ${despesa.tipo_despesa},
-            '${despesa.fixa_variavel}', '${despesa.descricao}', ${idImovel})`, (erro, resultado) => {
+            '${despesa.fixa_variavel}', '${despesa.descricao.trim()}', ${idImovel})`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
                     return reject(erro)
@@ -299,7 +297,7 @@ module.exports = {
 
     editarDespesa: (despesa) => {
         return new Promise((resolve, reject) => {
-            db.query(`UPDATE despesa SET descricao = '${despesa.descricao}', data = '${despesa.data}',
+            db.query(`UPDATE despesa SET descricao = '${despesa.descricao.trim()}', data = '${despesa.data}',
              data_vencimento = '${despesa.data_vencimento}', valor = '${despesa.valor}', id_tipo_despesa = ${despesa.tipo_despesa} ,
              fixa_variavel = '${despesa.fixa_variavel}' WHERE id = ${despesa.id}`, (erro, resultado) => {
                 if (erro) {

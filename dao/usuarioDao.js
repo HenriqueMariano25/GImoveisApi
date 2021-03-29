@@ -21,7 +21,7 @@ module.exports = {
         let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO usuario(nome,email,senha,usuario,id_permissao, criado_em, alterado_em, criado_por, alterado_por, deletado) 
-            VALUES ('${usuario.nome}', '${usuario.email}', '${usuario.senha}', '${usuario.usuario}',${usuario.permissao},
+            VALUES ('${usuario.nome.trim()}', '${usuario.email.trim()}', '${usuario.senha}', '${usuario.usuario.trim()}',${usuario.permissao},
             '${agora}', '${agora}', ${idUsuario}, ${idUsuario}, ${false}
              ) RETURNING nome, id`, (erro, resultado) => {
                 if(erro){
@@ -52,7 +52,7 @@ module.exports = {
         let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`UPDATE usuario
-          SET nome = '${usuario.nome}', email = '${usuario.email}', usuario = '${usuario.usuario}',
+          SET nome = '${usuario.nome.trim()}', email = '${usuario.email.trim()}', usuario = '${usuario.usuario.trim()}',
            id_permissao = ${usuario.permissao}, senha = '${usuario.senha}',  alterado_em = '${agora}', alterado_por = ${alteradoPor}
            WHERE id = ${idUsuario} RETURNING nome,id`, (erro, resultado) => {
                 if(erro){
@@ -75,9 +75,7 @@ module.exports = {
             })
         })
     },
-
-
-
+    
     tiposPermissao: () => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT id as value, descricao as text FROM permissao ORDER BY descricao`, (erro, resultado) => {

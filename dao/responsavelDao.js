@@ -7,7 +7,7 @@ module.exports = {
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO responsavel(nome, data_nascimento, cpf_cnpj, identidade, id_estado_civil,cep,rua,
                     numero,bairro,cidade,estado, complemento, criado_em, alterado_em, criado_por, alterado_por) 
-                    VALUES ('${responsavel.nome}','${responsavel.data_nascimento}','${responsavel.cpf_cnpj}',
+                    VALUES ('${responsavel.nome.trim()}','${responsavel.data_nascimento}','${responsavel.cpf_cnpj}',
                     '${responsavel.identidade}',${responsavel.id_estado_civil},'${responsavel.cep}','${responsavel.rua}',
                     '${responsavel.numero}','${responsavel.bairro}','${responsavel.cidade}','${responsavel.estado}',
                     '${responsavel.complemento}', '${agora}', '${agora}', ${idUsuario}, ${idUsuario})
@@ -49,7 +49,7 @@ module.exports = {
     editar: (responsavel, idUsuario) => {
         let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
-            db.query(`UPDATE responsavel SET nome = '${responsavel.nome}' , data_nascimento = '${responsavel.data_nascimento}',
+            db.query(`UPDATE responsavel SET nome = '${responsavel.nome.trim()}' , data_nascimento = '${responsavel.data_nascimento}',
             id_estado_civil = ${responsavel.id_estado_civil}, cpf_cnpj = '${responsavel.cpf_cnpj}', identidade = '${responsavel.identidade}',
             cep = '${responsavel.cep}', rua = '${responsavel.rua}', bairro = '${responsavel.bairro}', cidade = '${responsavel.cidade}',
             estado = '${responsavel.estado}', numero = '${responsavel.numero}', complemento = '${responsavel.complemento}',
