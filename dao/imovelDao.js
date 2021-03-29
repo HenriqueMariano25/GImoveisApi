@@ -8,14 +8,14 @@ module.exports = {
             db.query(`INSERT INTO imovel(
                 nome, rua , cep, bairro,cidade,estado,complemento,met_quadrada,met_quadrada_construida, inscricao_municipal, 
                 funesbom, num_cliente_luz,num_cliente_agua, valor_aquisicao, valor_venda,data_aquisicao, data_venda, 
-                valor_atual, id_status_imovel, id_tipo_imovel, proprietario, numero, valor_aquisicao_dolar, criado_em, alterado_em,
+                valor_atual, id_status_imovel, id_tipo_imovel, id_responsavel, numero, valor_aquisicao_dolar, criado_em, alterado_em,
                 criado_por, alterado_por, observacao
                 ) VALUES (
                 '${imovel.nome}', '${imovel.rua}', '${imovel.cep}', '${imovel.bairro}', '${imovel.cidade}','${imovel.estado}', 
                 '${imovel.complemento}','${imovel.area}', '${imovel.area_construida}', '${imovel.inscricao_municipal}',
                 '${imovel.funesbom}', '${imovel.numero_cliente_luz}', '${imovel.numero_cliente_agua}', '${imovel.valor_aquisicao}',
                 '${imovel.valor_atual}', '${imovel.data_aquisicao}', '${imovel.data_venda}', '${imovel.valor_atual}', 
-                ${imovel.id_status}, ${imovel.tipo_imovel}, '${imovel.proprietario}', '${imovel.numero}', '${imovel.valor_aquisicao_dolar}',
+                ${imovel.id_status}, ${imovel.tipo_imovel}, ${imovel.id_responsavel}, '${imovel.numero}', '${imovel.valor_aquisicao_dolar}',
                 '${agora}', '${agora}', ${idUsuario}, ${idUsuario}, '${imovel.observacao}'
                 ) RETURNING id, nome`, (erro, resultado) => {
                 if (erro) {
@@ -29,7 +29,7 @@ module.exports = {
 
     visualizarTodos: () => {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT imo.id, imo.nome, imo.proprietario, imo.inscricao_municipal, imo.funesbom, 
+            db.query(`SELECT imo.id, imo.nome, imo.id_responsavel, imo.inscricao_municipal, imo.funesbom, 
             imo.id_tipo_imovel tipo_imovel,imo.id_status_imovel id_status ,sta_imo.descricao status,imo.cep, imo.rua,imo.numero, imo.complemento, 
             imo.bairro, imo.cidade, imo.estado,imo.data_aquisicao, imo.met_quadrada area, 
             imo.met_quadrada_construida area_construida, imo.valor_atual, imo.valor_aquisicao,
@@ -53,7 +53,7 @@ module.exports = {
 
     visualizar: (id) => {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT imo.id,imo.nome, imo.proprietario, imo.inscricao_municipal, imo.funesbom, 
+            db.query(`SELECT imo.id,imo.nome, imo.id_responsavel, imo.inscricao_municipal, imo.funesbom, 
                     imo.id_tipo_imovel tipo_imovel,imo.id_status_imovel id_status ,sta_imo.descricao status,
                     imo.cep, imo.rua,imo.numero, imo.complemento, imo.bairro, imo.cidade, imo.estado,imo.data_aquisicao,
                     imo.met_quadrada area, imo.met_quadrada_construida area_construida, imo.valor_atual, 
@@ -65,7 +65,7 @@ module.exports = {
                     LEFT OUTER JOIN tipo_comodo tip_com ON com.id_tipo_comodo = tip_com.id
                     LEFT OUTER JOIN status_imovel sta_imo ON imo.id_status_imovel = sta_imo.id
                     WHERE imo.id = ${id}
-                    GROUP BY imo.id, imo.nome, imo.proprietario, imo.inscricao_municipal, imo.funesbom, 
+                    GROUP BY imo.id, imo.nome, imo.id_responsavel, imo.inscricao_municipal, imo.funesbom, 
                     tipo_imovel,id_status ,status,
                     imo.cep, imo.rua,imo.numero, imo.complemento, imo.bairro, imo.cidade, imo.estado,imo.data_aquisicao,
                     area,area_construida, imo.valor_atual, imo.valor_aquisicao,numero_cliente_luz,numero_cliente_agua,
@@ -91,7 +91,7 @@ module.exports = {
              valor_venda = '${imovel.valor_atua}', data_aquisicao = '${imovel.data_aquisicao}', 
              data_venda = '${imovel.data_venda}',valor_atual = '${imovel.valor_atual}', 
              id_status_imovel = ${imovel.id_status}, id_tipo_imovel = '${imovel.tipo_imovel}',
-             proprietario = '${imovel.proprietario}', numero = '${imovel.numero}', cidade = '${imovel.cidade}', 
+             id_responsavel = ${imovel.id_responsavel}, numero = '${imovel.numero}', cidade = '${imovel.cidade}', 
              cep = '${imovel.cep}' , valor_aquisicao_dolar = '${imovel.valor_aquisicao_dolar}',
              alterado_em = '${agora}', alterado_por = ${idUsuario}, observacao = '${imovel.observacao}'
              WHERE id = ${id} RETURNING nome, id, data_venda`, (erro, resultado) => {
@@ -213,7 +213,7 @@ module.exports = {
             ) VALUES(
             ${idImovel}, ${comodo.quantidade}, ${comodo.id_tipo_comodo}, '${comodo.descricao}'
             ) RETURNING id`, (erro, resultado) => {
-                if(erro) {
+                if (erro) {
                     console.log(erro)
                     return reject(erro)
                 }
@@ -320,6 +320,20 @@ module.exports = {
                 }
                 return resolve(resultado.rows)
             })
+        })
+    },
+
+    proprietarios: () => {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT id, nome FROM responsavel ORDER BY nome`,
+                (erro, resultado) => {
+                    if (erro) {
+                        console.log(erro)
+                        return reject(erro)
+                    }
+                    return resolve(resultado.rows)
+                }
+            )
         })
     }
 }

@@ -55,4 +55,7 @@ module.exports = app => {
     app.delete('/imoveis/despesa/:id/deletar', (req, res) => {
         ImovelController.deletarDespesa(req, res)
     })
+    app.get('/imoveis/proprietarios', (req, res) => {
+        ImovelController.proprietarios(res)
+    })
 }

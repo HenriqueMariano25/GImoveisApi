@@ -5,8 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "set NODE_ENV=production&&node server.js",
-    "start": "nodemon server.js",
-    "bb": "set NODE_ENV=production&&node server.js"
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",

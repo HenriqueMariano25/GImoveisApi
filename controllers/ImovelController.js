@@ -139,6 +139,13 @@ class ImovelController {
             res.status(200).json(response)
         })
     }
+
+    async proprietarios(res){
+        await imovelDao.proprietarios().then(consulta => {
+            console.log(consulta)
+            res.status(200).json(consulta)
+        })
+    }
 }
 
 module.exports = new ImovelController
