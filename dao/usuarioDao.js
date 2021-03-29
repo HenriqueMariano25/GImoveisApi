@@ -75,7 +75,7 @@ module.exports = {
             })
         })
     },
-    
+
     tiposPermissao: () => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT id as value, descricao as text FROM permissao ORDER BY descricao`, (erro, resultado) => {

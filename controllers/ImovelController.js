@@ -35,13 +35,9 @@ class ImovelController {
     }
 
     async editarImovel(req, res){
-        console.log('EDITANDO IMOVEL')
         const id = req.params.id
-        console.log('Id: '+id)
         const imovel = req.body.data
-        console.log(imovel)
         const idUsuario = req.body.idUsuario
-        console.log('id_usuario: '+idUsuario)
         await imovelDao.editarImovel(id, imovel, idUsuario).then(response => {
             res.status(200).json(response)
         }).catch(erro => {
@@ -142,7 +138,6 @@ class ImovelController {
 
     async proprietarios(res){
         await imovelDao.proprietarios().then(consulta => {
-            console.log(consulta)
             res.status(200).json(consulta)
         })
     }
