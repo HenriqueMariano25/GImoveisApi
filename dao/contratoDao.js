@@ -25,8 +25,8 @@ module.exports = {
     visualizar: (idContrato) => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT con.id, con.id_responsavel, con.id_cliente, con.id_imovel, con.data_inicio, con.data_fim,
-            con.vigencia, con.data_vencimento, con.valor_boleto, con.carencia, pdf.nome nome_pdf, con.observacao, 
-            id_id_fiador fiador
+            con.vigencia, con.data_vencimento, con.valor_boleto, con.carencia, pdf.nome nome_pdf, con.observacao,
+            id_id_fiador fiador,con.id_status_contrato status
             FROM contrato con
             LEFT OUTER JOIN pdf_contrato pdf on pdf.id_contrato = con.id
             WHERE con.id = ${idContrato}`,
@@ -48,7 +48,7 @@ module.exports = {
             VALUES(
             ${contrato.id_responsavel}, ${contrato.id_cliente},${contrato.id_imovel},
             '${contrato.data_inicio}','${contrato.data_fim}','${contrato.data_vencimento}','${contrato.valor_boleto_convertido}',
-            '${contrato.carencia}', 'false', 1,'${agora}', '${agora}', ${idUsuario}, ${idUsuario}, '${contrato.observacao.trim()}',
+            '${contrato.carencia}', 'false', ${contrato.status},'${agora}', '${agora}', ${idUsuario}, ${idUsuario}, '${contrato.observacao.trim()}',
              ${contrato.fiador}
             ) RETURNING id`, (erro, resultado) => {
                 if (erro) {
@@ -65,7 +65,8 @@ module.exports = {
             db.query(`UPDATE contrato SET id_responsavel = ${contrato.id_responsavel}, id_cliente = ${contrato.id_cliente},
             id_imovel = ${contrato.id_imovel}, data_inicio = '${contrato.data_inicio}', valor_boleto = '${contrato.valor_boleto_convertido}',
             carencia = '${contrato.carencia}', alterado_em = '${agora}', alterado_por = ${idUsuario}, 
-            observacao = '${contrato.observacao.trim()}', id_id_fiador = ${contrato.fiador}
+            observacao = '${contrato.observacao.trim()}', id_id_fiador = ${contrato.fiador},
+             id_status_contrato = ${contrato.status}
              WHERE id = ${contrato.id} RETURNING id`,
                 (erro, resultado) => {
                     if (erro) {
@@ -103,13 +104,26 @@ module.exports = {
     },
     deletarContrato: idContrato => {
         return new Promise((resolve, reject) => {
-            db.query(`UPDATE contrato SET deletado = ${true} WHERE id = ${idContrato} RETURNING id`, (erro,resultado) => {
-                if(erro){
+            db.query(`UPDATE contrato SET deletado = ${true} WHERE id = ${idContrato} RETURNING id`, (erro, resultado) => {
+                if (erro) {
                     console.log(erro)
                     return reject(erro)
                 }
                 return resolve(resultado.rows)
-            } )
+            })
+        })
+    },
+    status: () => {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT id, descricao FROM status_contrato ORDER BY descricao`,
+                (erro, resultado) => {
+                    if (erro) {
+                        console.log(erro)
+                        return reject(erro)
+                    }
+                    return resolve(resultado.rows)
+                }
+            )
         })
     },
     deletarBoletos: (idContrato) => {
@@ -225,7 +239,7 @@ module.exports = {
             VALUES 
             (${idContrato}, '${boleto.data_vencimento}', '${boleto.data_quitacao}', '${boleto.valor}', ${boleto.id_status_boleto}) 
             RETURNING id`, (erro, resultado) => {
-                if(erro){
+                if (erro) {
                     console.log(erro)
                     return reject(erro)
                 }
@@ -234,21 +248,21 @@ module.exports = {
         })
     },
     deletarBoleto: (idBoleto) => {
-      return new Promise((resolve, reject) => {
-          db.query(`DELETE FROM boleto WHERE id = ${idBoleto} RETURNING id`, (erro, resultado) => {
-              if(erro){
-                  console.log(erro)
-                  return reject(erro)
-              }
-              return resolve(resultado.rows)
-          })
-      })
+        return new Promise((resolve, reject) => {
+            db.query(`DELETE FROM boleto WHERE id = ${idBoleto} RETURNING id`, (erro, resultado) => {
+                if (erro) {
+                    console.log(erro)
+                    return reject(erro)
+                }
+                return resolve(resultado.rows)
+            })
+        })
     },
-    importarPDF: (url,contrato, nome) => {
+    importarPDF: (url, contrato, nome) => {
         console.log(url)
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO pdf_contrato(url, id_contrato, nome) VALUES('${url}', ${contrato}, '${nome}') RETURNING id, nome`, (erro, resultado) => {
-                if(erro){
+                if (erro) {
                     console.log(erro)
                     return reject(erro)
                 }
@@ -260,12 +274,12 @@ module.exports = {
         return new Promise((resolve, reject) => {
             db.query(`DELETE FROM pdf_contrato WHERE id_contrato = ${idContrato} RETURNING id, nome, url`,
                 (erro, resultado) => {
-                if(erro){
-                    console.log(erro)
-                    return reject(erro)
-                }
-                return resolve(resultado.rows)
-            })
+                    if (erro) {
+                        console.log(erro)
+                        return reject(erro)
+                    }
+                    return resolve(resultado.rows)
+                })
         })
     }
 }

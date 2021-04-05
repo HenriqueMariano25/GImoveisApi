@@ -42,10 +42,11 @@ class ContratoController {
         await contratoDao.deletarContrato(idContrato).then(response => {
             res.status(200).json(response)
         })
-        // await contratoDao.deletarBoletos(idContrato)
-        // await contratoDao.deletar(idContrato).then(response => {
-        //     res.status(200).json(response)
-        // })
+    }
+    async status(res){
+        await contratoDao.status().then(consulta => {
+            res.status(200).json(consulta)
+        })
     }
     async responsaveis(res) {
         await contratoDao.responsaveis().then(consulta => {

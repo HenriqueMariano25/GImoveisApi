@@ -18,6 +18,9 @@ module.exports = app => {
     app.delete('/contrato/deletar', (req,res) => {
         ContratoController.deletar(req,res)
     })
+    app.get('/contrato/status', (req, res) => {
+        ContratoController.status(res)
+    })
     app.get('/contrato/responsaveis', (req, res) => {
         ContratoController.responsaveis(res)
     })
