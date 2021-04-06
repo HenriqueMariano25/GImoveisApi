@@ -57,4 +57,16 @@ module.exports = app => {
     app.post('/contrato/:id/importar/pdf', multer(multerConfig).single('files'),(req,res) => {
         ContratoController.importarPDF(req,res)
     })
+    app.post('/contrato/fiador/cadastrar',(req, res) => {
+        ContratoController.cadastrarFiador(req, res)
+    })
+    app.get('/contrato/fiadores', (req, res) => {
+        ContratoController.fiadores(req,res)
+    })
+    app.post('/contrato/fiador/editar', (req, res) => {
+        ContratoController.editarFiador(req, res)
+    })
+    app.delete('/contrato/fiador/deletar', (req, res) => {
+        ContratoController.deletarFiador(req, res)
+    })
 }
