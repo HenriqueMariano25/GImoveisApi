@@ -58,4 +58,7 @@ module.exports = app => {
     app.get('/imoveis/proprietarios', (req, res) => {
         ImovelController.proprietarios(res)
     })
+    app.get('/imoveis/despesas/responsavel_pagamento', (req, res) => {
+        ImovelController.responsaveisPagameneto(res)
+    })
 }

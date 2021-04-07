@@ -141,6 +141,12 @@ class ImovelController {
             res.status(200).json(consulta)
         })
     }
+
+    async responsaveisPagameneto(res){
+        await imovelDao.responsaveisPagameneto().then(consulta => {
+            res.status(200).json(consulta)
+        })
+    }
 }
 
 module.exports = new ImovelController

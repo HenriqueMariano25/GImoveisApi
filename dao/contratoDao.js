@@ -73,7 +73,6 @@ module.exports = {
         })
     },
     editar: (contrato, idUsuario) => {
-        console.log(contrato)
         let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`UPDATE contrato SET id_responsavel = ${contrato.id_responsavel}, id_cliente = ${contrato.id_cliente},
@@ -273,7 +272,6 @@ module.exports = {
         })
     },
     importarPDF: (url, contrato, nome) => {
-        console.log(url)
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO pdf_contrato(url, id_contrato, nome) VALUES('${url}', ${contrato}, '${nome}') RETURNING id, nome`, (erro, resultado) => {
                 if (erro) {

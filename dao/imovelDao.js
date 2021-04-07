@@ -266,10 +266,10 @@ module.exports = {
 
     cadastrarDespesa: (despesa, idImovel) => {
         return new Promise((resolve, reject) => {
-            db.query(`INSERT INTO despesa(valor, data,data_vencimento, id_tipo_despesa, fixa_variavel, descricao, id_imovel) 
+            db.query(`INSERT INTO despesa(valor, data,data_vencimento, id_tipo_despesa, fixa_variavel, descricao, id_imovel, id_responsavel_pagamento) 
             VALUES 
             ('${despesa.valor}', '${despesa.data}', '${despesa.data_vencimento}', ${despesa.tipo_despesa},
-            '${despesa.fixa_variavel}', '${despesa.descricao.trim()}', ${idImovel})`, (erro, resultado) => {
+            '${despesa.fixa_variavel}', '${despesa.descricao.trim()}', ${idImovel}, ${despesa.id_responsavel_pagamento})`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
                     return reject(erro)
@@ -282,9 +282,10 @@ module.exports = {
     despesas: (idImovel) => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT des.id, des.descricao, des.data,data_vencimento, des.valor, tip_des.descricao descricao_tipo_despesa,
-             des.fixa_variavel, des.id_tipo_despesa
+             des.fixa_variavel, des.id_tipo_despesa, res_pag.descricao responsavel_pagamento, des.id_responsavel_pagamento
                 FROM despesa des
                 LEFT JOIN tipo_despesa tip_des ON des.id_tipo_despesa = tip_des.id
+                LEFT JOIN responsavel_pagamento res_pag ON des.id_responsavel_pagamento = res_pag.id
                 WHERE id_imovel = ${idImovel} ORDER BY data, data_vencimento`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
@@ -299,7 +300,8 @@ module.exports = {
         return new Promise((resolve, reject) => {
             db.query(`UPDATE despesa SET descricao = '${despesa.descricao.trim()}', data = '${despesa.data}',
              data_vencimento = '${despesa.data_vencimento}', valor = '${despesa.valor}', id_tipo_despesa = ${despesa.tipo_despesa} ,
-             fixa_variavel = '${despesa.fixa_variavel}' WHERE id = ${despesa.id}`, (erro, resultado) => {
+             fixa_variavel = '${despesa.fixa_variavel}', id_responsavel_pagamento = ${despesa.id_responsavel_pagamento} 
+             WHERE id = ${despesa.id}`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
                     return reject(erro)
@@ -324,6 +326,20 @@ module.exports = {
     proprietarios: () => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT id, nome FROM responsavel ORDER BY nome`,
+                (erro, resultado) => {
+                    if (erro) {
+                        console.log(erro)
+                        return reject(erro)
+                    }
+                    return resolve(resultado.rows)
+                }
+            )
+        })
+    },
+
+    responsaveisPagameneto: () => {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT * FROM responsavel_pagamento ORDER BY descricao`,
                 (erro, resultado) => {
                     if (erro) {
                         console.log(erro)
