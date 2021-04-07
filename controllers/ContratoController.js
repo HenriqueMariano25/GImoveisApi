@@ -32,10 +32,6 @@ class ContratoController {
                 let data_vencimento = dayjs(contrato.data_vencimento).add(x, 'month').format('YYYY-MM-DD')
                 contratoDao.gerarBoleto(idContrato, data_vencimento, contrato)
             }
-            // console.log(fiador)
-            // contratoDao.cadastrarFiador(fiador, idContrato).then(res => {
-            //     console.log(res)
-            // })
             res.status(200).json(response)
         })
     }
@@ -43,15 +39,8 @@ class ContratoController {
     async editar(req, res) {
         let contrato = req.body.contrato
         let idUsuario = req.body.idUsuario
-        let fiador = req.body.fiador
         await contratoDao.editar(contrato, idUsuario).then(resposta => {
-            let idContrato = resposta[0].id
-            console.log(fiador)
-            contratoDao.editarFiador(fiador, idContrato).then(() => {
-                res.status(200).json(resposta)
-            }).catch(erro => {
-                console.log(erro)
-            })
+            res.status(200).json(resposta)
         }).catch(erro => {
             console.log(erro)
         })
@@ -140,15 +129,12 @@ class ContratoController {
     async importarPDF(req, res) {
         const idContrato = req.params.id
         const filename = req.file.key
-        console.log(filename)
         let url = req.file.location
-        console.log(req.file.location)
         if (!url) {
             url = `${req.protocol}://${req.get('host')}/files/${filename}`
         }
         await contratoDao.deletarPDF(idContrato).then(response => {
             let arquivoDeletado = response[0]
-            console.log(arquivoDeletado)
             if (response.length != 0) {
                 if (process.env.STORAGE_TYPE === "s3") {
                     return s3.deleteObject({
@@ -156,7 +142,6 @@ class ContratoController {
                         Key: arquivoDeletado.nome
                     }).promise()
                 } else {
-                    console.log('to aqui')
                     fs.unlink((path.resolve(__dirname, '..', 'tmp', 'uploads', arquivoDeletado.nome)),
                         function (err) {
                             if (err) throw err;
@@ -169,26 +154,30 @@ class ContratoController {
             res.status(200).json(response)
         })
     }
-    async cadastrarFiador(req, res){
+
+    async cadastrarFiador(req, res) {
         let fiador = req.body.fiador
         let idContrato = req.body.idContrato
         await contratoDao.cadastrarFiador(fiador, idContrato).then(resposta => {
             res.status(200).json(resposta)
         })
     }
-    async fiadores(req, res){
+
+    async fiadores(req, res) {
         let idContrato = req.query.idContrato
         await contratoDao.fiadores(idContrato).then(consulta => {
             res.status(200).json(consulta)
         })
     }
-    async editarFiador(req, res){
+
+    async editarFiador(req, res) {
         let fiador = req.body.fiador
         await contratoDao.editarFiador(fiador).then(resposta => {
             res.status(200).json(resposta)
         })
     }
-    async deletarFiador(req, res){
+
+    async deletarFiador(req, res) {
         let idFiador = req.query.idFiador
         await contratoDao.deletarFiador(idFiador).then(resposta => {
             res.status(200).json(resposta)

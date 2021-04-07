@@ -25,7 +25,7 @@ module.exports = {
     visualizar: (idContrato) => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT con.id, con.id_responsavel, con.id_cliente, con.id_imovel, con.data_inicio, con.data_fim,
-            con.vigencia, con.data_vencimento, con.valor_boleto, con.carencia, pdf.nome nome_pdf, con.observacao,
+            con.vigencia, con.data_vencimento, con.valor_boleto, con.carencia, pdf.nome nome_pdf, con.observacao, con.garantia,
             con.id_status_contrato status
             FROM contrato con
             LEFT OUTER JOIN pdf_contrato pdf on pdf.id_contrato = con.id
@@ -57,12 +57,12 @@ module.exports = {
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO contrato(id_responsavel,id_cliente,id_imovel,data_inicio,data_fim,data_vencimento,
             valor_boleto,carencia, deletado, id_status_contrato, criado_em, alterado_em, criado_por, alterado_por, 
-            observacao) 
+            observacao, garantia) 
             VALUES(
             ${contrato.id_responsavel}, ${contrato.id_cliente},${contrato.id_imovel},
             '${contrato.data_inicio}','${contrato.data_fim}','${contrato.data_vencimento}','${contrato.valor_boleto_convertido}',
             '${contrato.carencia}', 'false', ${contrato.status},'${agora}', '${agora}', ${idUsuario}, ${idUsuario}, 
-            '${contrato.observacao.trim()}'
+            '${contrato.observacao.trim()}', '${contrato.garantia.trim()}'
             ) RETURNING id`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
@@ -73,13 +73,14 @@ module.exports = {
         })
     },
     editar: (contrato, idUsuario) => {
+        console.log(contrato)
         let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`UPDATE contrato SET id_responsavel = ${contrato.id_responsavel}, id_cliente = ${contrato.id_cliente},
             id_imovel = ${contrato.id_imovel}, data_inicio = '${contrato.data_inicio}', 
             valor_boleto = '${contrato.valor_boleto_convertido}',carencia = '${contrato.carencia}', 
-            alterado_em = '${agora}', alterado_por = ${idUsuario}, observacao = '${contrato.observacao.trim()}', 
-             id_status_contrato = ${contrato.status}
+            alterado_em = '${agora}', alterado_por = ${idUsuario}, observacao = '${contrato.observacao.trim()}',
+             id_status_contrato = ${contrato.status}, garantia = '${contrato.garantia.trim()}'
              WHERE id = ${contrato.id} RETURNING id`,
                 (erro, resultado) => {
                     if (erro) {
@@ -296,7 +297,6 @@ module.exports = {
         })
     },
     cadastrarFiador: (fiador, idContrato) => {
-        console.log(fiador)
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO fiador(nome, id_estado_civil, data_nascimento,email,cpf_cnpj, identidade, cep, rua, 
             numero, complemento, bairro, cidade, estado, id_contrato, telefone)
