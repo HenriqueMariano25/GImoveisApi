@@ -296,13 +296,14 @@ module.exports = {
         })
     },
     cadastrarFiador: (fiador, idContrato) => {
+        console.log(fiador)
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO fiador(nome, id_estado_civil, data_nascimento,email,cpf_cnpj, identidade, cep, rua, 
-            numero, complemento, bairro, cidade, estado, id_contrato)
+            numero, complemento, bairro, cidade, estado, id_contrato, telefone)
           VALUES(
               '${fiador.nome}', ${fiador.estado_civil}, '${fiador.data_nascimento}', '${fiador.email}', '${fiador.cpf_cnpj}',
               '${fiador.identidade}', '${fiador.cep}', '${fiador.rua}','${fiador.numero}', '${fiador.complemento}', 
-              '${fiador.bairro}', '${fiador.cidade}', '${fiador.estado}', ${idContrato})
+              '${fiador.bairro}', '${fiador.cidade}', '${fiador.estado}', ${idContrato}, '${fiador.telefone}')
           RETURNING id`,
                 (erro, resultado) => {
                     if (erro) {
@@ -332,7 +333,8 @@ module.exports = {
             db.query(`UPDATE fiador SET nome = '${fiador.nome}', rua = '${fiador.rua}', bairro = '${fiador.bairro}',
           cidade = '${fiador.cidade}', estado = '${fiador.estado}', complemento = '${fiador.complemento}',
           email = '${fiador.email}', id_estado_civil = ${fiador.estado_civil}, cpf_cnpj = '${fiador.cpf_cnpj}',
-          identidade = '${fiador.identidade}', data_nascimento = '${fiador.data_nascimento}', cep = '${fiador.cep}'
+          identidade = '${fiador.identidade}', data_nascimento = '${fiador.data_nascimento}', cep = '${fiador.cep}',
+          telefone = '${fiador.telefone}'
           WHERE id = ${fiador.id}`,
                 (erro, resultado) => {
                     if (erro) {

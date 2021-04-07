@@ -73,7 +73,6 @@ module.exports = {
 
     editar: (idCliente, cliente, idUsuario) => {
         let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
-        console.log(cliente)
         return new Promise((resolve, reject) =>{
             db.query(`UPDATE cliente
             SET nome = '${cliente.nome.trim()}', rua = '${cliente.rua}', bairro = '${cliente.bairro}', estado = '${cliente.estado}',
