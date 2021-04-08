@@ -1,9 +1,9 @@
 const db = require('../db/conexao')
 
 module.exports = {
-    contratosVencendo: (diaVencimento) => {
+    contratosVencendo: (diaVencimento, diaAtual) => {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT id, data_fim FROM contrato WHERE data_fim <= '${diaVencimento}'`,
+            db.query(`SELECT id, data_fim FROM contrato WHERE data_fim <= '${diaVencimento}' AND data_fim >= '${diaAtual}'`,
                 (erro, resultado) => {
                     if (erro) {
                         console.log(erro)
