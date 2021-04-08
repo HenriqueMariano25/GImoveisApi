@@ -177,7 +177,7 @@ module.exports = {
              LEFT JOIN imovel imo ON con.id_imovel = imo.id
              LEFT JOIN status_contrato sta_con ON con.id_status_contrato = sta_con.id
              LEFT JOIN pdf_contrato pdf ON pdf.id_contrato = con.id
-             WHERE id_cliente = ${idCliente} AND deletado = 'false'`, (erro, resultado) => {
+             WHERE id_cliente = ${idCliente} OR id_cliente2 = ${idCliente} AND deletado = 'false'`, (erro, resultado) => {
                 if(erro){
                     console.log(erro)
                     return reject(erro)
