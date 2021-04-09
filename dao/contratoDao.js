@@ -78,8 +78,8 @@ module.exports = {
             db.query(`UPDATE contrato SET id_responsavel = ${contrato.id_responsavel}, id_cliente = ${contrato.id_cliente},
             id_cliente2 = ${contrato.id_cliente2}, id_imovel = ${contrato.id_imovel}, data_inicio = '${contrato.data_inicio}', 
             valor_boleto = '${contrato.valor_boleto_convertido}',carencia = '${contrato.carencia}', 
-            alterado_em = '${agora}', alterado_por = ${idUsuario}, observacao = '${contrato.observacao.trim()}',
-             id_status_contrato = ${contrato.status}, garantia = '${contrato.garantia.trim()}'
+            alterado_em = '${agora}', alterado_por = ${idUsuario}, observacao = '${contrato.observacao}',
+             id_status_contrato = ${contrato.status}, garantia = '${contrato.garantia}'
              WHERE id = ${contrato.id} RETURNING id`,
                 (erro, resultado) => {
                     if (erro) {
