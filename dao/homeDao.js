@@ -17,7 +17,7 @@ module.exports = {
     boletosVencendo: (diaAtual) => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT * FROM boleto WHERE data_vencimento < '${diaAtual}' AND id_status_boleto != 3 
-            `,
+            AND (data_quitacao = '' OR data_quitacao is null) ORDER BY id_contrato, data_vencimento`,
                 (erro,resultado) => {
                     if(erro){
                         console.log(erro)
