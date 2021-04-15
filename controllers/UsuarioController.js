@@ -5,7 +5,6 @@ class UsuarioController {
         await usuarioDao.visualizarTodos().then(consulta => {
             res.status(200).json(consulta)
         })
-
     }
 
     async cadastrar(req,res) {
@@ -13,6 +12,10 @@ class UsuarioController {
         const idUsuario = req.body.idUsuario
         await usuarioDao.cadastrar(usuario, idUsuario).then(consulta => {
             res.status(200).json(consulta)
+        }).catch(erro => {
+            if(erro.code == "23505"){
+                res.status('500').json({erro:"Nome do operador ou Usuário duplicado"})
+            }
         })
     }
 
@@ -29,6 +32,10 @@ class UsuarioController {
         const alteradoPor = req.body.idUsuario
         await usuarioDao.editar(idUsuario, usuario, alteradoPor).then(response => {
             res.status(200).json(response)
+        }).catch(erro => {
+            if(erro.code == "23505"){
+                res.status('500').json({erro:"Nome do operador ou Usuário duplicado"})
+            }
         })
     }
 
