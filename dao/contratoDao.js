@@ -212,15 +212,19 @@ module.exports = {
     },
     boleto: (idBoleto) => {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT bol.id, bol.data_vencimento, bol.id_status_boleto, bol.valor, bol.data_quitacao
-                FROM boleto bol
-                WHERE bol.id = ${idBoleto}`, (erro, resultado) => {
-                if (erro) {
-                    console.log(erro)
-                    return reject(erro)
+            db.query(`SELECT bol.id, bol.data_vencimento, bol.id_status_boleto, bol.valor, bol.data_quitacao, 
+            bol.valor_juros, con.juros_multa
+            FROM boleto bol
+            INNER JOIN contrato con ON bol.id_contrato = con.id
+            WHERE bol.id = ${idBoleto}`,
+                (erro, resultado) => {
+                    if (erro) {
+                        console.log(erro)
+                        return reject(erro)
+                    }
+                    return resolve(resultado.rows)
                 }
-                return resolve(resultado.rows)
-            })
+            )
         })
     },
     statusBoleto: () => {
