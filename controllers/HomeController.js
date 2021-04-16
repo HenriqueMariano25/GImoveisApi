@@ -12,18 +12,34 @@ class HomeController {
         })
     }
     async boletosVencendo(res){
-        let diaAtual = dayjs().format('YYYY-MM-DD')
-        await homeDao.boletosVencendo(diaAtual).then(consulta => {
+        let dataAtual = dayjs().format('YYYY-MM-DD')
+        await homeDao.boletosVencendo(dataAtual).then(consulta => {
+            console.log(consulta)
+            let inicioMesAtual = dayjs(dataAtual).startOf('month').format('YYYY-MM-DD')
+            let diasMesAtual = dayjs(dataAtual).diff(inicioMesAtual, 'days')
+            let totalDiasMesAtual = dayjs(dataAtual).daysInMonth()
+            let mesAtual = dayjs(dataAtual).month() + 1
             consulta.forEach((boleto) => {
-                var meses_atrasados = dayjs(diaAtual).diff(boleto.data_vencimento, 'month', true)
                 if(boleto.juros_multa){
-                    let valor = parseFloat(boleto.valor)
-                    let juros = parseFloat(boleto.juros_mes)
-                    let multa = parseFloat(boleto.multa)
-                    let valor_juros_mes = valor*((juros/100) * parseInt(meses_atrasados + 1))
-                    let total_juros_mes = valor + valor_juros_mes
-                    let valor_multa = total_juros_mes*(multa/100)
-                    boleto.valor_juros = (total_juros_mes + valor_multa).toFixed(2)
+                    let fimMesVencimento = dayjs(boleto.data_vencimento).endOf('month').format('YYYY-MM-DD')
+                    let diasMesVencimento = dayjs(fimMesVencimento).diff(boleto.data_vencimento, 'days') + 1
+                    let totalDiasMesVencimento = dayjs(boleto.data_vencimento).daysInMonth()
+                    let mesVencimento = dayjs(boleto.data_vencimento).month() + 1
+                    let periodo = (diasMesVencimento / totalDiasMesVencimento) + (diasMesAtual / totalDiasMesAtual)
+                    if(dayjs(dataAtual).diff(boleto.data_vencimento, 'days') <= 15) {
+                        periodo -= 1
+                    }else if(mesAtual - mesVencimento > 1){
+                        periodo += (mesAtual - mesVencimento) - 1
+                    }
+                    let valorOriginal = parseFloat(boleto.valor)
+                    let porcentJurosAoMes = parseFloat(boleto.juros_mes)
+                    let porcentJurosTotal = porcentJurosAoMes * periodo
+                    let valorJurosTotal = (valorOriginal*(porcentJurosTotal/100))
+                    let valorComJuros = valorOriginal + valorJurosTotal
+                    let porcentMulta = parseFloat(boleto.multa)
+                    let valorMultaTotal = valorComJuros*(porcentMulta/100)
+                    let valorComJurosMulta = valorComJuros + valorMultaTotal
+                    boleto.valor_juros = valorComJurosMulta.toFixed(2)
                     homeDao.aplicarJuros(boleto)
                 }
                 if(boleto.id_status_boleto != 2){
