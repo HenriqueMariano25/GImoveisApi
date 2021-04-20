@@ -14,7 +14,6 @@ class HomeController {
     async boletosVencendo(res){
         let dataAtual = dayjs().format('YYYY-MM-DD')
         await homeDao.boletosVencendo(dataAtual).then(consulta => {
-            console.log(consulta)
             let inicioMesAtual = dayjs(dataAtual).startOf('month').format('YYYY-MM-DD')
             let diasMesAtual = dayjs(dataAtual).diff(inicioMesAtual, 'days')
             let totalDiasMesAtual = dayjs(dataAtual).daysInMonth()
@@ -30,6 +29,12 @@ class HomeController {
                         periodo -= 1
                     }else if(mesAtual - mesVencimento > 1){
                         periodo += (mesAtual - mesVencimento) - 1
+                    }
+                    let anos_vencidos = dayjs(dataAtual).diff(boleto.data_vencimento, 'years')
+                    if(anos_vencidos == 1){
+                        periodo = periodo += 11 * anos_vencidos
+                    }else if(anos_vencidos > 1){
+                        periodo = periodo += 11 + (12 * (anos_vencidos - 1))
                     }
                     let valorOriginal = parseFloat(boleto.valor)
                     let porcentJurosAoMes = parseFloat(boleto.juros_mes)
