@@ -1,4 +1,5 @@
 const contratoDao = require('../dao/contratoDao')
+const boletoDao = require('../dao/boletoDao')
 const dayjs = require('dayjs')
 const fs = require('fs')
 const path = require('path')
@@ -16,10 +17,10 @@ class ContratoController {
     async visualizar(req, res) {
         let idContrato = req.query.idContrato
         await contratoDao.visualizar(idContrato).then(contrato => {
+            console.log(contrato)
             contratoDao.fiador(idContrato).then(fiador => {
                 res.status(200).json({contrato: contrato, fiador: fiador})
             })
-
         })
     }
 
@@ -183,6 +184,31 @@ class ContratoController {
             res.status(200).json(resposta)
         })
     }
+
+    async aplicarReajuste(req, res){
+        let idContrato = req.body.contrato.id
+        let reajuste = parseFloat(req.body.reajuste)
+        let valor_original = parseFloat(req.body.valor)
+        let valor_reajustado_original = req.body.valor_reajustado
+        let valor_reajuste = ""
+        if(valor_reajustado_original){
+            valor_reajuste = (valor_reajustado_original * ((reajuste/100) + 1)).toFixed(2)
+        }else{
+            valor_reajuste = (valor_original * ((reajuste/100) + 1)).toFixed(2)
+        }
+        let dataHoje = dayjs().format('YYYY-MM-DD')
+        await contratoDao.aplicarReajuste(valor_reajuste, idContrato, dataHoje).then(contrato => {
+            boletoDao.aplicarReajuste(valor_reajuste, dataHoje, idContrato).then(() => {
+                res.status(200).json({valor_reajustado: valor_reajuste, ultimo_reajuste: contrato[0].ultimo_reajuste})
+            })
+        })
+    }
+
+    async contratosParaReajustar(req, res){
+
+    }
+
+
 }
 
 module.exports = new ContratoController();

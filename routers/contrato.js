@@ -69,4 +69,10 @@ module.exports = app => {
     app.delete('/contrato/fiador/deletar', (req, res) => {
         ContratoController.deletarFiador(req, res)
     })
+    app.patch('/contrato/reajuste', (req, res) => {
+        ContratoController.aplicarReajuste(req, res)
+    })
+    app.get('/contrato/reajuste', (req, res) => {
+        ContratoController.contratosParaReajustar(req, res)
+    })
 }
