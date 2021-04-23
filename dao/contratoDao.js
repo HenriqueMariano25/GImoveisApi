@@ -376,5 +376,21 @@ module.exports = {
                     return resolve(resultado.rows)
                 })
         })
+    },
+
+    contratosParaReajustar: (anoPassado) => {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT id,data_inicio,
+            COALESCE(ultimo_reajuste, data_inicio) AS ultimo_reajuste
+            FROM contrato
+            WHERE data_inicio < '${anoPassado}' AND ultimo_reajuste < '${anoPassado}'`,
+                (erro, resultado) => {
+                    if(erro){
+                        console.log(erro)
+                        return reject(erro)
+                    }
+                    return resolve(resultado.rows)
+                })
+        })
     }
 }

@@ -17,7 +17,6 @@ class ContratoController {
     async visualizar(req, res) {
         let idContrato = req.query.idContrato
         await contratoDao.visualizar(idContrato).then(contrato => {
-            console.log(contrato)
             contratoDao.fiador(idContrato).then(fiador => {
                 res.status(200).json({contrato: contrato, fiador: fiador})
             })
@@ -205,7 +204,10 @@ class ContratoController {
     }
 
     async contratosParaReajustar(req, res){
-
+        let anoPassado = dayjs().subtract(1, 'year').add(60, 'days').format('YYYY-MM-DD')
+        await contratoDao.contratosParaReajustar(anoPassado).then(consulta => {
+            res.status(200).json(consulta)
+        })
     }
 
 
