@@ -380,10 +380,12 @@ module.exports = {
 
     contratosParaReajustar: (anoPassado) => {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT id,data_inicio,
-            COALESCE(ultimo_reajuste, data_inicio) AS ultimo_reajuste
-            FROM contrato
-            WHERE data_inicio < '${anoPassado}' AND ultimo_reajuste < '${anoPassado}'`,
+            db.query(`SELECT con.id, con.data_inicio, cli.nome cliente_nome, imo.nome imovel_nome,
+            COALESCE(con.ultimo_reajuste, con.data_inicio) AS ultimo_reajuste
+            FROM contrato con
+            INNER JOIN cliente cli ON cli.id = con.id_cliente
+            INNER JOIN imovel imo ON imo.id = con.id_imovel
+            WHERE con.data_inicio < '${anoPassado}' AND COALESCE(con.ultimo_reajuste, con.data_inicio) < '${anoPassado}'`,
                 (erro, resultado) => {
                     if(erro){
                         console.log(erro)
