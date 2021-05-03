@@ -238,10 +238,12 @@ module.exports = {
             })
         })
     },
-    editarBoleto: (boleto) => {
+    editarBoleto: (boleto, idUsuario) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`UPDATE boleto SET data_vencimento = '${boleto.data_vencimento}', data_quitacao = '${boleto.data_quitacao}',
-            valor = '${boleto.valor}', id_status_boleto = ${boleto.id_status_boleto} WHERE id = ${boleto.id} 
+            valor = '${boleto.valor}', id_status_boleto = ${boleto.id_status_boleto}, alterado_em = '${agora}', 
+            alterado_por = ${idUsuario} WHERE id = ${boleto.id} 
             RETURNING id, id_contrato`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
@@ -251,12 +253,15 @@ module.exports = {
             })
         })
     },
-    cadastrarBoleto: (boleto, idContrato) => {
+    cadastrarBoleto: (boleto, idContrato, idUsuario) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO boleto
-            (id_contrato, data_vencimento, data_quitacao, valor, id_status_boleto) 
+            (id_contrato, data_vencimento, data_quitacao, valor, id_status_boleto, criado_em, alterado_em, criado_por, 
+            alterado_por) 
             VALUES 
-            (${idContrato}, '${boleto.data_vencimento}', '${boleto.data_quitacao}', '${boleto.valor}', ${boleto.id_status_boleto}) 
+            (${idContrato}, '${boleto.data_vencimento}', '${boleto.data_quitacao}', '${boleto.valor}', ${boleto.id_status_boleto},
+            '${agora}', '${agora}', ${idUsuario}, ${idUsuario}) 
             RETURNING id`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
@@ -300,14 +305,17 @@ module.exports = {
                 })
         })
     },
-    cadastrarFiador: (fiador, idContrato) => {
+    cadastrarFiador: (fiador, idContrato, idUsuario) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO fiador(nome, id_estado_civil, data_nascimento,email,cpf_cnpj, identidade, cep, rua, 
-            numero, complemento, bairro, cidade, estado, id_contrato, telefone)
+            numero, complemento, bairro, cidade, estado, id_contrato, telefone, criado_em, alterado_em, criado_por, 
+            alterado_por)
           VALUES(
               '${fiador.nome}', ${fiador.estado_civil}, '${fiador.data_nascimento}', '${fiador.email}', '${fiador.cpf_cnpj}',
               '${fiador.identidade}', '${fiador.cep}', '${fiador.rua}','${fiador.numero}', '${fiador.complemento}', 
-              '${fiador.bairro}', '${fiador.cidade}', '${fiador.estado}', ${idContrato}, '${fiador.telefone}')
+              '${fiador.bairro}', '${fiador.cidade}', '${fiador.estado}', ${idContrato}, '${fiador.telefone}',
+              '${agora}', '${agora}', ${idUsuario}, ${idUsuario})
           RETURNING id`,
                 (erro, resultado) => {
                     if (erro) {
@@ -332,13 +340,14 @@ module.exports = {
             )
         })
     },
-    editarFiador: (fiador) => {
+    editarFiador: (fiador, idUsuario) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`UPDATE fiador SET nome = '${fiador.nome}', rua = '${fiador.rua}', bairro = '${fiador.bairro}',
           cidade = '${fiador.cidade}', estado = '${fiador.estado}', complemento = '${fiador.complemento}',
           email = '${fiador.email}', id_estado_civil = ${fiador.estado_civil}, cpf_cnpj = '${fiador.cpf_cnpj}',
           identidade = '${fiador.identidade}', data_nascimento = '${fiador.data_nascimento}', cep = '${fiador.cep}',
-          telefone = '${fiador.telefone}'
+          telefone = '${fiador.telefone}', alterado_em = '${agora}', alterado_por = ${idUsuario}
           WHERE id = ${fiador.id}`,
                 (erro, resultado) => {
                     if (erro) {
@@ -369,7 +378,7 @@ module.exports = {
             db.query(`UPDATE contrato SET valor_reajustado = '${reajuste}', ultimo_reajuste = '${dataHoje}' 
             WHERE id = ${idContrato} RETURNING ultimo_reajuste`,
                 (erro, resultado) => {
-                    if(erro){
+                    if (erro) {
                         console.log(erro)
                         return reject(erro)
                     }
@@ -387,7 +396,7 @@ module.exports = {
             INNER JOIN imovel imo ON imo.id = con.id_imovel
             WHERE con.data_inicio < '${anoPassado}' AND COALESCE(con.ultimo_reajuste, con.data_inicio) < '${anoPassado}'`,
                 (erro, resultado) => {
-                    if(erro){
+                    if (erro) {
                         console.log(erro)
                         return reject(erro)
                     }

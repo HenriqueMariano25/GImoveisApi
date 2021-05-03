@@ -103,11 +103,12 @@ module.exports = {
         })
     },
 
-    editarTelefone:(telefone) => {
+    editarTelefone:(telefone, idUsuario) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`UPDATE telefone
             SET numero = '${telefone.numero.trim()}', id_tipo_telefone = ${telefone.id_tipo_telefone}, 
-            observacao = '${telefone.observacao.trim()}'
+            observacao = '${telefone.observacao.trim()}', alterado_em = '${agora}', alterado_por = ${idUsuario}
             WHERE id = ${telefone.id} RETURNING id`, (erro, resultado) => {
                 if(erro){
                     console.log(erro)
@@ -118,12 +119,14 @@ module.exports = {
         })
     },
 
-    cadastrarTelefone: (idCliente, telefone) => {
+    cadastrarTelefone: (idCliente, telefone, idUsuario) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO telefone(  
-            id_cliente,numero,id_tipo_telefone,observacao
+            id_cliente,numero,id_tipo_telefone,observacao, criado_em, alterado_em, criado_por, alterado_por
             ) VALUES (
-            ${idCliente}, '${telefone.numero.trim()}',${telefone.id_tipo_telefone}, '${telefone.observacao.trim()}'
+            ${idCliente}, '${telefone.numero.trim()}',${telefone.id_tipo_telefone}, '${telefone.observacao.trim()}',
+            '${agora}', '${agora}', ${idUsuario}, ${idUsuario}
             ) RETURNING id`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)

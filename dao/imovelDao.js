@@ -204,12 +204,14 @@ module.exports = {
     //         })
     //     })
     // },
-    cadastrarComodo: (idImovel, comodo) => {
+    cadastrarComodo: (idImovel, comodo, idUsuario) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO comodo(  
-            id_imovel,quantidade,id_tipo_comodo, descricao
+            id_imovel,quantidade,id_tipo_comodo, descricao, criado_em, alterado_em, criado_por, alterado_por
             ) VALUES(
-            ${idImovel}, ${comodo.quantidade}, ${comodo.id_tipo_comodo}, '${comodo.descricao}'
+            ${idImovel}, ${comodo.quantidade}, ${comodo.id_tipo_comodo}, '${comodo.descricao}',
+            '${agora}', '${agora}', ${idUsuario}, ${idUsuario}
             ) RETURNING id`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
@@ -220,10 +222,12 @@ module.exports = {
         })
     },
 
-    editarComodo: (comodo) => {
+    editarComodo: (comodo, idUsuario) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`UPDATE comodo
             SET quantidade = ${comodo.quantidade}, id_tipo_comodo = ${comodo.id_tipo_comodo}, descricao = '${comodo.descricao}'
+            , alterado_em = '${agora}', alterado_por = ${idUsuario}
             WHERE id = ${comodo.id}`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
@@ -264,18 +268,22 @@ module.exports = {
         })
     },
 
-    cadastrarDespesa: (despesa, idImovel) => {
+    cadastrarDespesa: (despesa, idImovel, idUsuario) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
-            db.query(`INSERT INTO despesa(valor, data,data_vencimento, id_tipo_despesa, fixa_variavel, descricao, id_imovel, id_responsavel_pagamento) 
+            db.query(`INSERT INTO despesa(valor, data,data_vencimento, id_tipo_despesa, fixa_variavel, descricao, id_imovel, 
+            id_responsavel_pagamento, criado_em, alterado_em, criado_por, alterado_por) 
             VALUES 
             ('${despesa.valor}', '${despesa.data}', '${despesa.data_vencimento}', ${despesa.tipo_despesa},
-            '${despesa.fixa_variavel}', '${despesa.descricao.trim()}', ${idImovel}, ${despesa.id_responsavel_pagamento})`, (erro, resultado) => {
-                if (erro) {
-                    console.log(erro)
-                    return reject(erro)
-                }
-                return resolve(resultado.rows)
-            })
+            '${despesa.fixa_variavel}', '${despesa.descricao.trim()}', ${idImovel}, ${despesa.id_responsavel_pagamento},
+            '${agora}', '${agora}', ${idUsuario}, ${idUsuario})`,
+                (erro, resultado) => {
+                    if (erro) {
+                        console.log(erro)
+                        return reject(erro)
+                    }
+                    return resolve(resultado.rows)
+                })
         })
     },
 
@@ -296,11 +304,13 @@ module.exports = {
         })
     },
 
-    editarDespesa: (despesa) => {
+    editarDespesa: (despesa, idUsuario) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
         return new Promise((resolve, reject) => {
             db.query(`UPDATE despesa SET descricao = '${despesa.descricao.trim()}', data = '${despesa.data}',
              data_vencimento = '${despesa.data_vencimento}', valor = '${despesa.valor}', id_tipo_despesa = ${despesa.tipo_despesa} ,
-             fixa_variavel = '${despesa.fixa_variavel}', id_responsavel_pagamento = ${despesa.id_responsavel_pagamento} 
+             fixa_variavel = '${despesa.fixa_variavel}', id_responsavel_pagamento = ${despesa.id_responsavel_pagamento}
+             , alterado_em = '${agora}', alterado_por = ${idUsuario} 
              WHERE id = ${despesa.id}`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)

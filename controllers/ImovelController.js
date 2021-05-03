@@ -75,14 +75,16 @@ class ImovelController {
     async cadastrarComodo(req, res){
         let comodo = req.body.comodo
         let idImovel = req.body.idImovel
-        await imovelDao.cadastrarComodo(idImovel, comodo).then(response => {
+        let idUsuario = req.body.idUsuario
+        await imovelDao.cadastrarComodo(idImovel, comodo, idUsuario).then(response => {
             res.status(200).json(response)
         })
     }
 
     async editarComodo(req, res){
         let comodo = req.body.comodo
-        await imovelDao.editarComodo(comodo).then(response => {
+        let idUsuario = req.body.idUsuario
+        await imovelDao.editarComodo(comodo, idUsuario).then(response => {
             res.status(200).json({mensagem: "ok"})
         })
     }
@@ -110,7 +112,8 @@ class ImovelController {
     async cadastrarDespesa(req,res){
         let despesa = req.body.despesa
         let idImovel = req.body.idImovel
-        await imovelDao.cadastrarDespesa(despesa, idImovel).then(response => {
+        let idUsuario = req.body.idUsuario
+        await imovelDao.cadastrarDespesa(despesa, idImovel, idUsuario).then(response => {
             res.status(200).json(response)
         })
     }
@@ -124,7 +127,8 @@ class ImovelController {
 
     async editarDespesa(req, res){
         let despesa = req.body.despesa
-        await imovelDao.editarDespesa(despesa).then(response => {
+        let idUsuario = req.body.idUsuario
+        await imovelDao.editarDespesa(despesa, idUsuario).then(response => {
             res.status(200).json(response)
         })
     }

@@ -79,14 +79,16 @@ class ClienteController {
     async cadastrarTelefone(req, res){
         let telefone = req.body.telefone
         let idCliente = req.body.idCliente
-        await clienteDao.cadastrarTelefone(idCliente, telefone).then(response => {
+        let idUsuario = req.body.idUsuario
+        await clienteDao.cadastrarTelefone(idCliente, telefone, idUsuario).then(response => {
             res.status(200).json(response)
         })
     }
 
     async editarTelefone(req, res){
         let telefone = req.body.telefone
-        await clienteDao.editarTelefone(telefone).then(response => {
+        let idUsuario = req.body.idUsuario
+        await clienteDao.editarTelefone(telefone,idUsuario).then(response => {
             res.status(200).json(response)
         })
     }
