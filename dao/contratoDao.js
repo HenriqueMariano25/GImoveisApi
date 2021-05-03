@@ -5,21 +5,28 @@ module.exports = {
     visualizarTodos: () => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT con.id,cli.nome nome_cliente,imo.nome nome_imovel,
-                res.nome nome_responsavel, pdf.url, pdf.nome nome_pdf, sta_con.descricao status
+                    res.nome nome_responsavel, pdf.url, pdf.nome nome_pdf, sta_con.descricao status, con.data_inicio, 
+                    con.data_fim, con.data_vencimento,  ARRAY_AGG(fia.nome) fiadores, con.carencia, 
+                    con.valor_boleto
                     FROM contrato con
-                    INNER JOIN cliente cli ON con.id_cliente = cli.id
-                    INNER JOIN imovel imo ON con.id_imovel = imo.id
-                    INNER JOIN responsavel res ON con.id_responsavel = res.id
+                    LEFT JOIN cliente cli ON con.id_cliente = cli.id
+                    LEFT JOIN imovel imo ON con.id_imovel = imo.id
+                    LEFT JOIN responsavel res ON con.id_responsavel = res.id
                     LEFT JOIN status_contrato sta_con ON con.id_status_contrato = sta_con.id
-                    LEFT OUTER JOIN pdf_contrato pdf on pdf.id_contrato = con.id
+                    LEFT JOIN pdf_contrato pdf on pdf.id_contrato = con.id
+                    LEFT JOIN fiador fia ON fia.id_contrato = con.id
                     WHERE deletado = 'false'
-                    ORDER BY con.id`, (erro, resultado) => {
-                if (erro) {
-                    console.log(erro)
-                    return reject(erro)
-                }
-                return resolve(resultado.rows)
-            })
+                    GROUP BY con.id, cli.nome, imo.nome, res.nome, pdf.url, pdf.nome, sta_con.descricao, con.data_inicio,
+                    con.data_fim, con.data_vencimento, con.carencia,con.valor_boleto
+                    ORDER BY con.id`,
+                (erro, resultado) => {
+                    if (erro) {
+                        console.log(erro)
+                        return reject(erro)
+                    }
+                    console.log(resultado.rows)
+                    return resolve(resultado.rows)
+                })
         })
     },
     visualizar: (idContrato) => {

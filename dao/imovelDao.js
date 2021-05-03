@@ -27,27 +27,37 @@ module.exports = {
         })
     },
 
+    // db.query(`SELECT imo.id, imo.nome, imo.id_responsavel, imo.inscricao_municipal, imo.funesbom,
+    //         imo.id_tipo_imovel tipo_imovel,imo.id_status_imovel id_status ,sta_imo.descricao status,imo.cep, imo.rua,imo.numero, imo.complemento,
+    //         imo.bairro, imo.cidade, imo.estado,imo.data_aquisicao, imo.met_quadrada area,
+    //         imo.met_quadrada_construida area_construida, imo.valor_atual, imo.valor_aquisicao,
+    //         imo.num_cliente_luz numero_cliente_luz, imo.num_cliente_agua numero_cliente_agua, imo.data_venda, res.nome nome_responsavel,
+    //         ARRAY_AGG(com.quantidade) quantidade, ARRAY_AGG(tip_com.descricao) descricao,
+    //         ARRAY_AGG(com.id_tipo_comodo)
+    //         FROM comodo com
+    //         FULL OUTER JOIN imovel imo ON imo.id = com.id_imovel
+    //         LEFT OUTER JOIN tipo_comodo tip_com ON com.id_tipo_comodo = tip_com.id
+    //         LEFT OUTER JOIN status_imovel sta_imo ON imo.id_status_imovel = sta_imo.id
+    //         LEFT OUTER JOIN responsavel res ON imo.id_responsavel = res.id
+    //         GROUP BY imo.nome, imo.rua, imo.id,sta_imo.descricao, nome_responsavel
+
     visualizarTodos: () => {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT imo.id, imo.nome, imo.id_responsavel, imo.inscricao_municipal, imo.funesbom, 
-            imo.id_tipo_imovel tipo_imovel,imo.id_status_imovel id_status ,sta_imo.descricao status,imo.cep, imo.rua,imo.numero, imo.complemento, 
-            imo.bairro, imo.cidade, imo.estado,imo.data_aquisicao, imo.met_quadrada area, 
-            imo.met_quadrada_construida area_construida, imo.valor_atual, imo.valor_aquisicao,
-            imo.num_cliente_luz numero_cliente_luz, imo.num_cliente_agua numero_cliente_agua, imo.data_venda,
-            ARRAY_AGG(com.quantidade) quantidade, ARRAY_AGG(tip_com.descricao) descricao,
-            ARRAY_AGG(com.id_tipo_comodo)
-            FROM comodo com
-            FULL OUTER JOIN imovel imo ON imo.id = com.id_imovel
-            LEFT OUTER JOIN tipo_comodo tip_com ON com.id_tipo_comodo = tip_com.id
-            LEFT OUTER JOIN status_imovel sta_imo ON imo.id_status_imovel = sta_imo.id
-            GROUP BY imo.nome, imo.rua, imo.id,sta_imo.descricao
-                                ORDER BY imo.nome`, (erro, resultado) => {
-                if (erro) {
-                    console.log(erro)
-                    return reject(erro)
-                }
-                return resolve(resultado.rows)
-            })
+            db.query(`SELECT imo.id, imo.nome, imo.rua, sta_imo.descricao status, res.nome proprietario, 
+                    imo.rua, imo.numero, imo.bairro, imo.cidade,imo.cep, tip_imo.descricao tipo_imovel,
+                    imo.inscricao_municipal, imo.funesbom, imo.complemento, imo.estado
+                    FROM imovel imo
+                    LEFT JOIN status_imovel sta_imo ON imo.id_status_imovel = sta_imo.id
+                    LEFT JOIN responsavel res ON imo.id_responsavel = res.id
+                    LEFT JOIN tipo_imovel tip_imo ON imo.id_tipo_imovel = tip_imo.id
+                    ORDER BY imo.nome`,
+                (erro, resultado) => {
+                    if (erro) {
+                        console.log(erro)
+                        return reject(erro)
+                    }
+                    return resolve(resultado.rows)
+                })
         })
     },
 

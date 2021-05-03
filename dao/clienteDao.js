@@ -5,7 +5,7 @@ module.exports = {
     visualizarTodos: () => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT 
-                 cli.id,cli.nome, cli.email, cli.rua, cli.bairro, cli.cidade, cli.estado, cli.complemento , cli.cpf_cnpj, cli.identidade,
+                 cli.id,cli.nome, cli.email, cli.rua, cli.bairro, cli.cidade, cli.estado, cli.complemento, cli.cep, cli.cpf_cnpj, cli.identidade,
                  cli.data_nascimento, cli.referencia , cli.numero, ARRAY_AGG(tel.numero) numero_telefone, ARRAY_AGG(tip_tel.descricao) tipo_telefone, cli.id, 
                  sta.descricao status, cli.observacao
                 FROM telefone tel
