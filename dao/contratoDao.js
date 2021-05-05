@@ -87,9 +87,10 @@ module.exports = {
             id_cliente2 = ${contrato.id_cliente2}, id_imovel = ${contrato.id_imovel}, data_inicio = '${contrato.data_inicio}', 
             valor_boleto = '${contrato.valor_boleto_convertido}',carencia = '${contrato.carencia}', 
             alterado_em = '${agora}', alterado_por = ${idUsuario}, observacao = '${contrato.observacao}',
-             id_status_contrato = ${contrato.status}, garantia = '${contrato.garantia}', juros_multa = ${contrato.juros_multa},
-             juros_mes = '${contrato.juros_mes}', multa = '${contrato.multa}'
-             WHERE id = ${contrato.id} RETURNING id`,
+            id_status_contrato = ${contrato.status}, garantia = '${contrato.garantia}', juros_multa = ${contrato.juros_multa},
+            data_vencimento = '${contrato.data_vencimento}',juros_mes = '${contrato.juros_mes}', 
+            multa = '${contrato.multa}'
+            WHERE id = ${contrato.id} RETURNING id`,
                 (erro, resultado) => {
                     if (erro) {
                         console.log(erro)
