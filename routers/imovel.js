@@ -7,6 +7,9 @@ module.exports = app => {
     app.get('/imoveis', (req,res) => {
         ImovelController.visualizarTodos(res)
     })
+    app.get('/imoveis/simples', (req,res) => {
+        ImovelController.visualizarSimples(res)
+    })
     app.get('/imovel', (req,res) => {
         ImovelController.visualizar(req,res)
     })

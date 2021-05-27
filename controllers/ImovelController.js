@@ -14,8 +14,15 @@ class ImovelController {
     }
 
     async visualizarTodos(res) {
-        await imovelDao.visualizarTodos().then(response => {
-            res.status(200).json(response)
+        await imovelDao.visualizarTodos().then(consulta => {
+            res.status(200).json(consulta)
+        })
+    }
+
+
+    async visualizarSimples(res){
+        await imovelDao.visualizarSimples().then(consulta => {
+            res.status(200).json(consulta)
         })
     }
 

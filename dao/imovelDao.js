@@ -61,6 +61,21 @@ module.exports = {
         })
     },
 
+    visualizarSimples: () => {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT imo.id, imo.nome
+                    FROM imovel imo
+                    ORDER BY imo.nome`,
+                (erro, resultado) => {
+                    if (erro) {
+                        console.log(erro)
+                        return reject(erro)
+                    }
+                    return resolve(resultado.rows)
+                })
+        })
+    },
+
     visualizar: (id) => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT imo.id,imo.nome, imo.id_responsavel, imo.inscricao_municipal, imo.funesbom, 
