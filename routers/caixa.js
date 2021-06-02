@@ -7,4 +7,10 @@ module.exports = app => {
     app.get('/caixa', (req, res) => {
         CaixaController.visualizarTodos(res)
     })
+    app.put('/caixa', (req, res) => {
+        CaixaController.editar(req, res)
+    })
+    app.delete('/caixa/:id', (req, res) => {
+        CaixaController.deletar(req, res)
+    })
 }
