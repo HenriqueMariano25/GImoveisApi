@@ -26,9 +26,10 @@ module.exports = {
     visualizarTodos: () => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT cai.id, cai.movimento, cai.id_debito_credito, cai.historico, cai.complemento_historico,
-               imo.nome imovel_nome, imo.id id_imovel, cai.valor, cai.id_conta, cai.numero_documento
+               imo.nome imovel_nome, imo.id id_imovel, cai.valor, cai.id_conta, cai.numero_documento, con.nome conta_nome
                 FROM caixa cai
                 LEFT JOIN imovel imo ON imo.id = cai.id_imovel
+                LEFT JOIN conta con ON con.id = cai.id_conta
                 ORDER BY cai.movimento`,
                 (erro, resultado) => {
                     if (erro) {
