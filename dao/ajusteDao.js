@@ -45,5 +45,32 @@ module.exports = {
                 }
             )
         })
-    }
+    },
+
+    visualizarTodosHistoricos: () => {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT descricao, id FROM historico ORDER BY descricao`,
+                (erro, resultado) => {
+                    if (erro) {
+                        console.log(erro)
+                        return reject(erro)
+                    }
+                    return resolve(resultado.rows)
+                })
+        })
+    },
+    cadastrarHistorico: (historico) => {
+        return new Promise((resolve, reject) => {
+            db.query(`INSERT INTO historico(descricao) 
+                VALUES
+                ('${historico.descricao}')`,
+                (erro, resultado) => {
+                    if (erro) {
+                        console.log(erro)
+                        return reject(erro)
+                    }
+                    return resolve(resultado.rows)
+                })
+        })
+    },
 }

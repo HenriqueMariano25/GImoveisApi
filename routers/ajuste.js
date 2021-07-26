@@ -10,4 +10,11 @@ module.exports = app => {
     app.put('/ajuste/conta', (req, res) => {
         AjusteController.editarConta(req, res)
     })
+
+    app.get('/ajuste/historico', (req, res) => {
+        AjusteController.visualizarTodosHistoricos(req,res)
+    })
+    app.post('/ajuste/historico', (req, res) => {
+        AjusteController.cadastrarHistorico(req, res)
+    })
 }

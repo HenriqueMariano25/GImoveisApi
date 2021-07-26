@@ -22,6 +22,18 @@ class AjusteController {
             res.status(200).json(resposta)
         })
     }
+
+    async visualizarTodosHistoricos(req, res){
+        await ajusteDao.visualizarTodosHistoricos().then(consulta => {
+            res.status(200).json(consulta)
+        })
+    }
+    async cadastrarHistorico(req, res) {
+        let historico = req.body.historico
+        await ajusteDao.cadastrarHistorico(historico).then(resposta => {
+            res.status(200).json(resposta)
+        })
+    }
 }
 
 module.exports = new AjusteController()
