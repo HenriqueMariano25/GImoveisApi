@@ -25,6 +25,7 @@ module.exports = {
             INNER JOIN imovel imo ON imo.id = con.id_imovel
             INNER JOIN cliente cli ON cli.id = con.id_cliente
             WHERE bol.data_vencimento < '${diaAtual}' AND bol.id_status_boleto != 3 AND con.deletado = 'false'
+            AND con.id_status_contrato = 1
             AND (bol.data_quitacao = '' OR bol.data_quitacao is null) ORDER BY id_contrato, data_vencimento`,
                 (erro,resultado) => {
                     if(erro){

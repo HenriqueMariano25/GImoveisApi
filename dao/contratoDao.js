@@ -402,7 +402,7 @@ module.exports = {
             FROM contrato con
             INNER JOIN cliente cli ON cli.id = con.id_cliente
             INNER JOIN imovel imo ON imo.id = con.id_imovel
-            WHERE con.data_inicio < '${anoPassado}' AND COALESCE(con.ultimo_reajuste, con.data_inicio) < '${anoPassado}'`,
+            WHERE con.id_status_contrato = 1 AND con.data_inicio < '${anoPassado}' AND COALESCE(con.ultimo_reajuste, con.data_inicio) < '${anoPassado}'`,
                 (erro, resultado) => {
                     if (erro) {
                         console.log(erro)
