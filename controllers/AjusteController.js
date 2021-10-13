@@ -34,6 +34,24 @@ class AjusteController {
             res.status(200).json(resposta)
         })
     }
+
+    async editarHistorico(req, res) {
+        let historico = req.body.historico
+
+        await ajusteDao.editarHistorico(historico).then(resposta => {
+            res.status(200).json(resposta)
+        })
+    }
+
+    async deletarHistorico(req, res){
+        let { id } = req.params
+
+        await ajusteDao.deletarHistorico(id).then(resposta => {
+            res.status(200).json(resposta)
+        }).catch(() => {
+            res.status(401).json({message: 'Histórico sendo utilizado no caixa'})
+        })
+    }
 }
 
 module.exports = new AjusteController()

@@ -17,4 +17,12 @@ module.exports = app => {
     app.post('/ajuste/historico', (req, res) => {
         AjusteController.cadastrarHistorico(req, res)
     })
+
+    app.put('/ajuste/historico', (req, res) => {
+        AjusteController.editarHistorico(req, res)
+    })
+
+    app.delete('/ajuste/historico/:id', (req, res) => {
+        AjusteController.deletarHistorico(req, res)
+    })
 }

@@ -73,4 +73,29 @@ module.exports = {
                 })
         })
     },
+
+    editarHistorico: (historico) => {
+        return new Promise((resolve, reject) => {
+            db.query(`UPDATE historico SET descricao = '${historico.descricao}' WHERE id = ${historico.id} RETURNING id, descricao`,
+                (erro, resultado) => {
+                    if(erro){
+                        console.log(erro)
+                        return reject(erro)
+                    }
+                    return resolve(resultado.rows)
+                }
+            )
+        })
+    },
+
+    deletarHistorico: (id) => {
+        return new Promise((resolve, reject) => {
+            db.query(`DELETE FROM historico WHERE id = ${id} RETURNING id, descricao`, (erro, resultado) => {
+                if (erro) {
+                    return reject(erro)
+                }
+                return resolve(resultado.rows)
+            })
+        })
+    }
 }
