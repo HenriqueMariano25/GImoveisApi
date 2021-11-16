@@ -51,11 +51,11 @@ module.exports = app => {
     app.delete('/contrato/boleto/deletar', (req, res) => {
         ContratoController.deletarBoleto(req, res)
     })
-    // app.post('/contrato/:id/importar/pdf', upload.single('files'),(req,res) => {
-    //     ContratoController.importarPDF(req,res)
-    // })
     app.post('/contrato/:id/importar/pdf', multer(multerConfig).single('files'),(req,res) => {
         ContratoController.importarPDF(req,res)
+    })
+    app.post('/contrato/:id/importar/aditivo', multer(multerConfig).single('files'),(req,res) => {
+        ContratoController.importarAditivo(req,res)
     })
     app.post('/contrato/fiador/cadastrar',(req, res) => {
         ContratoController.cadastrarFiador(req, res)

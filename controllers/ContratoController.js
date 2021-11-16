@@ -157,6 +157,35 @@ class ContratoController {
         })
     }
 
+    async importarAditivo(req, res) {
+        const idContrato = req.params.id
+        const filename = req.file.key
+        let url = req.file.location
+        if (!url) {
+            url = `${req.protocol}://${req.get('host')}/files/${filename}`
+        }
+        await contratoDao.deletarAditivo(idContrato).then(response => {
+            let arquivoDeletado = response[0]
+            if (response.length != 0) {
+                if (process.env.STORAGE_TYPE === "s3") {
+                    return s3.deleteObject({
+                        Bucket: process.env.BUCKET_NAME,
+                        Key: arquivoDeletado.nome
+                    }).promise()
+                } else {
+                    fs.unlink((path.resolve(__dirname, '..', 'tmp', 'uploads', arquivoDeletado.nome)),
+                        function (err) {
+                            if (err) throw err;
+                            console.log(err)
+                        })
+                }
+            }
+        })
+        await contratoDao.importarAditivo(url, idContrato, filename).then(response => {
+            res.status(200).json(response)
+        })
+    }
+
     async cadastrarFiador(req, res) {
         let fiador = req.body.fiador
         let idContrato = req.body.idContrato
