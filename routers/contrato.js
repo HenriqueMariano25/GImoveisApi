@@ -57,6 +57,9 @@ module.exports = app => {
     app.delete('/contrato/:id/remover/pdf', (req, res) => {
         ContratoController.deletarPDF(req, res)
     })
+    app.delete('/contrato/:id/remover/aditivo', (req, res) => {
+        ContratoController.deletarAditivo(req, res)
+    })
     app.post('/contrato/:id/importar/aditivo', multer(multerConfig).single('files'),(req,res) => {
         ContratoController.importarAditivo(req,res)
     })

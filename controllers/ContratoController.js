@@ -159,7 +159,7 @@ class ContratoController {
         })
     }
 
-    async deletarPDF(req, res){
+    async deletarPDF(req, res) {
         let arquivoDeletado
 
         const idContrato = req.params.id
@@ -179,23 +179,6 @@ class ContratoController {
                         })
                 }
             }
-            contratoDao.deletarAditivo(idContrato).then(response =>{
-                arquivoDeletado = response[0]
-                if (response.length !== 0) {
-                    if (process.env.STORAGE_TYPE === "s3") {
-                        return s3.deleteObject({
-                            Bucket: process.env.BUCKET_NAME,
-                            Key: arquivoDeletado.nome
-                        }).promise()
-                    } else {
-                        fs.unlink((path.resolve(__dirname, '..', 'tmp', 'uploads', arquivoDeletado.nome)),
-                            function (err) {
-                                if (err) throw err;
-                                console.log(err)
-                            })
-                    }
-                }
-            })
             res.status(200).json(response)
         })
     }
@@ -229,6 +212,30 @@ class ContratoController {
         })
     }
 
+    async deletarAditivo(req, res) {
+        let arquivoDeletado
+
+        const idContrato = req.params.id
+        await contratoDao.deletarAditivo(idContrato).then(response => {
+            arquivoDeletado = response[0]
+            if (response.length !== 0) {
+                if (process.env.STORAGE_TYPE === "s3") {
+                    return s3.deleteObject({
+                        Bucket: process.env.BUCKET_NAME,
+                        Key: arquivoDeletado.nome
+                    }).promise()
+                } else {
+                    fs.unlink((path.resolve(__dirname, '..', 'tmp', 'uploads', arquivoDeletado.nome)),
+                        function (err) {
+                            if (err) throw err;
+                            console.log(err)
+                        })
+                }
+            }
+        })
+        res.status(200).json(response)
+    }
+
     async cadastrarFiador(req, res) {
         let fiador = req.body.fiador
         let idContrato = req.body.idContrato
@@ -260,16 +267,16 @@ class ContratoController {
         })
     }
 
-    async aplicarReajuste(req, res){
+    async aplicarReajuste(req, res) {
         let idContrato = req.body.contrato.id
         let reajuste = parseFloat(req.body.reajuste)
         let valor_original = parseFloat(req.body.valor)
         let valor_reajustado_original = req.body.valor_reajustado
         let valor_reajuste = ""
-        if(valor_reajustado_original){
-            valor_reajuste = (valor_reajustado_original * ((reajuste/100) + 1)).toFixed(2)
-        }else{
-            valor_reajuste = (valor_original * ((reajuste/100) + 1)).toFixed(2)
+        if (valor_reajustado_original) {
+            valor_reajuste = (valor_reajustado_original * ((reajuste / 100) + 1)).toFixed(2)
+        } else {
+            valor_reajuste = (valor_original * ((reajuste / 100) + 1)).toFixed(2)
         }
         let dataHoje = dayjs().format('YYYY-MM-DD')
         await contratoDao.aplicarReajuste(valor_reajuste, idContrato, dataHoje).then(contrato => {
@@ -279,7 +286,7 @@ class ContratoController {
         })
     }
 
-    async contratosParaReajustar(req, res){
+    async contratosParaReajustar(req, res) {
         let anoPassado = dayjs().subtract(1, 'year').add(60, 'days').format('YYYY-MM-DD')
         await contratoDao.contratosParaReajustar(anoPassado).then(consulta => {
             res.status(200).json(consulta)
