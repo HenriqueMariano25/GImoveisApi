@@ -25,7 +25,6 @@ module.exports = {
                         console.log(erro)
                         return reject(erro)
                     }
-                    console.log(resultado.rows)
                     return resolve(resultado.rows)
                 })
         })

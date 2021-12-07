@@ -54,6 +54,9 @@ module.exports = app => {
     app.post('/contrato/:id/importar/pdf', multer(multerConfig).single('files'),(req,res) => {
         ContratoController.importarPDF(req,res)
     })
+    app.delete('/contrato/:id/remover/pdf', (req, res) => {
+        ContratoController.deletarPDF(req, res)
+    })
     app.post('/contrato/:id/importar/aditivo', multer(multerConfig).single('files'),(req,res) => {
         ContratoController.importarAditivo(req,res)
     })
@@ -75,4 +78,5 @@ module.exports = app => {
     app.get('/contrato/reajuste', (req, res) => {
         ContratoController.contratosParaReajustar(req, res)
     })
+
 }

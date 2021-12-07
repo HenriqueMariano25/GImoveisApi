@@ -4,6 +4,8 @@ const dayjs = require('dayjs')
 const fs = require('fs')
 const path = require('path')
 const aws = require('aws-sdk')
+const {deletarPDF} = require("../dao/contratoDao");
+const {response} = require("express");
 
 const s3 = new aws.S3()
 
@@ -153,6 +155,47 @@ class ContratoController {
             }
         })
         await contratoDao.importarPDF(url, idContrato, filename).then(response => {
+            res.status(200).json(response)
+        })
+    }
+
+    async deletarPDF(req, res){
+        let arquivoDeletado
+
+        const idContrato = req.params.id
+        await contratoDao.deletarPDF(idContrato).then(response => {
+            arquivoDeletado = response[0]
+            if (response.length !== 0) {
+                if (process.env.STORAGE_TYPE === "s3") {
+                    return s3.deleteObject({
+                        Bucket: process.env.BUCKET_NAME,
+                        Key: arquivoDeletado.nome
+                    }).promise()
+                } else {
+                    fs.unlink((path.resolve(__dirname, '..', 'tmp', 'uploads', arquivoDeletado.nome)),
+                        function (err) {
+                            if (err) throw err;
+                            console.log(err)
+                        })
+                }
+            }
+            contratoDao.deletarAditivo(idContrato).then(response =>{
+                arquivoDeletado = response[0]
+                if (response.length !== 0) {
+                    if (process.env.STORAGE_TYPE === "s3") {
+                        return s3.deleteObject({
+                            Bucket: process.env.BUCKET_NAME,
+                            Key: arquivoDeletado.nome
+                        }).promise()
+                    } else {
+                        fs.unlink((path.resolve(__dirname, '..', 'tmp', 'uploads', arquivoDeletado.nome)),
+                            function (err) {
+                                if (err) throw err;
+                                console.log(err)
+                            })
+                    }
+                }
+            })
             res.status(200).json(response)
         })
     }
