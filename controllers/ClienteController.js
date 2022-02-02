@@ -5,9 +5,6 @@ const axios = require('axios')
 class ClienteController {
     async visualizarTodos(res) {
         await clienteDao.visualizarTodos().then(consulta => {
-            for(let x = 0; x < consulta.length; x++){
-                // consulta[x].data_formatada = dayjs(consulta[x].data_nascimento).format('DD/MM/YYYY')
-            }
             res.json(consulta)
         })
     }
@@ -15,20 +12,19 @@ class ClienteController {
     async visualizar(req, res) {
         let idCliente = req.query.idCliente
         await clienteDao.visualizar(idCliente).then(consulta => {
-            // consulta.data_nascimento = dayjs(consulta.data_nascimento).format('YYYY-MM-DD')
             res.json(consulta)
         })
     }
 
     async cadastrar(req, res) {
-        console.log('CADASTRANDO CLIENTE')
         const cliente = req.body.data
-        console.log(cliente)
         let cep = cliente.cep
-        console.log('cep: '+cep)
         let idUsuario = req.body.idUsuario
-        console.log('id_usuario: '+idUsuario)
-        cliente.cep = cep.normalize("NFD").replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '')
+        cliente.cep = cliente.cep !== null ? cep.normalize("NFD").replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '') : null
+        let naoFormatarNull = ['estado_civil', 'status']
+        for(let key of Object.keys(cliente)){
+            cliente[key] = cliente[key] === null && !naoFormatarNull.includes(key)  ? '' : cliente[key]
+        }
         await clienteDao.cadastrar(cliente, idUsuario).then(consulta => {
             res.json(consulta)
         }).catch(erro => {
@@ -41,10 +37,8 @@ class ClienteController {
     async editar(req, res) {
         let idCliente = req.params.id
         let cliente = req.body.data
-        let cpf_cnpj = cliente.cpf_cnpj
         let cep = cliente.cep
         let idUsuario  = req.body.idUsuario
-        // cliente.cpf_cnpj = cpf_cnpj.normalize("NFD").replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '')
         cliente.cep = cep.normalize("NFD").replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '')
         await clienteDao.editar(idCliente, cliente, idUsuario).then(consulta => {
             res.status(200).json(consulta)
@@ -95,8 +89,8 @@ class ClienteController {
 
     async deletarTelefone(req,res){
         let idTelefone = req.query.idTelefone
-        await clienteDao.deletarTelefone(idTelefone).then(() => {
-            res.status(200).json()
+        await clienteDao.deletarTelefone(idTelefone).then(response => {
+            res.status(200).json(response)
         })
     }
 
