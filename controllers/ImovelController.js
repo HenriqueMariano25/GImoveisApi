@@ -2,9 +2,8 @@ const imovelDao = require('../dao/imovelDao')
 
 class ImovelController {
     async cadastrar(req, res) {
-        const dadosImovel = req.body.data
-        let idUsuario = req.body.idUsuario
-        await imovelDao.cadastrar(dadosImovel, idUsuario).then(response => {
+        let { imovel, idUsuario } = req.body
+        await imovelDao.cadastrar(imovel, idUsuario).then(response => {
             res.status(200).json(response)
         }).catch(erro => {
             if(erro.code == "23505"){
@@ -35,7 +34,7 @@ class ImovelController {
     }
 
     async visualizar(req,res) {
-        const id = req.query.id
+        const { id } = req.params
         await imovelDao.visualizar(id).then(resultado => {
             res.status(200).json(resultado)
         })
@@ -43,8 +42,8 @@ class ImovelController {
 
     async editarImovel(req, res){
         const id = req.params.id
-        const imovel = req.body.data
-        const idUsuario = req.body.idUsuario
+        let { imovel, idUsuario } = req.body
+            console.log('Editiando')
         await imovelDao.editarImovel(id, imovel, idUsuario).then(response => {
             res.status(200).json(response)
         }).catch(erro => {
@@ -92,14 +91,14 @@ class ImovelController {
         let comodo = req.body.comodo
         let idUsuario = req.body.idUsuario
         await imovelDao.editarComodo(comodo, idUsuario).then(response => {
-            res.status(200).json({mensagem: "ok"})
+            res.status(200).json(response)
         })
     }
 
     async deletarComodo(req,res){
         let idComodo = req.query.idComodo
-        await imovelDao.deletarComodo(idComodo).then(() => {
-            res.status(200).json()
+        await imovelDao.deletarComodo(idComodo).then(response => {
+            res.status(200).json(response)
         })
     }
 

@@ -39,7 +39,7 @@ class ClienteController {
         let cliente = req.body.data
         let cep = cliente.cep
         let idUsuario  = req.body.idUsuario
-        cliente.cep = cep.normalize("NFD").replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '')
+        cliente.cep = cliente.cep !== null ? cep.normalize("NFD").replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '') : null
         await clienteDao.editar(idCliente, cliente, idUsuario).then(consulta => {
             res.status(200).json(consulta)
         }).catch(erro => {

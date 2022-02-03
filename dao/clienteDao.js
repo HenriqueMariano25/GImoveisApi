@@ -51,8 +51,6 @@ module.exports = {
 
     cadastrar: async (cliente, idUsuario) => {
         let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
-        console.log("Cheguei aqui")
-        console.log(cliente)
 
         let insert = await db.query(`INSERT INTO cliente(nome,rua,cep,bairro,cidade,estado,complemento,cpf_cnpj,identidade,email,referencia,data_nascimento, id_estado_civil,numero, id_status_cliente, observacao, tipo_cliente, criado_em, alterado_em, criado_por, alterado_por) VALUES (
             '${cliente.nome.trim()}','${cliente.rua}','${cliente.cep}','${cliente.bairro}','${cliente.cidade}','${cliente.estado}','${cliente.complemento}','${cliente.cpf_cnpj}','${cliente.identidade}',
@@ -63,6 +61,7 @@ module.exports = {
             return resp.rows[0]
         }).catch(e => {
             console.log(e)
+            return Promise.reject(e);
         })
 
         let select = await db.query(`SELECT 
@@ -99,6 +98,7 @@ module.exports = {
             return resp.rows[0]
         }).catch(e => {
             console.log(e)
+            return Promise.reject(e);
         })
 
         let select = await db.query(`SELECT 
