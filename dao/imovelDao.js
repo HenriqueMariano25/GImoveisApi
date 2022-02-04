@@ -118,8 +118,6 @@ module.exports = {
     editarImovel: async (id, imovel, idUsuario) => {
         let agora = dayjs().format('DD/MM/YYYY HH:mm:ss ')
 
-        console.log("Estou editando " + id)
-
         let update = await db.query(`UPDATE imovel SET nome = '${imovel.nome.trim()}', rua = '${imovel.rua}', bairro = '${imovel.bairro}',
              estado = '${imovel.estado}', complemento = '${imovel.complemento.trim()}', met_quadrada = '${imovel.area}',
              met_quadrada_construida = '${imovel.area_construida}', inscricao_municipal = '${imovel.inscricao_municipal}',
@@ -164,16 +162,15 @@ module.exports = {
         return {imovel: select}
     },
 
-    deletarImovel: idImovel => {
-        return new Promise((resolve, reject) => {
-            db.query(`DELETE FROM imovel WHERE id = ${idImovel} RETURNING id, nome`, (erro, resultado) => {
-                if (erro) {
-                    console.log(erro)
-                    return reject(erro)
-                }
-                return resolve(resultado.rows)
-            })
+    deletarImovel: async idImovel => {
+        let deletado = await db.query(`DELETE FROM imovel WHERE id = ${idImovel} RETURNING id`).then(resp => {
+            return resp.rows[0]
+        }).catch(e => {
+            console.log(e)
+            return Promise.reject(e);
         })
+
+        return {responsavel: deletado}
     },
 
     deletarComodosImovel: idImovel => {

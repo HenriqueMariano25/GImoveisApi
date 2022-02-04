@@ -7,10 +7,10 @@ module.exports = app => {
     app.get('/responsaveis', (req,res) => {
         ResponsavelController.visualizarTodos(res)
     })
-    app.get('/responsavel', (req,res) => {
+    app.get('/responsavel/:id', (req,res) => {
         ResponsavelController.visualizar(req,res)
     })
-    app.post('/responsavel/editar', (req,res) => {
+    app.post('/responsavel/editar/:id', (req,res) => {
         ResponsavelController.editar(req,res)
     })
     app.delete('/responsavel/deletar/:id',(req,res) => {

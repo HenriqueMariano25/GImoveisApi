@@ -18,23 +18,26 @@ class ResponsavelController {
         })
     }
     async visualizar(req,res){
-        let idResponsavel = req.query.idResponsavel
-        await responsavelDao.visualizar(idResponsavel).then(response => {
+        const { id } = req.params
+        await responsavelDao.visualizar(id).then(response => {
             res.status(200).json(response)
         })
     }
     async editar(req,res){
-        let responsavel = req.body.responsavel
-        let idUsuario = req.body.idUsuario
+        let { responsavel, idUsuario } = req.body
         await responsavelDao.editar(responsavel, idUsuario).then(response => {
             res.status(200).json(response)
         })
     }
     async deletar(req,res){
-        let idResponsavel = req.params.id
-        await responsavelDao.deletar(idResponsavel).then(response => {
+        let { id } = req.params
+        await responsavelDao.deletar(id).then(response => {
             console.log(response)
             res.status(200).json(response)
+        }).catch(erro => {
+            if(erro.code == "23503"){
+                res.status('500').json({erro:"Esse responsável está vinculado a um imóvel"})
+            }
         })
     }
 }

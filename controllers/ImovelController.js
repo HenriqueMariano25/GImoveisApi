@@ -30,7 +30,13 @@ class ImovelController {
         await imovelDao.deletarComodosImovel(idImovel)
         await imovelDao.deletarImovel(idImovel).then(response => {
             res.status(200).json(response)
+        }).catch(erro => {
+            if(erro.code == "23503"){
+                res.status('500').json({erro:"Esse imóvel está vinculado a um contrato"})
+            }
         })
+
+
     }
 
     async visualizar(req,res) {
