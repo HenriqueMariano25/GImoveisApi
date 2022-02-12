@@ -17,24 +17,21 @@ class ContratoController {
     }
 
     async visualizar(req, res) {
-        let idContrato = req.query.idContrato
-        await contratoDao.visualizar(idContrato).then(contrato => {
-            contratoDao.fiador(idContrato).then(fiador => {
-                res.status(200).json({contrato: contrato, fiador: fiador})
-            })
+        let {id} = req.query
+        await contratoDao.visualizar(id).then(contrato => {
+            res.status(200).json({contrato: contrato})
         })
     }
 
     async cadastrar(req, res) {
-        let contrato = req.body.contrato
-        let idUsuario = req.body.idUsuario
-        await contratoDao.cadastrar(contrato, idUsuario).then(response => {
-            let idContrato = response[0].id
+        let {contrato, idUsuario} = req.body
+        await contratoDao.cadastrar(contrato, idUsuario).then(resp => {
+            let idContrato = resp.contrato.id
             for (let x = 0; x < contrato.vigencia; x++) {
                 let data_vencimento = dayjs(contrato.data_vencimento).add(x, 'month').format('YYYY-MM-DD')
                 contratoDao.gerarBoleto(idContrato, data_vencimento, contrato)
             }
-            res.status(200).json(response)
+            res.status(200).json(resp.contrato)
         })
     }
 
@@ -49,8 +46,8 @@ class ContratoController {
     }
 
     async deletar(req, res) {
-        let idContrato = req.query.id
-        await contratoDao.deletarContrato(idContrato).then(response => {
+        let { id } = req.params
+        await contratoDao.deletarContrato(id).then(response => {
             res.status(200).json(response)
         })
     }
@@ -87,8 +84,8 @@ class ContratoController {
 
     async boletos(req, res) {
         let idContrato = req.query.idContrato
-        await contratoDao.boletos(idContrato).then(consulta => {
-            res.status(200).json(consulta)
+        await contratoDao.boletos(idContrato).then(resp => {
+            res.status(200).json(resp)
         })
     }
 
@@ -109,24 +106,22 @@ class ContratoController {
         let boleto = req.body.boleto
         let idUsuario = req.body.idUsuario
         // let data_vencimento = dayjs(boleto.data_vencimento).format('YYYY-MM-DD')
-        await contratoDao.editarBoleto(boleto, idUsuario).then(response => {
-            res.status(200).json(response)
+        await contratoDao.editarBoleto(boleto, idUsuario).then(resp => {
+            res.status(200).json(resp)
         })
     }
 
     async cadastrarBoleto(req, res) {
-        let boleto = req.body.boleto
-        let idContrato = req.body.idContrato
-        let idUsuario = req.body.idUsuario
-        await contratoDao.cadastrarBoleto(boleto, idContrato, idUsuario).then(response => {
-            res.status(200).json(response)
+        let { boleto, idContrato, idUsuario } = req.body
+        await contratoDao.cadastrarBoleto(boleto, idContrato, idUsuario).then(resp => {
+            res.status(200).json(resp)
         })
     }
 
     async deletarBoleto(req, res) {
-        let idBoleto = req.query.idBoleto
-        contratoDao.deletarBoleto(idBoleto).then(response => {
-            res.status(200).json(response)
+        let { id } = req.query
+        contratoDao.deletarBoleto(id).then(resp => {
+            res.status(200).json(resp)
         })
     }
 
@@ -240,8 +235,8 @@ class ContratoController {
         let fiador = req.body.fiador
         let idContrato = req.body.idContrato
         let idUsuario = req.body.idUsuario
-        await contratoDao.cadastrarFiador(fiador, idContrato, idUsuario).then(resposta => {
-            res.status(200).json(resposta)
+        await contratoDao.cadastrarFiador(fiador, idContrato, idUsuario).then(resp => {
+            res.status(200).json(resp)
         })
     }
 
@@ -255,8 +250,8 @@ class ContratoController {
     async editarFiador(req, res) {
         let fiador = req.body.fiador
         let idUsuario = req.body.idUsuario
-        await contratoDao.editarFiador(fiador, idUsuario).then(resposta => {
-            res.status(200).json(resposta)
+        await contratoDao.editarFiador(fiador, idUsuario).then(resp => {
+            res.status(200).json(resp)
         })
     }
 
@@ -268,7 +263,7 @@ class ContratoController {
     }
 
     async aplicarReajuste(req, res) {
-        let idContrato = req.body.contrato.id
+        let { id } = req.body
         let reajuste = parseFloat(req.body.reajuste)
         let valor_original = parseFloat(req.body.valor)
         let valor_reajustado_original = req.body.valor_reajustado
@@ -279,8 +274,8 @@ class ContratoController {
             valor_reajuste = (valor_original * ((reajuste / 100) + 1)).toFixed(2)
         }
         let dataHoje = dayjs().format('YYYY-MM-DD')
-        await contratoDao.aplicarReajuste(valor_reajuste, idContrato, dataHoje).then(contrato => {
-            boletoDao.aplicarReajuste(valor_reajuste, dataHoje, idContrato).then(() => {
+        await contratoDao.aplicarReajuste(valor_reajuste, id, dataHoje).then(contrato => {
+            boletoDao.aplicarReajuste(valor_reajuste, dataHoje, id).then(() => {
                 res.status(200).json({valor_reajustado: valor_reajuste, ultimo_reajuste: contrato[0].ultimo_reajuste})
             })
         })
