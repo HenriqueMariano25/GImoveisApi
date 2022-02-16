@@ -112,6 +112,7 @@ module.exports = {
             return Promise.reject(e);
         })
 
+
         let select = await db.query(`SELECT con.id,cli.nome nome_cliente,imo.nome nome_imovel,
                     res.nome nome_responsavel, pdf.url, pdf.nome nome_pdf, sta_con.descricao status, con.data_inicio, 
                     con.data_fim, con.data_vencimento, ARRAY_AGG(fia.nome) fiadores, con.carencia, 
@@ -131,6 +132,8 @@ module.exports = {
         }).catch(e => {
             console.log(e)
         })
+
+        console.log(select)
 
         return {contrato: select}
     },
@@ -487,7 +490,7 @@ module.exports = {
             FROM contrato con
             INNER JOIN cliente cli ON cli.id = con.id_cliente
             INNER JOIN imovel imo ON imo.id = con.id_imovel
-            WHERE con.id_status_contrato = 1 AND con.data_inicio < '${anoPassado}' AND COALESCE(con.ultimo_reajuste, con.data_inicio) < '${anoPassado}'`,
+            WHERE con.id_status_contrato = 1 AND con.data_inicio < '${anoPassado}' AND COALESCE(con.ultimo_reajuste, con.data_inicio) < '${anoPassado}' AND deletado = 'false'`,
                 (erro, resultado) => {
                     if (erro) {
                         console.log(erro)
