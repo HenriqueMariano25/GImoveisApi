@@ -19,7 +19,7 @@ module.exports = {
                     WHERE deletado = 'false'
                     GROUP BY con.id, cli.nome, imo.nome, res.nome, pdf.url, pdf.nome, sta_con.descricao, con.data_inicio,
                     con.data_fim, con.data_vencimento, con.carencia,con.valor_boleto, pdfadt.url
-                    ORDER BY con.id`,
+                    ORDER BY imo.nome`,
                 (erro, resultado) => {
                     if (erro) {
                         console.log(erro)
@@ -137,11 +137,23 @@ module.exports = {
 
         return {contrato: select}
     },
-    gerarBoleto: (idContrato, data_vencimento, contrato) => {
+    gerarBoleto: (idContrato, data_vencimento, valor_boleto) => {
         return new Promise((resolve, reject) => {
             db.query(`INSERT INTO boleto(id_contrato, data_vencimento, valor, id_status_boleto) VALUES(
-            ${idContrato}, '${data_vencimento}', '${contrato.valor_boleto_convertido}', 1) 
+            ${idContrato}, '${data_vencimento}', '${valor_boleto}', 1) 
             RETURNING id, data_vencimento`, (erro, resultado) => {
+                if (erro) {
+                    console.log(erro)
+                    return reject(erro)
+                }
+                return resolve(resultado.rows)
+            })
+        })
+    },
+    atualizarVigencia: (idContrato, vigencia) => {
+        return new Promise((resolve, reject) => {
+            db.query(`UPDATE contrato SET vigencia = ${vigencia}
+            WHERE id = ${idContrato} RETURNING id`, (erro, resultado) => {
                 if (erro) {
                     console.log(erro)
                     return reject(erro)

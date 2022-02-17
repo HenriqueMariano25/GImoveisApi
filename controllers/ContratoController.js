@@ -27,11 +27,43 @@ class ContratoController {
         let {contrato, idUsuario} = req.body
         await contratoDao.cadastrar(contrato, idUsuario).then(resp => {
             let idContrato = resp.contrato.id
-            for (let x = 0; x < contrato.vigencia; x++) {
-                let data_vencimento = dayjs(contrato.data_vencimento).add(x, 'month').format('YYYY-MM-DD')
-                contratoDao.gerarBoleto(idContrato, data_vencimento, contrato)
+            let contratoParaRetornar = resp.contrato
+            let data_inicio = contrato.data_inicio
+            let data_fim = contrato.data_fim
+            let dia_vencimento = contrato.data_vencimento
+            let valor_boleto = contrato.valor_boleto_convertido
+            let data_vencimento_inicial = ''
+            let vigencia = 0
+            let dia_inicio = dayjs(data_inicio).get('date')
+
+            if (dia_inicio >= dia_vencimento) {
+                data_vencimento_inicial = dayjs(data_inicio).date(dia_vencimento).add(1, 'month').format('YYYY-MM-DD')
+            } else {
+                data_vencimento_inicial = dayjs(data_inicio).date(dia_vencimento).format('YYYY-MM-DD')
             }
-            res.status(200).json(resp.contrato)
+            let data_vencimento = data_vencimento_inicial
+
+            while (dayjs(data_vencimento).isBefore(dayjs(data_fim, 'day'))) {
+                if (dayjs(data_vencimento_inicial).add(vigencia + 1, 'month').isAfter(dayjs(data_fim, 'day'))) {
+                    data_vencimento = dayjs(data_vencimento_inicial).add(vigencia, 'month').format('YYYY-MM-DD')
+                    vigencia += 1
+                    let dias_faltando = dayjs(data_fim).diff(data_vencimento, 'day')
+
+                    let valor_restante = (valor_boleto / 30) * dias_faltando
+                    valor_boleto = Number(parseFloat(valor_boleto) + parseFloat(valor_restante)).toFixed(2)
+
+                    contratoDao.gerarBoleto(idContrato, data_vencimento, valor_boleto)
+                    break
+                } else {
+                    data_vencimento = dayjs(data_vencimento_inicial).add(vigencia, 'month').format('YYYY-MM-DD')
+                    contratoDao.gerarBoleto(idContrato, data_vencimento, valor_boleto)
+                    vigencia += 1
+                }
+
+            }
+            contratoDao.atualizarVigencia(idContrato, vigencia)
+            contratoParaRetornar.vigencia = vigencia
+            res.status(200).json(contratoParaRetornar)
         })
     }
 
@@ -46,7 +78,7 @@ class ContratoController {
     }
 
     async deletar(req, res) {
-        let { id } = req.params
+        let {id} = req.params
         await contratoDao.deletarContrato(id).then(response => {
             res.status(200).json(response)
         })
@@ -112,14 +144,14 @@ class ContratoController {
     }
 
     async cadastrarBoleto(req, res) {
-        let { boleto, idContrato, idUsuario } = req.body
+        let {boleto, idContrato, idUsuario} = req.body
         await contratoDao.cadastrarBoleto(boleto, idContrato, idUsuario).then(resp => {
             res.status(200).json(resp)
         })
     }
 
     async deletarBoleto(req, res) {
-        let { id } = req.query
+        let {id} = req.query
         contratoDao.deletarBoleto(id).then(resp => {
             res.status(200).json(resp)
         })
@@ -263,7 +295,7 @@ class ContratoController {
     }
 
     async aplicarReajuste(req, res) {
-        let { id } = req.body
+        let {id} = req.body
         let reajuste = parseFloat(req.body.reajuste)
         let valor_original = parseFloat(req.body.valor)
         let valor_reajustado_original = req.body.valor_reajustado
