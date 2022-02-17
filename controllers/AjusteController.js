@@ -2,10 +2,9 @@ const ajusteDao = require('../dao/ajusteDao')
 
 class AjusteController {
     async cadastrarConta(req, res) {
-        let conta = req.body.conta
-        let idUsuario = req.body.idUsuario
-        await ajusteDao.cadastrarConta(conta, idUsuario).then(resposta => {
-            res.status(200).json(resposta)
+        let { conta, idUsuario } = req.body
+        await ajusteDao.cadastrarConta(conta, idUsuario).then(resp => {
+            res.status(200).json(resp)
         })
     }
 
@@ -16,10 +15,9 @@ class AjusteController {
     }
 
     async editarConta(req, res){
-        let conta = req.body.conta
-        let idUsuario = req.body.idUsuario
-        await ajusteDao.editarConta(conta, idUsuario).then(resposta => {
-            res.status(200).json(resposta)
+        let { conta, idUsuario } = req.body
+        await ajusteDao.editarConta(conta, idUsuario).then(resp => {
+            res.status(200).json(resp)
         })
     }
 
@@ -29,17 +27,17 @@ class AjusteController {
         })
     }
     async cadastrarHistorico(req, res) {
-        let historico = req.body.historico
-        await ajusteDao.cadastrarHistorico(historico).then(resposta => {
-            res.status(200).json(resposta)
+        let { historico } = req.body
+        await ajusteDao.cadastrarHistorico(historico).then(resp => {
+            res.status(200).json(resp)
         })
     }
 
     async editarHistorico(req, res) {
-        let historico = req.body.historico
+        let { historico } = req.body
 
-        await ajusteDao.editarHistorico(historico).then(resposta => {
-            res.status(200).json(resposta)
+        await ajusteDao.editarHistorico(historico).then(resp => {
+            res.status(200).json(resp)
         })
     }
 

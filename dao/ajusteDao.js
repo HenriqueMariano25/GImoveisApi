@@ -4,19 +4,23 @@ const dayjs = require('dayjs')
 let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
 
 module.exports = {
-    cadastrarConta: (conta, idUsuario) => {
-        return new Promise((resolve, reject) => {
-            db.query(`INSERT INTO conta(nome, criado_em, alterado_em, criado_por, alterado_por) 
+    cadastrarConta: async (conta, idUsuario) => {
+        let insert = await db.query(`INSERT INTO conta(nome, criado_em, alterado_em, criado_por, alterado_por) 
                 VALUES
-                ('${conta.nome}', '${agora}', '${agora}', ${idUsuario}, ${idUsuario})`,
-                (erro, resultado) => {
-                    if (erro) {
-                        console.log(erro)
-                        return reject(erro)
-                    }
-                    return resolve(resultado.rows)
-                })
+                ('${conta.nome}', '${agora}', '${agora}', ${idUsuario}, ${idUsuario}) RETURNING id`).then(resp => {
+            return resp.rows[0]
+        }).catch(e => {
+            console.log(e)
         })
+
+        let select = await db.query(`SELECT nome, id FROM conta
+               WHERE id = ${insert.id}`).then(resp => {
+            return resp.rows[0]
+        }).catch(e => {
+            console.log(e)
+        })
+
+        return {conta: select}
     },
 
     visualizarTodasContas: () => {
@@ -32,19 +36,22 @@ module.exports = {
         })
     },
 
-    editarConta: (conta, idUsuario) => {
-        return new Promise((resolve, reject) => {
-            db.query(`UPDATE conta SET nome = '${conta.nome}', alterado_em = '${agora}', alterado_por = ${idUsuario}
-            WHERE id = ${conta.id} RETURNING id, nome`,
-                (erro, resultado) => {
-                    if(erro){
-                        console.log(erro)
-                        return reject(erro)
-                    }
-                    return resolve(resultado.rows)
-                }
-            )
+    editarConta: async (conta, idUsuario) => {
+        let update = await db.query(`UPDATE conta SET nome = '${conta.nome}', alterado_em = '${agora}', alterado_por = ${idUsuario}
+            WHERE id = ${conta.id} RETURNING id`).then(resp => {
+            return resp.rows[0]
+        }).catch(e => {
+            console.log(e)
         })
+
+        let select = await db.query(`SELECT nome, id FROM conta WHERE id = ${update.id}`).then(resp => {
+            return resp.rows[0]
+        }).catch(e => {
+            console.log(e)
+        })
+
+        return {conta: select}
+
     },
 
     visualizarTodosHistoricos: () => {
@@ -59,33 +66,39 @@ module.exports = {
                 })
         })
     },
-    cadastrarHistorico: (historico) => {
-        return new Promise((resolve, reject) => {
-            db.query(`INSERT INTO historico(descricao) 
+    cadastrarHistorico: async (historico) => {
+        let insert = await db.query(`INSERT INTO historico(descricao) 
                 VALUES
-                ('${historico.descricao}')`,
-                (erro, resultado) => {
-                    if (erro) {
-                        console.log(erro)
-                        return reject(erro)
-                    }
-                    return resolve(resultado.rows)
-                })
+                ('${historico.descricao}') RETURNING id`).then(resp => {
+            return resp.rows[0]
+        }).catch(e => {
+            console.log(e)
         })
+
+        let select = await db.query(`SELECT descricao, id FROM historico
+               WHERE id = ${insert.id}`).then(resp => {
+            return resp.rows[0]
+        }).catch(e => {
+            console.log(e)
+        })
+
+        return {historico: select}
     },
 
-    editarHistorico: (historico) => {
-        return new Promise((resolve, reject) => {
-            db.query(`UPDATE historico SET descricao = '${historico.descricao}' WHERE id = ${historico.id} RETURNING id, descricao`,
-                (erro, resultado) => {
-                    if(erro){
-                        console.log(erro)
-                        return reject(erro)
-                    }
-                    return resolve(resultado.rows)
-                }
-            )
+    editarHistorico: async (historico) => {
+        let update = await db.query(`UPDATE historico SET descricao = '${historico.descricao}' WHERE id = ${historico.id} RETURNING id`).then(resp => {
+            return resp.rows[0]
+        }).catch(e => {
+            console.log(e)
         })
+
+        let select = await db.query(`SELECT descricao, id FROM historico WHERE id = ${update.id}`).then(resp => {
+            return resp.rows[0]
+        }).catch(e => {
+            console.log(e)
+        })
+
+        return {historico: select}
     },
 
     deletarHistorico: (id) => {
