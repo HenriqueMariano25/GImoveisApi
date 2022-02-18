@@ -88,7 +88,7 @@ module.exports = {
         let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
 
         let update = await db.query(`UPDATE cliente
-            SET nome = '${cliente.nome.trim()}', rua = '${cliente.rua}', bairro = '${cliente.bairro}', estado = '${cliente.estado}',
+            SET nome = '${cliente.nome.replace("\'", "\'\'")}', rua = '${cliente.rua}', bairro = '${cliente.bairro}', estado = '${cliente.estado}',
             cidade = '${cliente.cidade}',  complemento = '${cliente.complemento}',identidade = '${cliente.identidade}', 
             email = '${cliente.email.trim()}', referencia = '${cliente.referencia}',id_estado_civil = ${cliente.estado_civil}, 
             cpf_cnpj = '${cliente.cpf_cnpj}', cep = '${cliente.cep}',data_nascimento = '${cliente.data_nascimento}',
