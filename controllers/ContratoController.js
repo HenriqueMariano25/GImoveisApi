@@ -297,8 +297,11 @@ class ContratoController {
     async aplicarReajuste(req, res) {
         let {id} = req.body
         let reajuste = parseFloat(req.body.reajuste)
+        console.log('reajuste', reajuste)
         let valor_original = parseFloat(req.body.valor)
+        console.log('valor_original', valor_original)
         let valor_reajustado_original = req.body.valor_reajustado
+        console.log('valor_reajustado_original', valor_reajustado_original)
         let valor_reajuste = ""
         if (valor_reajustado_original) {
             valor_reajuste = (valor_reajustado_original * ((reajuste / 100) + 1)).toFixed(2)

@@ -7,7 +7,9 @@ module.exports = {
                 FROM contrato con
                 LEFT OUTER JOIN imovel imo ON imo.id = con.id_imovel
                 WHERE data_fim <= '${diaVencimento}' AND data_fim >= '${diaAtual}' AND deletado = 'false' 
-            AND id_status_contrato = 1`,
+                AND id_status_contrato = 1
+                ORDER BY data_fim ASC
+`,
                 (erro, resultado) => {
                     if (erro) {
                         console.log(erro)
