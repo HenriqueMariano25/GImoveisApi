@@ -5,7 +5,7 @@ module.exports = app => {
         CaixaController.cadastrar(req, res)
     })
     app.get('/caixa', (req, res) => {
-        CaixaController.visualizarTodos(res)
+        CaixaController.visualizarTodos(req, res)
     })
     app.put('/caixa', (req, res) => {
         CaixaController.editar(req, res)

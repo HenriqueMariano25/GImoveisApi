@@ -9,8 +9,12 @@ class CaixaController {
         })
     }
 
-    async visualizarTodos(res){
-        await caixaDao.visualizarTodos().then(consulta => {
+    async visualizarTodos(req, res){
+        let { page, size } = req.query
+
+        // console.log(page, size)
+
+        await caixaDao.visualizarTodos(page, size).then(consulta => {
             res.status(200).json(consulta)
         })
     }
