@@ -36,7 +36,8 @@ module.exports = {
       .query(
         `SELECT con.id, con.id_responsavel, con.id_cliente, con.id_cliente2, con.id_imovel, con.data_inicio, con.data_fim,
             con.vigencia, con.data_vencimento data_vencimento, con.valor_boleto, con.carencia, pdf.nome nome_pdf, con.observacao, con.garantia,
-            con.id_status_contrato status, con.juros_multa, con.juros_mes, con.multa, con.ultimo_reajuste, con.valor_reajustado, pdfadt.nome nome_aditivo
+            con.id_status_contrato status, con.juros_multa, con.juros_mes, con.multa, con.ultimo_reajuste, con.valor_reajustado, pdfadt.nome nome_aditivo,
+            con.valor_anterior_reajustado
             FROM contrato con
             LEFT OUTER JOIN pdf_contrato pdf on pdf.id_contrato = con.id
             LEFT OUTER JOIN pdf_aditivo_contrato pdfadt on pdfadt.id_contrato = con.id
@@ -600,10 +601,10 @@ module.exports = {
     return { fiador: deletado }
   },
 
-  aplicarReajuste: (reajuste, idContrato, dataHoje) => {
+  aplicarReajuste: (reajuste, idContrato, dataHoje, valor_anterior) => {
     return new Promise((resolve, reject) => {
       db.query(
-        `UPDATE contrato SET valor_reajustado = '${reajuste}', ultimo_reajuste = '${dataHoje}' 
+        `UPDATE contrato SET valor_reajustado = '${reajuste}', ultimo_reajuste = '${dataHoje}', valor_anterior_reajustado='${valor_anterior}' 
             WHERE id = ${idContrato} RETURNING ultimo_reajuste`,
         (erro, resultado) => {
           if (erro) {

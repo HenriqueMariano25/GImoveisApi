@@ -300,15 +300,19 @@ class ContratoController {
         let valor_original = parseFloat(req.body.valor)
         let valor_reajustado_original = req.body.valor_reajustado
         let valor_reajuste = ""
+        let valor_anterior = ""
         if (valor_reajustado_original) {
+            valor_anterior = valor_reajustado_original
             valor_reajuste = (valor_reajustado_original * ((reajuste / 100) + 1)).toFixed(2)
         } else {
+            valor_anterior = valor_original
             valor_reajuste = (valor_original * ((reajuste / 100) + 1)).toFixed(2)
         }
+
         let dataHoje = dayjs().format('YYYY-MM-DD')
-        await contratoDao.aplicarReajuste(valor_reajuste, id, dataHoje).then(contrato => {
+        await contratoDao.aplicarReajuste(valor_reajuste, id, dataHoje, valor_anterior).then(contrato => {
             boletoDao.aplicarReajuste(valor_reajuste, dataHoje, id).then(() => {
-                res.status(200).json({valor_reajustado: valor_reajuste, ultimo_reajuste: contrato[0].ultimo_reajuste})
+                res.status(200).json({valor_reajustado: valor_reajuste, ultimo_reajuste: contrato[0].ultimo_reajuste, valor_anterior: valor_anterior})
             })
         })
     }
@@ -317,6 +321,19 @@ class ContratoController {
         let anoPassado = dayjs().subtract(1, 'year').add(60, 'days').format('YYYY-MM-DD')
         await contratoDao.contratosParaReajustar(anoPassado).then(consulta => {
             res.status(200).json(consulta)
+        })
+    }
+
+    async reverterReajuste(req, res) {
+        let {id, valor_anterior} = req.body
+
+        let valor_reajuste = parseFloat(valor_anterior)
+
+        let dataHoje = dayjs().format('YYYY-MM-DD')
+        await contratoDao.aplicarReajuste(valor_reajuste, id, dataHoje, valor_anterior).then(contrato => {
+            boletoDao.aplicarReajuste(valor_reajuste, dataHoje, id).then(() => {
+                res.status(200).json({valor_reajustado: valor_reajuste, ultimo_reajuste: contrato[0].ultimo_reajuste})
+            })
         })
     }
 

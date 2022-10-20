@@ -82,4 +82,6 @@ module.exports = app => {
         ContratoController.contratosParaReajustar(req, res)
     })
 
+    app.patch("/contrato/reverter_reajuste", ContratoController.reverterReajuste)
+
 }
