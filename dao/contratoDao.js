@@ -637,4 +637,42 @@ module.exports = {
       )
     })
   },
+
+  visualizarBusca: (busca) => {
+    return new Promise((resolve, reject) => {
+      db.query(
+          `SELECT con.id,cli.nome nome_cliente,imo.nome nome_imovel,
+                    res.nome nome_responsavel, pdf.url, pdf.nome nome_pdf, sta_con.descricao status, con.data_inicio, 
+                    con.data_fim, con.data_vencimento, ARRAY_AGG(fia.nome) fiadores, con.carencia, 
+                    con.valor_boleto, pdfadt.url url_aditivo
+                    FROM contrato con
+                    LEFT JOIN cliente cli ON con.id_cliente = cli.id
+                    LEFT JOIN imovel imo ON con.id_imovel = imo.id
+                    LEFT JOIN responsavel res ON con.id_responsavel = res.id
+                    LEFT JOIN status_contrato sta_con ON con.id_status_contrato = sta_con.id
+                    LEFT JOIN pdf_contrato pdf on pdf.id_contrato = con.id
+                    LEFT JOIN pdf_aditivo_contrato pdfadt on pdfadt.id_contrato = con.id
+                    LEFT JOIN fiador fia ON fia.id_contrato = con.id
+                    WHERE deletado = 'false' AND
+                    LOWER(cli.nome) LIKE LOWER('%${busca}%')
+                    OR LOWER(imo.nome) LIKE LOWER('%${busca}%')
+                    OR LOWER(res.nome) LIKE LOWER('%${busca}%')
+                    OR LOWER(res.nome) LIKE LOWER('%${busca}%')
+                    OR LOWER(sta_con.descricao) LIKE LOWER('%${busca}%')
+                    OR LOWER(sta_con.descricao) LIKE LOWER('%${busca}%')
+                    OR con.id::varchar(255) LIKE LOWER('%${busca}%') 
+                    GROUP BY con.id, cli.nome, imo.nome, res.nome, pdf.url, pdf.nome, sta_con.descricao, con.data_inicio,
+                    con.data_fim, con.data_vencimento, con.carencia,con.valor_boleto, pdfadt.url
+                    ORDER BY imo.nome
+                `,
+          (erro, resultado) => {
+            if (erro) {
+              console.log(erro)
+              return reject(erro)
+            }
+            return resolve(resultado.rows)
+          }
+      )
+    })
+  },
 }

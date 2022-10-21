@@ -1,4 +1,5 @@
 const usuarioDao = require('../dao/usuarioDao')
+const caixaDao = require("../dao/caixaDao");
 
 class UsuarioController {
     async visualizarTodos(res) {
@@ -47,6 +48,14 @@ class UsuarioController {
     async tiposPermissao(res){
         await usuarioDao.tiposPermissao().then(response => {
             res.status(200).json(response)
+        })
+    }
+
+    async visualizarBusca(req, res){
+        let { busca } = req.query
+
+        await usuarioDao.visualizarBusca(busca).then(consulta => {
+            res.status(200).json(consulta)
         })
     }
 }

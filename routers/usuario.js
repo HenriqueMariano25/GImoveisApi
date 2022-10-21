@@ -1,4 +1,5 @@
 const UsuarioController = require('../controllers/UsuarioController')
+const CaixaController = require("../controllers/CaixaController");
 
 module.exports = app => {
     app.post('/usuario/cadastrar',(req, res) => {
@@ -19,4 +20,6 @@ module.exports = app => {
     app.get('/usuarios/tipos_permissao', (req, res) => {
         UsuarioController.tiposPermissao(res)
     })
+
+    app.get("/usuarios/busca", UsuarioController.visualizarBusca)
 }

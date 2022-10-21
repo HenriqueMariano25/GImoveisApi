@@ -1,6 +1,7 @@
 const clienteDao = require('../dao/clienteDao')
 const dayjs = require('dayjs')
 const axios = require('axios')
+const caixaDao = require("../dao/caixaDao");
 
 class ClienteController {
     async visualizarTodos(res) {
@@ -13,6 +14,16 @@ class ClienteController {
         let idCliente = req.query.idCliente
         await clienteDao.visualizar(idCliente).then(consulta => {
             res.json(consulta)
+        })
+    }
+
+    async visualizarBusca(req, res){
+        let { busca } = req.query
+
+        console.log(busca)
+
+        await clienteDao.visualizarBusca(busca).then(consulta => {
+            res.status(200).json(consulta)
         })
     }
 

@@ -1,4 +1,5 @@
 const ImovelController = require('../controllers/ImovelController')
+const CaixaController = require("../controllers/CaixaController");
 
 module.exports = app => {
     app.post('/imovel/cadastrar', (req, res) => {
@@ -7,6 +8,8 @@ module.exports = app => {
     app.get('/imoveis', (req,res) => {
         ImovelController.visualizarTodos(res)
     })
+    app.get("/imoveis/busca", ImovelController.visualizarBusca)
+
     app.get('/imoveis/simples', (req,res) => {
         ImovelController.visualizarSimples(res)
     })

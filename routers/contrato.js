@@ -1,6 +1,7 @@
 const ContratoController = require('../controllers/ContratoController')
 const multer = require('multer')
 const multerConfig = require('../config/multer')
+const CaixaController = require("../controllers/CaixaController");
 
 module.exports = app => {
     app.get('/contratos',(req,res) => {
@@ -83,5 +84,7 @@ module.exports = app => {
     })
 
     app.patch("/contrato/reverter_reajuste", ContratoController.reverterReajuste)
+
+    app.get("/contrato/busca", ContratoController.visualizarBusca)
 
 }

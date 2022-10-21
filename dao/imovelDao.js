@@ -71,6 +71,37 @@ module.exports = {
         })
     },
 
+    visualizarBusca: (busca) => {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT imo.id, imo.nome, imo.rua, sta_imo.descricao status, res.nome proprietario, 
+                    imo.rua, imo.numero, imo.bairro, imo.cidade,imo.cep, tip_imo.descricao tipo_imovel,
+                    imo.inscricao_municipal, imo.funesbom, imo.complemento, imo.estado
+                    FROM imovel imo
+                    LEFT JOIN status_imovel sta_imo ON imo.id_status_imovel = sta_imo.id
+                    LEFT JOIN responsavel res ON imo.id_responsavel = res.id
+                    LEFT JOIN tipo_imovel tip_imo ON imo.id_tipo_imovel = tip_imo.id
+                    WHERE LOWER(imo.nome) LIKE LOWER('%${busca}%') 
+                    OR LOWER(sta_imo.descricao) LIKE LOWER('%${busca}%')
+                    OR LOWER(imo.rua) LIKE LOWER('%${busca}%')
+                    OR LOWER(imo.numero) LIKE LOWER('%${busca}%')
+                    OR LOWER(imo.bairro) LIKE LOWER('%${busca}%')
+                    OR LOWER(imo.cidade) LIKE LOWER('%${busca}%')
+                    OR LOWER(imo.cep) LIKE LOWER('%${busca}%')
+                    OR LOWER(imo.estado) LIKE LOWER('%${busca}%')
+                    OR LOWER(tip_imo.descricao) LIKE LOWER('%${busca}%')
+                    OR LOWER(imo.complemento) LIKE LOWER('%${busca}%')
+                    OR LOWER(res.nome) LIKE LOWER('%${busca}%')
+                    ORDER BY imo.nome`,
+                (erro, resultado) => {
+                    if (erro) {
+                        console.log(erro)
+                        return reject(erro)
+                    }
+                    return resolve(resultado.rows)
+                })
+        })
+    },
+
     visualizarSimples: () => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT imo.id, imo.nome

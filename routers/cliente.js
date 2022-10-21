@@ -1,4 +1,5 @@
 const ClienteController = require('../controllers/ClienteController')
+const CaixaController = require("../controllers/CaixaController");
 
 module.exports = app => {
     app.get('/clientes',(req,res) => {
@@ -7,6 +8,8 @@ module.exports = app => {
     app.get('/cliente',(req,res) => {
         ClienteController.visualizar(req,res)
     })
+    app.get("/cliente/busca", ClienteController.visualizarBusca)
+
     app.post('/cliente/cadastrar',(req, res) => {
         ClienteController.cadastrar(req,res)
     })

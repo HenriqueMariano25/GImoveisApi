@@ -6,6 +6,7 @@ const path = require('path')
 const aws = require('aws-sdk')
 const {deletarPDF} = require("../dao/contratoDao");
 const {response} = require("express");
+const caixaDao = require("../dao/caixaDao");
 
 const s3 = new aws.S3()
 
@@ -334,6 +335,14 @@ class ContratoController {
             boletoDao.aplicarReajuste(valor_reajuste, dataHoje, id).then(() => {
                 res.status(200).json({valor_reajustado: valor_reajuste, ultimo_reajuste: contrato[0].ultimo_reajuste})
             })
+        })
+    }
+
+    async visualizarBusca(req, res){
+        let { busca } = req.query
+
+        await contratoDao.visualizarBusca(busca).then(consulta => {
+            res.status(200).json(consulta)
         })
     }
 

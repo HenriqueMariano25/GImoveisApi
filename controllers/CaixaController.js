@@ -12,8 +12,6 @@ class CaixaController {
     async visualizarTodos(req, res){
         let { page, size } = req.query
 
-        // console.log(page, size)
-
         await caixaDao.visualizarTodos(page, size).then(consulta => {
             res.status(200).json(consulta)
         })
@@ -31,6 +29,27 @@ class CaixaController {
         let idCaixa = req.params.id
         await caixaDao.deletar(idCaixa).then(resposta => {
             res.status(200).json(resposta)
+        })
+    }
+
+    async buscarRelatorio(req, res){
+
+        let {data_inicio, data_fim } = req.query
+
+        console.log(data_inicio)
+        console.log(data_fim)
+
+        await caixaDao.buscarRelatorio(data_inicio, data_fim).then(resp => {
+            console.log(resp)
+            res.status(200).json(resp)
+        })
+    }
+
+    async visualizarBusca(req, res){
+        let { busca } = req.query
+
+        await caixaDao.visualizarBusca(busca).then(consulta => {
+            res.status(200).json(consulta)
         })
     }
 }

@@ -1,4 +1,5 @@
 const ResponsavelController = require('../controllers/ResponsavelController')
+const CaixaController = require("../controllers/CaixaController");
 
 module.exports = app => {
     app.post('/responsavel/cadastrar', (req, res) => {
@@ -7,6 +8,8 @@ module.exports = app => {
     app.get('/responsaveis', (req,res) => {
         ResponsavelController.visualizarTodos(res)
     })
+    app.get("/responsaveis/busca", ResponsavelController.visualizarBusca)
+
     app.get('/responsavel/:id', (req,res) => {
         ResponsavelController.visualizar(req,res)
     })

@@ -45,9 +45,6 @@ module.exports = {
   },
 
   visualizarTodos: (page, size) => {
-    console.log(page)
-    console.log(size)
-
     return new Promise((resolve, reject) => {
       db.query(
         `SELECT count(*) OVER() AS total_itens, cai.id, cai.movimento, cai.id_debito_credito, cai.id_historico id_historico, cai.complemento_historico,
@@ -119,5 +116,53 @@ module.exports = {
       })
 
     return { caixa: deletado }
+  },
+
+  buscarRelatorio: async(data_inicio, data_fim) =>{
+    return new Promise((resolve, reject) => {
+      db.query(
+          `SELECT  cai.id, cai.movimento, cai.id_debito_credito, cai.id_historico id_historico, cai.complemento_historico,
+               imo.nome imovel_nome, imo.id id_imovel, cai.valor, cai.id_conta, cai.numero_documento, con.nome conta_nome,
+               his.descricao descricao_historico
+                FROM caixa cai
+                LEFT JOIN imovel imo ON imo.id = cai.id_imovel
+                LEFT JOIN conta con ON con.id = cai.id_conta
+                LEFT JOIN historico his ON his.id = cai.id_historico
+                WHERE cai.movimento BETWEEN '${data_inicio}' AND '${data_fim}'
+                ORDER BY cai.movimento DESC`,
+          (erro, resultado) => {
+            if (erro) {
+              console.log(erro)
+              return reject(erro)
+            }
+            return resolve(resultado.rows)
+          }
+      )
+    })
+  },
+
+  visualizarBusca: (busca) => {
+    return new Promise((resolve, reject) => {
+      db.query(
+          `SELECT count(*) OVER() AS total_itens, cai.id, cai.movimento, cai.id_debito_credito, cai.id_historico id_historico, cai.complemento_historico,
+               imo.nome imovel_nome, imo.id id_imovel, cai.valor, cai.id_conta, cai.numero_documento, con.nome conta_nome,
+               his.descricao descricao_historico
+                FROM caixa cai
+                LEFT JOIN imovel imo ON imo.id = cai.id_imovel
+                LEFT JOIN conta con ON con.id = cai.id_conta
+                LEFT JOIN historico his ON his.id = cai.id_historico
+                WHERE LOWER(imo.nome) LIKE LOWER('%${busca}%') OR LOWER(his.descricao) LIKE LOWER('%${busca}%') 
+                OR LOWER(con.nome) LIKE LOWER('%${busca}%') OR cai.id::varchar(255) LIKE LOWER('%${busca}%') 
+                ORDER BY cai.movimento DESC
+                `,
+          (erro, resultado) => {
+            if (erro) {
+              console.log(erro)
+              return reject(erro)
+            }
+            return resolve(resultado.rows)
+          }
+      )
+    })
   },
 }

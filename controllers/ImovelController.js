@@ -1,4 +1,5 @@
 const imovelDao = require('../dao/imovelDao')
+const caixaDao = require("../dao/caixaDao");
 
 class ImovelController {
     async cadastrar(req, res) {
@@ -14,6 +15,14 @@ class ImovelController {
 
     async visualizarTodos(res) {
         await imovelDao.visualizarTodos().then(consulta => {
+            res.status(200).json(consulta)
+        })
+    }
+
+    async visualizarBusca(req, res){
+        let { busca } = req.query
+
+        await imovelDao.visualizarBusca(busca).then(consulta => {
             res.status(200).json(consulta)
         })
     }

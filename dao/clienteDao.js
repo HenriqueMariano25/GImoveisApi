@@ -49,6 +49,30 @@ module.exports = {
         })
     },
 
+    visualizarBusca: (busca) => {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT 
+                 cli.id,cli.nome, cli.email, cli.rua, cli.bairro, cli.cidade, cli.estado, cli.complemento, cli.cep, cli.cpf_cnpj, cli.identidade,
+                 cli.data_nascimento, cli.referencia , cli.numero, ARRAY_AGG(tel.numero) numero_telefone, ARRAY_AGG(tip_tel.descricao) tipo_telefone, cli.id, 
+                 sta.descricao status, cli.observacao
+                FROM telefone tel
+                FULL OUTER JOIN cliente cli ON tel.id_cliente = cli.id
+                LEFT OUTER JOIN status_cliente sta ON sta.id = cli.id_status_cliente
+                LEFT OUTER JOIN tipo_telefone tip_tel ON tel.id_tipo_telefone = tip_tel.id 
+                 WHERE LOWER(cli.nome) LIKE LOWER('%${busca}%') OR LOWER(sta.descricao) LIKE LOWER('%${busca}%')
+                GROUP BY cli.nome, cli.email, cli.rua, cli.bairro, cli.cidade, cli.estado, cli.complemento, cli.cpf_cnpj,
+                 cli.identidade, cli.data_nascimento, cli.referencia, cli.numero, cli.id, status, cli.observacao, cli.id
+                 ORDER BY nome`,
+                (erro, resultado) => {
+                    if (erro) {
+                        return reject(erro)
+                    }
+                    return resolve(resultado.rows)
+                }
+            )
+        })
+    },
+
     cadastrar: async (cliente, idUsuario) => {
         let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
 
@@ -123,8 +147,8 @@ module.exports = {
 
     deletarCliente: idCliente => {
         return new Promise((resolve, reject) => {
-            db.query(`DELETE FROM cliente WHERE id = ${idCliente}`,(erro,resultado) => {
-                if(erro){
+            db.query(`DELETE FROM cliente WHERE id = ${idCliente}`, (erro, resultado) => {
+                if (erro) {
                     console.log(erro)
                     return reject(erro)
                 }
@@ -185,8 +209,8 @@ module.exports = {
 
     deletarTelefoneCliente: (idCliente) => {
         return new Promise((resolve, reject) => {
-            db.query(`DELETE FROM telefone WHERE id_cliente = ${idCliente}`, (erro, resultado) =>{
-                if(erro){
+            db.query(`DELETE FROM telefone WHERE id_cliente = ${idCliente}`, (erro, resultado) => {
+                if (erro) {
                     console.log(erro)
                     return reject(erro)
                 }
@@ -195,7 +219,7 @@ module.exports = {
         })
     },
 
-    deletarTelefone: async  (idTelefone) => {
+    deletarTelefone: async (idTelefone) => {
         let deletado = await db.query(`DELETE FROM telefone WHERE id = ${idTelefone} RETURNING id`).then(resp => {
             return resp.rows[0]
         }).catch(e => {
@@ -208,7 +232,7 @@ module.exports = {
     tipoStatus: () => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT * FROM status_cliente ORDER BY descricao`, (erro, resultado) => {
-                if(erro){
+                if (erro) {
                     console.log(erro)
                     return reject(erro)
                 }
@@ -225,7 +249,7 @@ module.exports = {
              LEFT JOIN status_contrato sta_con ON con.id_status_contrato = sta_con.id
              LEFT JOIN pdf_contrato pdf ON pdf.id_contrato = con.id
              WHERE id_cliente = ${idCliente} OR id_cliente2 = ${idCliente} AND deletado = 'false'`, (erro, resultado) => {
-                if(erro){
+                if (erro) {
                     console.log(erro)
                     return reject(erro)
                 }
@@ -239,8 +263,8 @@ module.exports = {
             db.query(`SELECT bol.id, bol.data_vencimento , sta_bol.descricao status, bol.valor, bol.data_quitacao
             FROM boleto bol
             LEFT JOIN status_boleto sta_bol ON bol.id_status_boleto = sta_bol.id 
-            WHERE id_contrato = ${idContrato} ORDER BY data_vencimento`,(erro, resultado) => {
-                if(erro){
+            WHERE id_contrato = ${idContrato} ORDER BY data_vencimento`, (erro, resultado) => {
+                if (erro) {
                     console.log(erro)
                     return reject(erro)
                 }

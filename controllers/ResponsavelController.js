@@ -1,4 +1,5 @@
 const responsavelDao = require('../dao/responsavelDao')
+const caixaDao = require("../dao/caixaDao");
 
 class ResponsavelController {
     async cadastrar(req, res) {
@@ -38,6 +39,14 @@ class ResponsavelController {
             if(erro.code == "23503"){
                 res.status('500').json({erro:"Esse responsável está vinculado a um imóvel"})
             }
+        })
+    }
+
+    async visualizarBusca(req, res){
+        let { busca } = req.query
+
+        await responsavelDao.visualizarBusca(busca).then(consulta => {
+            res.status(200).json(consulta)
         })
     }
 }

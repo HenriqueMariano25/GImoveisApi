@@ -93,5 +93,29 @@ module.exports = {
         })
 
         return {responsavel: deletado}
-    }
+    },
+    visualizarBusca: (busca) => {
+        return new Promise((resolve, reject) => {
+            db.query(
+                `SELECT res.nome, res.id, res.cpf_cnpj, res.rua, res.numero, res.cidade, res.bairro, res.estado, res.complemento
+                FROM responsavel res
+                WHERE LOWER(res.nome) LIKE LOWER('%${busca}%') 
+                OR LOWER(res.rua) LIKE LOWER('%${busca}%') 
+                OR LOWER(res.bairro) LIKE LOWER('%${busca}%') 
+                OR LOWER(res.cidade) LIKE LOWER('%${busca}%') 
+                OR LOWER(res.numero) LIKE LOWER('%${busca}%') 
+                OR LOWER(res.estado) LIKE LOWER('%${busca}%') 
+                OR LOWER(res.complemento) LIKE LOWER('%${busca}%') 
+                ORDER BY res.nome
+                `,
+                (erro, resultado) => {
+                    if (erro) {
+                        console.log(erro)
+                        return reject(erro)
+                    }
+                    return resolve(resultado.rows)
+                }
+            )
+        })
+    },
 }

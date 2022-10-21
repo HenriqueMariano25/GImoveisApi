@@ -13,4 +13,7 @@ module.exports = app => {
     app.delete('/caixa/:id', (req, res) => {
         CaixaController.deletar(req, res)
     })
+    app.get("/caixa/relatorio", CaixaController.buscarRelatorio)
+
+    app.get("/caixa/busca", CaixaController.visualizarBusca)
 }

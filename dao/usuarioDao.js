@@ -103,5 +103,29 @@ module.exports = {
                 return resolve(resultado.rows)
             })
         })
-    }
+    },
+
+    visualizarBusca: (busca) => {
+        return new Promise((resolve, reject) => {
+            db.query(
+                `SELECT usu.id, usu.nome, usu.email, usu.usuario, per.descricao permissao,usu.deletado FROM usuario usu
+                   LEFT OUTER JOIN permissao per ON per.id = usu.id_permissao
+                   WHERE deletado = ${false} AND
+                   LOWER(usu.nome) LIKE LOWER('%${busca}%')
+                   OR LOWER(usu.email) LIKE LOWER('%${busca}%')
+                   OR LOWER(usu.usuario) LIKE LOWER('%${busca}%')
+                   OR LOWER(usu.usuario) LIKE LOWER('%${busca}%')
+                   OR LOWER(per.descricao) LIKE LOWER('%${busca}%')
+                    ORDER BY nome
+                `,
+                (erro, resultado) => {
+                    if (erro) {
+                        console.log(erro)
+                        return reject(erro)
+                    }
+                    return resolve(resultado.rows)
+                }
+            )
+        })
+    },
 }
