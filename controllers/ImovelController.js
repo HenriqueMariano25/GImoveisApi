@@ -58,7 +58,6 @@ class ImovelController {
     async editarImovel(req, res){
         const id = req.params.id
         let { imovel, idUsuario } = req.body
-            console.log('Editiando')
         await imovelDao.editarImovel(id, imovel, idUsuario).then(response => {
             res.status(200).json(response)
         }).catch(erro => {

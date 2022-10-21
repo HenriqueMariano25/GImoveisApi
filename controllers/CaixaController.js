@@ -36,11 +36,7 @@ class CaixaController {
 
         let {data_inicio, data_fim } = req.query
 
-        console.log(data_inicio)
-        console.log(data_fim)
-
         await caixaDao.buscarRelatorio(data_inicio, data_fim).then(resp => {
-            console.log(resp)
             res.status(200).json(resp)
         })
     }

@@ -20,8 +20,6 @@ class ClienteController {
     async visualizarBusca(req, res){
         let { busca } = req.query
 
-        console.log(busca)
-
         await clienteDao.visualizarBusca(busca).then(consulta => {
             res.status(200).json(consulta)
         })

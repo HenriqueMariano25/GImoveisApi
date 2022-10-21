@@ -33,7 +33,6 @@ class ResponsavelController {
     async deletar(req,res){
         let { id } = req.params
         await responsavelDao.deletar(id).then(response => {
-            console.log(response)
             res.status(200).json(response)
         }).catch(erro => {
             if(erro.code == "23503"){

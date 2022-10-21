@@ -161,8 +161,6 @@ module.exports = {
         console.log(e)
       })
 
-    console.log(select)
-
     return { contrato: select }
   },
   gerarBoleto: (idContrato, data_vencimento, valor_boleto) => {
