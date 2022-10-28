@@ -185,7 +185,7 @@ class ContratoController {
                 } else {
                     fs.unlink((path.resolve(__dirname, '..', 'tmp', 'uploads', arquivoDeletado.nome)),
                         function (err) {
-                            if (err) throw err;
+                            if (err)
                             console.log(err)
                         })
                 }
@@ -211,7 +211,7 @@ class ContratoController {
                 } else {
                     fs.unlink((path.resolve(__dirname, '..', 'tmp', 'uploads', arquivoDeletado.nome)),
                         function (err) {
-                            if (err) throw err;
+                            if (err)
                             console.log(err)
                         })
                 }
@@ -238,8 +238,7 @@ class ContratoController {
                 } else {
                     fs.unlink((path.resolve(__dirname, '..', 'tmp', 'uploads', arquivoDeletado.nome)),
                         function (err) {
-                            if (err) throw err;
-                            console.log(err)
+                            if (err) console.log(err)
                         })
                 }
             }
@@ -264,8 +263,7 @@ class ContratoController {
                 } else {
                     fs.unlink((path.resolve(__dirname, '..', 'tmp', 'uploads', arquivoDeletado.nome)),
                         function (err) {
-                            if (err) throw err;
-                            console.log(err)
+                            if (err) console.log(err)
                         })
                 }
             }
