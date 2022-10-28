@@ -26,6 +26,7 @@ class ContratoController {
 
     async cadastrar(req, res) {
         let {contrato, idUsuario} = req.body
+
         await contratoDao.cadastrar(contrato, idUsuario).then(resp => {
             let idContrato = resp.contrato.id
             let contratoParaRetornar = resp.contrato
@@ -63,6 +64,11 @@ class ContratoController {
 
             }
             contratoDao.atualizarVigencia(idContrato, vigencia)
+
+
+            let idImovel = contrato.id_imovel
+            contratoDao.atualizarImovelAlugado(idImovel)
+
             contratoParaRetornar.vigencia = vigencia
             res.status(200).json(contratoParaRetornar)
         })
@@ -72,6 +78,9 @@ class ContratoController {
         let contrato = req.body.contrato
         let idUsuario = req.body.idUsuario
         await contratoDao.editar(contrato, idUsuario).then(resposta => {
+            let idImovel = contrato.id_imovel
+            contratoDao.atualizarImovelAlugado(idImovel)
+
             res.status(200).json(resposta)
         }).catch(erro => {
             console.log(erro)
