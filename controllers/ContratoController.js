@@ -11,8 +11,12 @@ const caixaDao = require("../dao/caixaDao");
 const s3 = new aws.S3()
 
 class ContratoController {
-    async visualizarTodos(res) {
-        await contratoDao.visualizarTodos().then(consulta => {
+    async visualizarTodos(req, res) {
+
+        let { todos } = req.query
+        console.log(req.query)
+
+        await contratoDao.visualizarTodos(todos).then(consulta => {
             res.status(200).json(consulta)
         })
     }

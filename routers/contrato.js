@@ -4,9 +4,8 @@ const multerConfig = require('../config/multer')
 const CaixaController = require("../controllers/CaixaController");
 
 module.exports = app => {
-    app.get('/contratos',(req,res) => {
-        ContratoController.visualizarTodos(res)
-    })
+    app.get("/contratos", ContratoController.visualizarTodos)
+
     app.get('/contrato', (req,res) => {
         ContratoController.visualizar(req,res)
     })

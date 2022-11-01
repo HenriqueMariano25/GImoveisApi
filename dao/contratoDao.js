@@ -2,7 +2,7 @@ const db = require("../db/conexao")
 const dayjs = require("dayjs")
 
 module.exports = {
-    visualizarTodos: () => {
+    visualizarTodos: (todos) => {
         return new Promise((resolve, reject) => {
             db.query(
                 `SELECT con.id,cli.nome nome_cliente,imo.nome nome_imovel,
@@ -17,7 +17,7 @@ module.exports = {
                     LEFT JOIN pdf_contrato pdf on pdf.id_contrato = con.id
                     LEFT JOIN pdf_aditivo_contrato pdfadt on pdfadt.id_contrato = con.id
                     LEFT JOIN fiador fia ON fia.id_contrato = con.id
-                    WHERE deletado = 'false'
+                    WHERE deletado = 'false' ${ todos === 'false' ? "AND id_status_contrato = 1" : ""}
                     GROUP BY con.id, cli.nome, imo.nome, res.nome, pdf.url, pdf.nome, sta_con.descricao, con.data_inicio,
                     con.data_fim, con.data_vencimento, con.carencia,con.valor_boleto, pdfadt.url
                     ORDER BY imo.nome`,
