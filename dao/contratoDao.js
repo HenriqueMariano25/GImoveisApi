@@ -32,6 +32,8 @@ module.exports = {
         })
     },
     visualizar: async (idContrato) => {
+        console.log(idContrato)
+
         let select = await db
             .query(
                 `SELECT con.id, con.id_responsavel, con.id_cliente, con.id_cliente2, con.id_imovel, con.data_inicio, con.data_fim,
@@ -44,6 +46,8 @@ module.exports = {
             WHERE con.id = ${idContrato}`
             )
             .then((resp) => {
+                console.log(resp.rows)
+
                 return resp.rows[0]
             })
             .catch((e) => {

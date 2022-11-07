@@ -24,6 +24,9 @@ class ContratoController {
     async visualizar(req, res) {
         let {id} = req.query
         await contratoDao.visualizar(id).then(contrato => {
+            console.log("contrato ----------------------")
+            console.log(contrato)
+
             res.status(200).json({contrato: contrato})
         })
     }
