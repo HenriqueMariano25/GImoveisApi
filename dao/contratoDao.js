@@ -229,20 +229,25 @@ module.exports = {
             )
         })
     },
-    deletarContrato: async (idContrato) => {
-        let deletado = await db
-            .query(
-                `UPDATE contrato SET deletado = ${true} WHERE id = ${idContrato} RETURNING id`
-            )
-            .then((resp) => {
-                return resp.rows[0]
-            })
-            .catch((e) => {
-                console.log(e)
-                return Promise.reject(e)
-            })
+    deletarContrato: async (idContrato, id_usuario) => {
+        let agora = dayjs().format("DD/MM/YYYY HH:mm:ss")
 
-        return {contrato: deletado}
+        try{
+            let {id_cliente, id_imovel, id_cliente2} = await db.query(`
+                SELECT id_cliente, id_imovel, id_cliente2 FROM contrato WHERE id = ${idContrato} LIMIT 1
+            `).then(resp => resp.rows[0])
+
+            await db.query(`UPDATE imovel SET id_status_imovel = 3, alterado_em = '${agora}', alterado_por = ${ id_usuario } WHERE id = ${id_imovel}`)
+
+            await db.query(`UPDATE cliente SET id_status_cliente = 2, alterado_em = '${agora}', alterado_por = ${ id_usuario } WHERE id = ${id_cliente} OR id = ${id_cliente2}`)
+
+            await db.query(`UPDATE contrato SET deletado = ${true}, alterado_em = '${agora}', alterado_por = ${ id_usuario } WHERE id = ${idContrato}`)
+
+            return { falha: false, dados: { contrato: idContrato } }
+        }catch(error){
+            console.log(error)
+            return { falha: true, erro: error}
+        }
     },
     status: () => {
         return new Promise((resolve, reject) => {

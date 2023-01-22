@@ -96,7 +96,9 @@ class ContratoController {
 
     async deletar(req, res) {
         let {id} = req.params
-        await contratoDao.deletarContrato(id).then(response => {
+        let { id_usuario } = req.query
+
+        await contratoDao.deletarContrato(id, id_usuario).then(response => {
             res.status(200).json(response)
         })
     }
