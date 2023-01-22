@@ -121,30 +121,33 @@ module.exports = {
 
     editar: async (contrato, idUsuario) => {
         let agora = dayjs().format("DD/MM/YYYY HH:mm:ss")
-        let update = await db
-            .query(
-                `UPDATE contrato SET id_responsavel = ${contrato.id_responsavel}, id_cliente = ${contrato.id_cliente},
-            id_cliente2 = ${contrato.id_cliente2}, id_imovel = ${contrato.id_imovel}, data_inicio = '${contrato.data_inicio}', 
-            valor_boleto = '${contrato.valor_boleto_convertido}',carencia = '${contrato.carencia}', 
-            alterado_em = '${agora}', alterado_por = ${idUsuario}, observacao = '${contrato.observacao}',
-            id_status_contrato = ${contrato.status}, garantia = '${contrato.garantia}', juros_multa = ${contrato.juros_multa},
-            data_vencimento = '${contrato.data_vencimento}',juros_mes = '${contrato.juros_mes}', 
-            multa = '${contrato.multa}'
-            WHERE id = ${contrato.id} RETURNING id`
-            )
-            .then((resp) => {
-                return resp.rows[0]
-            })
-            .catch((e) => {
-                console.log(e)
-                return Promise.reject(e)
-            })
+
+        await db.query(`
+            UPDATE contrato SET
+                id_responsavel = ${contrato.id_responsavel},
+                id_cliente = ${contrato.id_cliente},
+                id_cliente2 = ${contrato.id_cliente2},
+                id_imovel = ${contrato.id_imovel},
+                data_inicio = '${contrato.data_inicio}',
+                valor_boleto = '${contrato.valor_boleto_convertido}',
+                carencia = '${contrato.carencia}',
+                juros_mes = '${contrato.juros_mes}',
+                id_status_contrato = ${contrato.status},
+                garantia = '${contrato.garantia}',
+                juros_multa = ${contrato.juros_multa},
+                data_vencimento = '${contrato.data_vencimento}',
+                multa = '${contrato.multa}',
+                alterado_em = '${agora}',
+                alterado_por = ${idUsuario},
+                observacao = '${contrato.observacao}'
+            WHERE id = ${contrato.id} RETURNING id
+        `)
 
         let select = await db
             .query(
                 `SELECT con.id,cli.nome nome_cliente,imo.nome nome_imovel,
-                    res.nome nome_responsavel, pdf.url, pdf.nome nome_pdf, sta_con.descricao status, con.data_inicio, 
-                    con.data_fim, con.data_vencimento, ARRAY_AGG(fia.nome) fiadores, con.carencia, 
+                    res.nome nome_responsavel, pdf.url, pdf.nome nome_pdf, sta_con.descricao status, con.data_inicio,
+                    con.data_fim, con.data_vencimento, ARRAY_AGG(fia.nome) fiadores, con.carencia,
                     con.valor_boleto, pdfadt.url url_aditivo
                     FROM contrato con
                     LEFT JOIN cliente cli ON con.id_cliente = cli.id
@@ -154,7 +157,7 @@ module.exports = {
                     LEFT JOIN pdf_contrato pdf on pdf.id_contrato = con.id
                     LEFT JOIN pdf_aditivo_contrato pdfadt on pdfadt.id_contrato = con.id
                     LEFT JOIN fiador fia ON fia.id_contrato = con.id
-                    WHERE deletado = 'false' AND con.id = ${update.id}
+                    WHERE deletado = 'false' AND con.id = ${contrato.id}
                     GROUP BY con.id, cli.nome, imo.nome, res.nome, pdf.url, pdf.nome, sta_con.descricao, con.data_inicio,
                     con.data_fim, con.data_vencimento, con.carencia,con.valor_boleto, pdfadt.url`
             )
@@ -167,6 +170,24 @@ module.exports = {
 
         return {contrato: select}
     },
+
+    atualizarBoletoContrato: async (idContrato, valor, data_vencimento) => {
+        let boletos = await db.query(`SELECT id, data_vencimento FROM boleto WHERE id_contrato = ${idContrato} AND id_status_boleto = 1 ORDER BY data_vencimento`).then(resp => resp.rows)
+
+        let mesAtualVencimento = null
+        let novaDataVencimento = null
+
+        for(let boleto of boletos){
+            let dataVencimento = boleto.data_vencimento
+            mesAtualVencimento = dayjs(dataVencimento).month()
+            novaDataVencimento = dayjs(dataVencimento).date(data_vencimento).format("YYYY-MM-DD")
+            while(dayjs(novaDataVencimento).month() !== mesAtualVencimento){
+                novaDataVencimento = dayjs(novaDataVencimento).subtract(1,'day').format("YYYY-MM-DD")
+            }
+            await db.query(`UPDATE boleto SET data_vencimento = '${novaDataVencimento}', valor = '${valor}' WHERE id = ${boleto.id}`)
+        }
+    },
+
     gerarBoleto: (idContrato, data_vencimento, valor_boleto) => {
         return new Promise((resolve, reject) => {
             db.query(

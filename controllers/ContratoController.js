@@ -88,10 +88,16 @@ class ContratoController {
             let idImovel = contrato.id_imovel
             contratoDao.atualizarImovelAlugado(idImovel)
 
+            let {valor_boleto_convertido: valorBoleto, data_vencimento, id: idContrato} = contrato
+
+            contratoDao.atualizarBoletoContrato(idContrato, valorBoleto, data_vencimento)
+
             res.status(200).json(resposta)
         }).catch(erro => {
             console.log(erro)
         })
+
+
     }
 
     async deletar(req, res) {
