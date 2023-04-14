@@ -44,7 +44,7 @@ module.exports = {
 
     visualizar: (idUsusario) => {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT usu.id, usu.nome, usu.email, usu.usuario, per.id permissao, usu.senha FROM usuario usu
+            db.query(`SELECT usu.id, usu.nome, usu.email, usu.usuario, per.id permissao FROM usuario usu
                    FULL OUTER JOIN permissao per ON per.id = usu.id_permissao
                    WHERE usu.id = ${idUsusario}
                     ORDER BY nome`, (erro, resultado) => {
