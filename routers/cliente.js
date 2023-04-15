@@ -5,6 +5,9 @@ module.exports = app => {
     app.get('/clientes',(req,res) => {
         ClienteController.visualizarTodos(res)
     })
+    app.get('/clientes/novo_padrao',ClienteController.visualizarTodosNovoPadrao)
+
+
     app.get('/cliente',(req,res) => {
         ClienteController.visualizar(req,res)
     })
@@ -19,6 +22,9 @@ module.exports = app => {
     app.delete('/cliente/deletar/:id',(req, res) => {
         ClienteController.deletar(req,res)
     })
+
+    app.delete("/cliente/deletar/:id/novo_padrao", ClienteController.deletarNovoPadrao)
+
     app.get('/cliente/consultar_cep/:cep', (req, res) => {
         ClienteController.consultarCep(req,res)
     })
@@ -40,4 +46,8 @@ module.exports = app => {
     app.delete('/cliente/telefone/deletar', (req, res) => {
         ClienteController.deletarTelefone(req,res)
     })
+
+    app.delete('/cliente/telefone/deletar/novo_padrao',ClienteController.deletarTelefoneNovoPadrao)
+
+    app.post("/cliente/cadastrar/novo_padrao", ClienteController.cadastrarNovoPadrao)
 }

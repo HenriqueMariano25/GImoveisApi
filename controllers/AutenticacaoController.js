@@ -15,15 +15,10 @@ class AutenticacaoController {
     async loginNovoPadrao(req, res) {
         const token = criarTokenJWT(req.user)
 
-        console.log("Passei aquii")
         await res.status(200).send({token: token})
     }
     async buscarUsuario(req, res){
         const token = req.body.token || req.query.token || req.headers["authorization"].split(" ")[1]
-        console.log(token)
-        // console.log(req.params)
-
-
             try{
                 const decoded = jwt.verify(token, process.env.CHAVE_JWT)
 
@@ -31,8 +26,6 @@ class AutenticacaoController {
                 let idUsuario = req.user.id
 
                 let usuario = await usuarioDao.visualizar(idUsuario)
-
-                console.log(usuario)
 
                 return res.status(200).json(usuario)
             }catch(error){
