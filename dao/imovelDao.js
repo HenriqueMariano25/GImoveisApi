@@ -71,6 +71,33 @@ module.exports = {
         })
     },
 
+    visualizarTodosNovoPadrao: (pagina, itensPorPagina, filtro) => {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT imo.id, imo.nome, imo.rua, sta_imo.descricao status, res.nome proprietario, 
+                    imo.rua, imo.numero, imo.bairro, imo.cidade,imo.cep, tip_imo.descricao tipo_imovel,
+                    imo.inscricao_municipal, imo.funesbom, imo.complemento, imo.estado
+                    FROM imovel imo
+                    LEFT JOIN status_imovel sta_imo ON imo.id_status_imovel = sta_imo.id
+                    LEFT JOIN responsavel res ON imo.id_responsavel = res.id
+                    LEFT JOIN tipo_imovel tip_imo ON imo.id_tipo_imovel = tip_imo.id
+                    WHERE imo.deletado_em IS NULL ${filtro ? `AND ${filtro}` : ""}
+                    ORDER BY imo.nome
+                    LIMIT ${itensPorPagina} 
+                    OFFSET ${(parseInt(pagina) - 1) * parseInt(itensPorPagina)}`,
+                (erro, resultado) => {
+                    if (erro) {
+                        console.log(erro)
+                        return reject(erro)
+                    }
+                    return resolve(resultado.rows)
+                })
+        })
+    },
+
+    contarImoveis: async (filtro) => {
+        return await db.query(`SELECT COUNT(id) total FROM imovel WHERE deletado_em IS NULL ${filtro ? `AND ${filtro}` : ""}`).then(resp => resp.rows[0].total)
+    },
+
     visualizarBusca: (busca) => {
         return new Promise((resolve, reject) => {
             db.query(`SELECT imo.id, imo.nome, imo.rua, sta_imo.descricao status, res.nome proprietario, 
@@ -131,6 +158,35 @@ module.exports = {
                     LEFT OUTER JOIN tipo_comodo tip_com ON com.id_tipo_comodo = tip_com.id
                     LEFT OUTER JOIN status_imovel sta_imo ON imo.id_status_imovel = sta_imo.id
                     WHERE imo.id = ${id}
+                    GROUP BY imo.id, imo.nome, imo.id_responsavel, imo.inscricao_municipal, imo.funesbom, 
+                    tipo_imovel,id_status ,status,
+                    imo.cep, imo.rua,imo.numero, imo.complemento, imo.bairro, imo.cidade, imo.estado,imo.data_aquisicao,
+                    area,area_construida, imo.valor_atual, imo.valor_aquisicao,numero_cliente_luz,numero_cliente_agua,
+                    imo.data_venda,valor_aquisicao_dolar, imo.observacao
+            `, (erro, resultado) => {
+                if (erro) {
+                    console.log(erro)
+                    return reject(erro)
+                }
+                return resolve(resultado.rows[0])
+            })
+        })
+    },
+
+    visualizarNovoPadrao: async (idImovel) => {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT imo.id,imo.nome, imo.id_responsavel, imo.inscricao_municipal, imo.funesbom, 
+                    imo.id_tipo_imovel tipo_imovel,imo.id_status_imovel id_status ,sta_imo.descricao status,
+                    imo.cep, imo.rua,imo.numero, imo.complemento, imo.bairro, imo.cidade, imo.estado,imo.data_aquisicao,
+                    imo.met_quadrada area, imo.met_quadrada_construida area_construida, imo.valor_atual, 
+                    imo.valor_aquisicao,imo.num_cliente_luz numero_cliente_luz, imo.num_cliente_agua numero_cliente_agua,
+                    imo.data_venda,ARRAY_AGG(com.quantidade) quantidade, ARRAY_AGG(tip_com.descricao) tipo_comodo, imo.observacao,
+                    ARRAY_AGG(com.id_tipo_comodo) id_tipo_comodo, ARRAY_AGG(com.id) id_comodo, ARRAY_AGG(com.descricao) descricao, valor_aquisicao_dolar
+                    FROM comodo com
+                    FULL OUTER JOIN imovel imo ON imo.id = com.id_imovel
+                    LEFT OUTER JOIN tipo_comodo tip_com ON com.id_tipo_comodo = tip_com.id
+                    LEFT OUTER JOIN status_imovel sta_imo ON imo.id_status_imovel = sta_imo.id
+                    WHERE imo.id = ${idImovel}
                     GROUP BY imo.id, imo.nome, imo.id_responsavel, imo.inscricao_municipal, imo.funesbom, 
                     tipo_imovel,id_status ,status,
                     imo.cep, imo.rua,imo.numero, imo.complemento, imo.bairro, imo.cidade, imo.estado,imo.data_aquisicao,
@@ -295,7 +351,7 @@ module.exports = {
         let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
 
         let update = await db.query(`UPDATE comodo
-            SET quantidade = ${comodo.quantidade}, id_tipo_comodo = ${comodo.id_tipo_comodo}, descricao = '${comodo.descricao}'
+            SET quantidade = ${comodo.quantidade}, id_tipo_comodo = ${comodo.id_tipo_comodo}, descricao = ${ comodo.descricao ? "'"+comodo.descricao+"'" : null }
             , alterado_em = '${agora}', alterado_por = ${idUsuario}
             WHERE id = ${comodo.id} RETURNING id`).then(resp => {
             return resp.rows[0]
@@ -323,6 +379,23 @@ module.exports = {
         })
 
         return {comodo: deletado}
+    },
+
+    deletarComodoNovoPadrao: async ( idComodo, idUsuario ) => {
+        let agora = dayjs().format("DD/MM/YYYY HH:mm:ss");
+
+        let resp = await db
+            .query(
+                `UPDATE comodo SET deletado_por = ${idUsuario}, deletado_em = '${agora}' WHERE id = ${idComodo}`
+            )
+            .then((resultado) => {
+                return {falha: false, dados: {resultado: resultado.rows}};
+            })
+            .catch((erro) => {
+                return {falha: true, erro};
+            });
+
+        return resp;
     },
 
 

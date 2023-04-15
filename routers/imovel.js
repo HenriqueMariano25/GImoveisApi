@@ -8,6 +8,11 @@ module.exports = app => {
     app.get('/imoveis', (req,res) => {
         ImovelController.visualizarTodos(res)
     })
+
+    app.get("/imoveis/novo_padrao", ImovelController.visualizarTodosNovoPadrao)
+
+    app.get("/imovel/novo_padrao", ImovelController.visualizarNovoPadrao)
+
     app.get("/imoveis/busca", ImovelController.visualizarBusca)
 
     app.get('/imoveis/simples', (req,res) => {
@@ -44,6 +49,8 @@ module.exports = app => {
     app.delete('/imoveis/comodo/deletar', (req,res) => {
         ImovelController.deletarComodo(req,res)
     })
+    app.delete("/imoveis/comodo/deletar/novo_padrao", ImovelController.deletarComodoNovoPadrao)
+
     app.get('/imoveis/contratos', (req,res) => {
         ImovelController.contratos(req,res)
     })

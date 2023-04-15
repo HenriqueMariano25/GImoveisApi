@@ -1,5 +1,7 @@
 const imovelDao = require('../dao/imovelDao')
 const caixaDao = require("../dao/caixaDao");
+const clienteDao = require("../dao/clienteDao");
+const limparDados = require("../functions/limparDados");
 
 class ImovelController {
     async cadastrar(req, res) {
@@ -17,6 +19,36 @@ class ImovelController {
         await imovelDao.visualizarTodos().then(consulta => {
             res.status(200).json(consulta)
         })
+    }
+
+    async visualizarTodosNovoPadrao(req, res) {
+        let {pagina, itensPorPagina, filtro} = req.query
+
+        try{
+            let imoveis = await imovelDao.visualizarTodosNovoPadrao(pagina, itensPorPagina, filtro)
+            let total = await imovelDao.contarImoveis(filtro)
+
+            return res.status(200).json({falha: false, dados: {total, imoveis}})
+        }catch(error){
+            console.log(error)
+            return res.status(500).json({ falha: true, erro: error})
+        }
+    }
+
+    async visualizarNovoPadrao(req, res){
+        let { idImovel } = req.query
+
+        try{
+            // let imovel = await imovelDao.visualizar(idImovel).then(resultado => resultado)
+
+            let imovel = await imovelDao.visualizarNovoPadrao(idImovel).then(resultado => resultado)
+
+            return res.status(200).json({ falha: false, dados: {imovel } })
+        }catch(error){
+            console.log(error)
+            return res.status(500).json({ falha: true, erro: error})
+        }
+
     }
 
     async visualizarBusca(req, res){
@@ -93,18 +125,26 @@ class ImovelController {
     }
 
     async cadastrarComodo(req, res){
-        let comodo = req.body.comodo
-        let idImovel = req.body.idImovel
-        let idUsuario = req.body.idUsuario
-        await imovelDao.cadastrarComodo(idImovel, comodo, idUsuario).then(response => {
+        let { comodo, idImovel, idUsuario } = req.body
+
+        if(isNaN(parseInt(comodo.quantidade)))
+            comodo.quantidade = 0
+        else
+            comodo.quantidade = parseInt(comodo.quantidade)
+
+        let comodoFormatado = limparDados(comodo);
+
+        await imovelDao.cadastrarComodo(idImovel, comodoFormatado, idUsuario).then(response => {
             res.status(200).json(response)
         })
     }
 
     async editarComodo(req, res){
-        let comodo = req.body.comodo
-        let idUsuario = req.body.idUsuario
-        await imovelDao.editarComodo(comodo, idUsuario).then(response => {
+        let { comodo, idUsuario } = req.body
+
+        let comodoFormatado = limparDados(comodo);
+
+        await imovelDao.editarComodo(comodoFormatado, idUsuario).then(response => {
             res.status(200).json(response)
         })
     }
@@ -114,6 +154,22 @@ class ImovelController {
         await imovelDao.deletarComodo(idComodo).then(response => {
             res.status(200).json(response)
         })
+    }
+
+    async deletarComodoNovoPadrao(req, res) {
+        let  { idComodo, idUsuario } = req.query
+
+        try {
+            let resp = await imovelDao.deletarComodoNovoPadrao(idComodo, idUsuario)
+
+            return res.status(200).json(resp)
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({falha: true, erro: error})
+        }
+        // await imovelDao.deletarComodoNovoPadrao(idComodo).then(response => {
+        //     res.status(200).json(response)
+        // })
     }
 
     async contratos(req,res){
