@@ -28,8 +28,6 @@ module.exports = {
   },
 
   visualizarTodosNovoPadrao: (pagina, itensPorPagina, filtro) => {
-    console.log(filtro)
-
     return new Promise((resolve, reject) => {
       db.query(
         `SELECT  cli.id,cli.nome, cli.email, cli.rua, cli.bairro, cli.cidade, cli.estado, cli.complemento, cli.cep, cli.cpf_cnpj, cli.identidade,

@@ -17,6 +17,36 @@ module.exports = {
         })
     },
 
+    visualizarTodosNovoPadrao: (pagina, itensPorPagina, filtro) => {
+        let sql = `SELECT usu.id, usu.nome, usu.email, usu.usuario, per.descricao permissao, usu.deletado
+                    FROM usuario usu
+                    LEFT OUTER JOIN permissao per ON per.id = usu.id_permissao
+                   WHERE usu.deletado = ${false} AND usu.deletado_em IS NULL
+                   ${ filtro ? `AND ( LOWER(usu.nome) LIKE LOWER('%${filtro}%')
+                   OR LOWER(usu.email) LIKE LOWER('%${filtro}%')
+                   OR LOWER(usu.usuario) LIKE LOWER('%${filtro}%')
+                   OR LOWER(per.descricao) LIKE LOWER('%${filtro}%') )` : ""}
+                    ORDER BY nome
+                    LIMIT ${itensPorPagina}
+                    OFFSET ${(parseInt(pagina) - 1) * parseInt(itensPorPagina)}`
+        return new Promise((resolve, reject) => {
+            db.query(sql, (erro, resultado) => {
+                if (erro) {
+                    console.log(erro)
+                    return reject(erro)
+                }
+                return resolve(resultado.rows)
+            })
+        })
+    } ,
+
+    contarUsuarios: async (filtro) => {
+        return await db.query(`SELECT COUNT(usu.id) total FROM usuario usu LEFT OUTER JOIN permissao per ON per.id = usu.id_permissao WHERE usu.deletado = ${false} AND usu.deletado_em IS NULL  ${ filtro ? `AND ( LOWER(usu.nome) LIKE LOWER('%${filtro}%')
+                   OR LOWER(usu.email) LIKE LOWER('%${filtro}%')
+                   OR LOWER(usu.usuario) LIKE LOWER('%${filtro}%')
+                   OR LOWER(per.descricao) LIKE LOWER('%${filtro}%') )` : ""}`).then(resp => resp.rows[0].total)
+    },
+
     cadastrar: async (usuario, idUsuario) => {
         let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
 
@@ -81,10 +111,50 @@ module.exports = {
         return {usuario: select}
     },
 
+    editarNovoPadrao: async (idUsuario, usuario) => {
+        let agora = dayjs().format('DD/MM/YYYY HH:mm:ss')
+        let update = await db.query(`UPDATE usuario
+          SET nome = '${usuario.nome.trim()}', email = '${usuario.email.trim()}', usuario = '${usuario.usuario.trim()}',
+           id_permissao = ${usuario.permissao}, senha = '${usuario.senha}',  alterado_em = '${agora}', alterado_por = ${idUsuario}
+           WHERE id = ${usuario.id} RETURNING id`).then(resp => {
+            return resp.rows[0]
+        }).catch(e => {
+            console.log(e)
+            return Promise.reject(e);
+        })
+
+        let select = await db.query(`SELECT usu.id, usu.nome, usu.email, usu.usuario, per.descricao permissao,usu.deletado FROM usuario usu
+                   LEFT OUTER JOIN permissao per ON per.id = usu.id_permissao
+                   WHERE usu.id = ${update.id}
+            `).then(resp => {
+            return resp.rows[0]
+        }).catch(e => {
+            console.log(e)
+        })
+
+        return {usuario: select}
+    },
+
     deletar: (idUsuario) => {
         return new Promise((resolve, reject) => {
             db.query(`UPDATE usuario SET deletado = ${true} WHERE id = ${idUsuario} RETURNING nome, id`, (erro, resultado) => {
                 if(erro){
+                    console.log(erro)
+                    return reject(erro)
+                }
+                return resolve(resultado.rows)
+            })
+        })
+    },
+
+    deletarNovoPadrao: (idUsuario, idUsuarioDeletando) => {
+        let agora = dayjs().format("DD/MM/YYYY HH:mm:ss");
+
+        return new Promise((resolve, reject) => {
+            db.query(`UPDATE usuario SET deletado = ${true}, deletado_em = '${agora}',
+               deletado_por = ${idUsuarioDeletando}
+            WHERE id = ${idUsuario} RETURNING nome, id`, (erro, resultado) => {
+                if (erro) {
                     console.log(erro)
                     return reject(erro)
                 }
@@ -113,7 +183,6 @@ module.exports = {
                    WHERE deletado = ${false} AND
                    LOWER(usu.nome) LIKE LOWER('%${busca}%')
                    OR LOWER(usu.email) LIKE LOWER('%${busca}%')
-                   OR LOWER(usu.usuario) LIKE LOWER('%${busca}%')
                    OR LOWER(usu.usuario) LIKE LOWER('%${busca}%')
                    OR LOWER(per.descricao) LIKE LOWER('%${busca}%')
                     ORDER BY nome
