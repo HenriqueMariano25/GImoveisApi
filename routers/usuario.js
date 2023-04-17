@@ -21,9 +21,8 @@ module.exports = app => {
         UsuarioController.editar(req,res)
     })
 
-    app.post("/usuario/edtiar/novo_padrao", UsuarioController.editarNovoPadrao
+    app.post("/usuario/editar/novo_padrao", UsuarioController.editarNovoPadrao)
 
-    )
     app.delete("/usuario/deletar/novo_padrao", UsuarioController.deletarNovoPadrao)
 
     app.delete('/usuario/deletar/:id', (req, res) => {

@@ -39,8 +39,6 @@ class UsuarioController {
 
     async cadastrarNovoPadrao(req, res) {
         let {usuario, idUsuario} = req.body
-        console.log(usuario)
-        console.log(idUsuario)
 
         await usuarioDao.cadastrar(usuario, idUsuario).then(consulta => {
             res.status(200).json({ falha: false, dados: { usuario: consulta } })
@@ -74,7 +72,7 @@ class UsuarioController {
         let {usuario, idUsuario} = req.body
 
         await usuarioDao.editarNovoPadrao(idUsuario, usuario).then(response => {
-            res.status(200).json({ falga:false, dados: { usuario: response}})
+            res.status(200).json({ falha:false, dados: { usuario: response}})
         }).catch(erro => {
             if (erro.code == "23505") {
                 res.status('500').json({falha: true, erro: "Nome do operador ou Usuário duplicado"})
