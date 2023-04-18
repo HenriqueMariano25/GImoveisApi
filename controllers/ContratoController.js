@@ -7,6 +7,8 @@ const aws = require('aws-sdk')
 const {deletarPDF} = require("../dao/contratoDao");
 const {response} = require("express");
 const caixaDao = require("../dao/caixaDao");
+const responsavelDao = require("../dao/responsavelDao");
+const limparDados = require("../functions/limparDados");
 
 const s3 = new aws.S3()
 
@@ -19,6 +21,21 @@ class ContratoController {
         await contratoDao.visualizarTodos(todos).then(consulta => {
             res.status(200).json(consulta)
         })
+    }
+
+    async visualizarTodosNovoPadrao(req, res) {
+        let {pagina, itensPorPagina} = req.query
+        let filtro = req.query.filtro || null
+
+        try {
+            let contratos = await contratoDao.visualizarTodosNovoPadrao(pagina, itensPorPagina, filtro)
+            let total = await contratoDao.contarContratos(filtro)
+
+            return res.status(200).json({falha: false, dados: {contratos, total}})
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({falha: true, erro: error})
+        }
     }
 
     async visualizar(req, res) {
@@ -41,6 +58,58 @@ class ContratoController {
             let data_fim = contrato.data_fim
             let dia_vencimento = contrato.data_vencimento
             let valor_boleto = contrato.valor_boleto_convertido
+            let data_vencimento_inicial = ''
+            let vigencia = 0
+            let dia_inicio = dayjs(data_inicio).get('date')
+
+            if (dia_inicio >= dia_vencimento) {
+                data_vencimento_inicial = dayjs(data_inicio).date(dia_vencimento).add(1, 'month').format('YYYY-MM-DD')
+            } else {
+                data_vencimento_inicial = dayjs(data_inicio).date(dia_vencimento).format('YYYY-MM-DD')
+            }
+            let data_vencimento = data_vencimento_inicial
+
+            while (dayjs(data_vencimento).isBefore(dayjs(data_fim, 'day'))) {
+                if (dayjs(data_vencimento_inicial).add(vigencia + 1, 'month').isAfter(dayjs(data_fim, 'day'))) {
+                    data_vencimento = dayjs(data_vencimento_inicial).add(vigencia, 'month').format('YYYY-MM-DD')
+                    vigencia += 1
+                    let dias_faltando = dayjs(data_fim).diff(data_vencimento, 'day')
+
+                    let valor_restante = (valor_boleto / 30) * dias_faltando
+                    valor_boleto = Number(parseFloat(valor_boleto) + parseFloat(valor_restante)).toFixed(2)
+
+                    contratoDao.gerarBoleto(idContrato, data_vencimento, valor_boleto)
+                    break
+                } else {
+                    data_vencimento = dayjs(data_vencimento_inicial).add(vigencia, 'month').format('YYYY-MM-DD')
+                    contratoDao.gerarBoleto(idContrato, data_vencimento, valor_boleto)
+                    vigencia += 1
+                }
+
+            }
+            contratoDao.atualizarVigencia(idContrato, vigencia)
+
+
+            let idImovel = contrato.id_imovel
+            contratoDao.atualizarImovelAlugado(idImovel)
+
+            contratoParaRetornar.vigencia = vigencia
+            res.status(200).json(contratoParaRetornar)
+        })
+    }
+
+    async cadastrarNovoPadrao(req, res){
+        let {contrato, idUsuario} = req.body
+
+        let contratolFormatado = limparDados(contrato);
+
+        await contratoDao.cadastrarNovoPadrao(contratolFormatado, idUsuario).then(resp => {
+            let idContrato = resp.contrato.id
+            let contratoParaRetornar = resp.contrato
+            let data_inicio = contrato.data_inicio
+            let data_fim = contrato.data_fim
+            let dia_vencimento = contrato.data_vencimento
+            let valor_boleto = contrato.valor_boleto
             let data_vencimento_inicial = ''
             let vigencia = 0
             let dia_inicio = dayjs(data_inicio).get('date')

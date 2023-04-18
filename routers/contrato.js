@@ -6,12 +6,17 @@ const CaixaController = require("../controllers/CaixaController");
 module.exports = app => {
     app.get("/contratos", ContratoController.visualizarTodos)
 
+    app.get("/contratos/novo_padrao", ContratoController.visualizarTodosNovoPadrao)
+
     app.get('/contrato', (req,res) => {
         ContratoController.visualizar(req,res)
     })
     app.post('/contrato/cadastrar', (req,res) => {
         ContratoController.cadastrar(req,res)
     })
+
+    app.post("/contrato/cadastrar/novo_padrao", ContratoController.cadastrarNovoPadrao)
+
     app.post('/contrato/editar', (req,res) => {
         ContratoController.editar(req,res)
     })

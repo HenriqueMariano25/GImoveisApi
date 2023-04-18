@@ -31,6 +31,71 @@ module.exports = {
             )
         })
     },
+
+    visualizarTodosNovoPadrao: (pagina, itensPorPagina, filtro) => {
+
+        let sql = `SELECT con.id,cli.nome nome_cliente,imo.nome nome_imovel,
+                    res.nome nome_responsavel, pdf.url, pdf.nome nome_pdf, sta_con.descricao status, con.data_inicio, 
+                    con.data_fim, con.data_vencimento, ARRAY_AGG(fia.nome) fiadores, con.carencia, 
+                    con.valor_boleto, pdfadt.url url_aditivo
+                    FROM contrato con
+                    LEFT JOIN cliente cli ON con.id_cliente = cli.id
+                    LEFT JOIN imovel imo ON con.id_imovel = imo.id
+                    LEFT JOIN responsavel res ON con.id_responsavel = res.id
+                    LEFT JOIN status_contrato sta_con ON con.id_status_contrato = sta_con.id
+                    LEFT JOIN pdf_contrato pdf on pdf.id_contrato = con.id
+                    LEFT JOIN pdf_aditivo_contrato pdfadt on pdfadt.id_contrato = con.id
+                    LEFT JOIN fiador fia ON fia.id_contrato = con.id
+                    WHERE deletado = 'false' ${filtro ? `AND
+                    (LOWER(cli.nome) LIKE LOWER('%${filtro}%')
+                    OR LOWER(imo.nome) LIKE LOWER('%${filtro}%')
+                    OR LOWER(res.nome) LIKE LOWER('%${filtro}%')
+                    OR LOWER(res.nome) LIKE LOWER('%${filtro}%')
+                    OR LOWER(sta_con.descricao) LIKE LOWER('%${filtro}%')
+                    OR LOWER(sta_con.descricao) LIKE LOWER('%${filtro}%')
+                    OR con.id::varchar(255) LIKE LOWER('%${filtro}%')) ` : ""}
+                    GROUP BY con.id, cli.nome, imo.nome, res.nome, pdf.url, pdf.nome, sta_con.descricao, con.data_inicio,
+                    con.data_fim, con.data_vencimento, con.carencia,con.valor_boleto, pdfadt.url
+                    ORDER BY imo.nome
+                    LIMIT ${itensPorPagina} 
+                    OFFSET ${(parseInt(pagina) - 1) * parseInt(itensPorPagina)}`
+
+        return new Promise((resolve, reject) => {
+            db.query(sql,
+                (erro, resultado) => {
+                    if (erro) {
+                        console.log(erro)
+                        return reject(erro)
+                    }
+                    return resolve(resultado.rows)
+                }
+            )
+        })
+    },
+
+    contarContratos: async (filtro) => {
+        return await db.query(`
+            SELECT 
+                COUNT(con.id) total
+            FROM contrato con
+             LEFT JOIN cliente cli ON con.id_cliente = cli.id
+            LEFT JOIN imovel imo ON con.id_imovel = imo.id
+            LEFT JOIN responsavel res ON con.id_responsavel = res.id
+            LEFT JOIN status_contrato sta_con ON con.id_status_contrato = sta_con.id
+            WHERE 
+                con.deletado_em IS NULL AND con.deletado = 'false'
+                ${filtro ? `AND
+                    (LOWER(cli.nome) LIKE LOWER('%${filtro}%')
+                    OR LOWER(imo.nome) LIKE LOWER('%${filtro}%')
+                    OR LOWER(res.nome) LIKE LOWER('%${filtro}%')
+                    OR LOWER(res.nome) LIKE LOWER('%${filtro}%')
+                    OR LOWER(sta_con.descricao) LIKE LOWER('%${filtro}%')
+                    OR LOWER(sta_con.descricao) LIKE LOWER('%${filtro}%')
+                    OR con.id::varchar(255) LIKE LOWER('%${filtro}%')) ` : ""}
+            `)
+            .then(resp => resp.rows[0].total)
+    },
+
     visualizar: async (idContrato) => {
         console.log(idContrato)
 
@@ -84,6 +149,57 @@ module.exports = {
             '${contrato.carencia}', 'false', ${contrato.status},'${agora}', '${agora}', ${idUsuario}, ${idUsuario}, 
             '${contrato.observacao}', '${contrato.garantia}', ${contrato.juros_multa}, '${contrato.juros_mes}',
             '${contrato.multa}'
+            ) RETURNING id`
+            )
+            .then((resp) => {
+                return resp.rows[0]
+            })
+            .catch((e) => {
+                console.log(e)
+                return Promise.reject(e)
+            })
+
+        let select = await db
+            .query(
+                `SELECT con.id,cli.nome nome_cliente,imo.nome nome_imovel,
+                    res.nome nome_responsavel, sta_con.descricao status, con.data_inicio, con.vigencia,
+                    con.data_fim, con.data_vencimento, con.carencia, con.valor_boleto,ARRAY_AGG(fia.nome) fiadores
+                    FROM contrato con
+                    LEFT JOIN cliente cli ON con.id_cliente = cli.id
+                    LEFT JOIN imovel imo ON con.id_imovel = imo.id
+                    LEFT JOIN responsavel res ON con.id_responsavel = res.id
+                    LEFT JOIN status_contrato sta_con ON con.id_status_contrato = sta_con.id
+                    LEFT JOIN fiador fia ON fia.id_contrato = con.id
+                    WHERE con.id = ${insert.id}
+                    GROUP BY con.id, cli.nome, imo.nome, res.nome, sta_con.descricao, con.data_inicio,
+                    con.data_fim, con.data_vencimento, con.carencia,con.valor_boleto`
+            )
+            .then((resp) => {
+                return resp.rows[0]
+            })
+            .catch((e) => {
+                console.log(e)
+            })
+
+        return {contrato: select}
+    },
+
+    cadastrarNovoPadrao: async (contrato, idUsuario) => {
+        console.log(contrato)
+
+        let agora = dayjs().format("DD/MM/YYYY HH:mm:ss")
+
+        let insert = await db
+            .query(
+                `INSERT INTO contrato(id_responsavel,id_cliente,id_cliente2,id_imovel,data_inicio,data_fim,data_vencimento,
+            valor_boleto,carencia, deletado, id_status_contrato, criado_em, alterado_em, criado_por, alterado_por, 
+            observacao, garantia, juros_multa, juros_mes, multa) 
+            VALUES(
+            ${contrato.id_responsavel}, ${contrato.id_cliente}, ${contrato.id_cliente2},${contrato.id_imovel},
+            ${contrato.data_inicio},${contrato.data_fim},${contrato.data_vencimento},${contrato.valor_boleto},
+            ${contrato.carencia}, 'false', ${contrato.status},'${agora}', '${agora}', ${idUsuario}, ${idUsuario}, 
+            ${contrato.observacao}, ${contrato.garantia}, ${contrato.juros_multa}, ${contrato.juros_mes},
+            ${contrato.multa}
             ) RETURNING id`
             )
             .then((resp) => {
