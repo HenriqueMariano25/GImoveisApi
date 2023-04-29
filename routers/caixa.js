@@ -12,6 +12,7 @@ module.exports = app => {
     })
 
     app.get("/caixa/novo_padrao", CaixaController.visualizarTodosNovoPadrao)
+    app.get("/caixa/filtro_avancado", CaixaController.visualizarFiltroAvancado)
 
     app.get("/caixa/:id", CaixaController.visualizarCaixa)
 

@@ -151,6 +151,42 @@ module.exports = {
         .then(resp => resp.rows[0].total)
   },
 
+    visualizarFiltroAvancado(pagina, itensPorPagina, filtro) {
+        return new Promise((resolve, reject) => {
+            db.query(
+                `SELECT cai.id, cai.movimento, cai.id_debito_credito, cai.id_historico id_historico, cai.complemento_historico,
+               imo.nome imovel_nome, imo.id id_imovel, cai.valor, cai.id_conta, cai.numero_documento, con.nome conta_nome,
+               his.descricao descricao_historico
+                FROM caixa cai
+                LEFT JOIN imovel imo ON imo.id = cai.id_imovel
+                LEFT JOIN conta con ON con.id = cai.id_conta
+                LEFT JOIN historico his ON his.id = cai.id_historico
+                WHERE cai.deletado_em IS NULL ${filtro ? filtro : ''} 
+                ORDER BY cai.movimento DESC
+                LIMIT ${itensPorPagina}
+                OFFSET ${(parseInt(pagina) - 1) * parseInt(itensPorPagina)}`,
+                (erro, resultado) => {
+                    if (erro) {
+                        console.log(erro)
+                        return reject(erro)
+                    }
+                    return resolve(resultado.rows)
+                }
+            )
+        })
+    },
+
+    contarCaixasFiltroAvancado: async (filtro) => {
+        return await db.query(`
+            SELECT 
+                COUNT(cai.id) total
+            FROM caixa cai 
+             WHERE cai.deletado_em IS NULL ${filtro ? filtro : ''} 
+            `)
+            .then(resp => resp.rows[0].total)
+    },
+
+
     visualizarCaixa(id){
         return new Promise((resolve, reject) => {
             db.query(

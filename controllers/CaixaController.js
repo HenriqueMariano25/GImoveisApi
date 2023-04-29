@@ -50,6 +50,22 @@ class CaixaController {
         }
     }
 
+    async visualizarFiltroAvancado(req, res) {
+        let {pagina, itensPorPagina} = req.query
+
+        try {
+            let filtro = req.query.filtro || null
+
+            let caixas = await caixaDao.visualizarFiltroAvancado(pagina, itensPorPagina, filtro)
+            let total = await caixaDao.contarCaixasFiltroAvancado(filtro)
+
+            return res.status(200).json({falha: false, dados: {total, caixas}})
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({falha: true, erro: error})
+        }
+    }
+
     async visualizarCaixa(req, res){
         let { id } = req.params
 
