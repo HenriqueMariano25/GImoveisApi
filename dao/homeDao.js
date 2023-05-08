@@ -20,4 +20,23 @@ module.exports = {
             )
         })
     },
+
+    todosContratos: async () => {
+        let sql = `SELECT con.id, con.id_status_contrato, stc.descricao status FROM contrato con LEFT JOIN status_contrato stc ON stc.id = con.id_status_contrato`
+
+
+
+        try{
+            let resultado = await db.query(sql)
+
+            return resultado.rows
+        }catch(error){
+            console.log(error)
+            return error
+        }
+
+        // console.log(resultado.rows)
+
+        // return resultado
+    }
 }
