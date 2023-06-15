@@ -24,6 +24,8 @@ class ImovelController {
     async visualizarTodosNovoPadrao(req, res) {
         let {pagina, itensPorPagina, filtro} = req.query
 
+        console.log(filtro)
+
         try{
             let imoveis = await imovelDao.visualizarTodosNovoPadrao(pagina, itensPorPagina, filtro)
             let total = await imovelDao.contarImoveis(filtro)

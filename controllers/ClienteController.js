@@ -16,7 +16,9 @@ class ClienteController {
 
     try{
       let clientes = await clienteDao.visualizarTodosNovoPadrao(pagina, itensPorPagina, filtro)
+
       let total = await clienteDao.contarClientes(filtro)
+      console.log(total)
 
       return res.status(200).json({ falha: false, dados: { total , clientes } })
     }catch(error){

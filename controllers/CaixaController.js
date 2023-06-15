@@ -40,6 +40,9 @@ class CaixaController {
         try{
             let filtro = req.query.filtro || null
 
+            console.log("filtro")
+            console.log(filtro)
+
             let caixas = await caixaDao.visualizarTodosNovoPadrao(pagina, itensPorPagina, filtro)
             let total = await caixaDao.contarCaixas(filtro)
 

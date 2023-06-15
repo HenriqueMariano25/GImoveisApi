@@ -90,6 +90,7 @@ module.exports = {
                 OR LOWER(res.cidade) LIKE LOWER('%${filtro}%') 
                 OR LOWER(res.numero) LIKE LOWER('%${filtro}%') 
                 OR LOWER(res.estado) LIKE LOWER('%${filtro}%') 
+                OR LOWER(res.cpf_cnpj) LIKE LOWER('%${filtro}%') 
                 OR LOWER(res.complemento) LIKE LOWER('%${filtro}%'))` : ''}
                 ORDER BY res.nome
                 LIMIT ${itensPorPagina} 
