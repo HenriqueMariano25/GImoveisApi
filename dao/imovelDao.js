@@ -80,10 +80,10 @@ module.exports = {
                     LEFT JOIN status_imovel sta_imo ON imo.id_status_imovel = sta_imo.id
                     LEFT JOIN responsavel res ON imo.id_responsavel = res.id
                     LEFT JOIN tipo_imovel tip_imo ON imo.id_tipo_imovel = tip_imo.id
-                    WHERE imo.deletado_em IS NULL ${filtro ? `AND LOWER(imo.nome) LIKE LOWER('%${filtro}%') OR 
-                    LOWER(imo.rua) LIKE LOWER('%${filtro}%') OR LOWER(imo.bairro) LIKE LOWER('%${filtro}%') OR 
-                    LOWER(imo.numero) LIKE LOWER('%${filtro}%') OR LOWER(imo.cidade) LIKE LOWER('%${filtro}%') OR 
-                    LOWER(sta_imo.descricao) LIKE LOWER('%${filtro}%')` : ''}
+                    WHERE imo.deletado_em IS NULL ${filtro ? `AND unaccent(imo.nome) ILIKE unaccent('%${filtro}%') OR 
+                    unaccent(imo.rua) ILIKE unaccent('%${filtro}%') OR unaccent(imo.bairro) ILIKE unaccent('%${filtro}%') OR 
+                    unaccent(imo.numero) ILIKE unaccent('%${filtro}%') OR unaccent(imo.cidade) ILIKE unaccent('%${filtro}%') OR 
+                    unaccent(sta_imo.descricao) ILIKE unaccent('%${filtro}%')` : ''}
                     ORDER BY imo.nome
                     LIMIT ${itensPorPagina} 
                     OFFSET ${(parseInt(pagina) - 1) * parseInt(itensPorPagina)}`,
@@ -102,8 +102,10 @@ module.exports = {
     LEFT JOIN status_imovel sta_imo ON imo.id_status_imovel = sta_imo.id
                     LEFT JOIN responsavel res ON imo.id_responsavel = res.id
                     LEFT JOIN tipo_imovel tip_imo ON imo.id_tipo_imovel = tip_imo.id
-WHERE imo.deletado_em IS NULL ${filtro ? `AND LOWER(imo.nome) LIKE LOWER('%${filtro}%') OR 
-                    LOWER(imo.rua) LIKE LOWER('%${filtro}%') OR LOWER(imo.bairro) LIKE LOWER('%${filtro}%')` : ''}`).then(resp => resp.rows[0].total)
+WHERE imo.deletado_em IS NULL  ${filtro ? `AND unaccent(imo.nome) ILIKE unaccent('%${filtro}%') OR 
+                    unaccent(imo.rua) ILIKE unaccent('%${filtro}%') OR unaccent(imo.bairro) ILIKE unaccent('%${filtro}%') OR 
+                    unaccent(imo.numero) ILIKE unaccent('%${filtro}%') OR unaccent(imo.cidade) ILIKE unaccent('%${filtro}%') OR 
+                    unaccent(sta_imo.descricao) ILIKE unaccent('%${filtro}%')` : ''}`).then(resp => resp.rows[0].total)
     },
 
     visualizarBusca: (busca) => {

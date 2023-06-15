@@ -84,14 +84,14 @@ module.exports = {
                 `SELECT res.nome, res.id, res.cpf_cnpj, res.rua, res.numero, res.cidade, res.bairro, res.estado, res.complemento
                 FROM responsavel res
                 WHERE res.deletado_em IS NULL 
-                ${filtro ? `AND (LOWER(res.nome) LIKE LOWER('%${filtro}%') 
-                OR LOWER(res.rua) LIKE LOWER('%${filtro}%') 
-                OR LOWER(res.bairro) LIKE LOWER('%${filtro}%') 
-                OR LOWER(res.cidade) LIKE LOWER('%${filtro}%') 
-                OR LOWER(res.numero) LIKE LOWER('%${filtro}%') 
-                OR LOWER(res.estado) LIKE LOWER('%${filtro}%') 
-                OR LOWER(res.cpf_cnpj) LIKE LOWER('%${filtro}%') 
-                OR LOWER(res.complemento) LIKE LOWER('%${filtro}%'))` : ''}
+                ${filtro ? `AND (unaccent(res.nome) ILIKE unaccent('%${filtro}%') 
+                OR unaccent(res.rua) ILIKE unaccent('%${filtro}%') 
+                OR unaccent(res.bairro) ILIKE unaccent('%${filtro}%') 
+                OR unaccent(res.cidade) ILIKE unaccent('%${filtro}%') 
+                OR unaccent(res.numero) ILIKE unaccent('%${filtro}%') 
+                OR unaccent(res.estado) ILIKE unaccent('%${filtro}%') 
+                OR unaccent(res.cpf_cnpj) ILIKE unaccent('%${filtro}%') 
+                OR unaccent(res.complemento) ILIKE unaccent('%${filtro}%'))` : ''}
                 ORDER BY res.nome
                 LIMIT ${itensPorPagina} 
                 OFFSET ${(parseInt(pagina) - 1) * parseInt(itensPorPagina)}`,
@@ -112,13 +112,14 @@ module.exports = {
             FROM responsavel res 
             WHERE 
                 deletado_em IS NULL 
-                ${filtro ? `AND (LOWER(res.nome) LIKE LOWER('%${filtro}%') 
-                OR LOWER(res.rua) LIKE LOWER('%${filtro}%') 
-                OR LOWER(res.bairro) LIKE LOWER('%${filtro}%') 
-                OR LOWER(res.cidade) LIKE LOWER('%${filtro}%') 
-                OR LOWER(res.numero) LIKE LOWER('%${filtro}%') 
-                OR LOWER(res.estado) LIKE LOWER('%${filtro}%') 
-                OR LOWER(res.complemento) LIKE LOWER('%${filtro}%'))` : ''} 
+                ${filtro ? `AND (unaccent(res.nome) ILIKE unaccent('%${filtro}%') 
+                OR unaccent(res.rua) ILIKE unaccent('%${filtro}%') 
+                OR unaccent(res.bairro) ILIKE unaccent('%${filtro}%') 
+                OR unaccent(res.cidade) ILIKE unaccent('%${filtro}%') 
+                OR unaccent(res.numero) ILIKE unaccent('%${filtro}%') 
+                OR unaccent(res.estado) ILIKE unaccent('%${filtro}%') 
+                OR unaccent(res.cpf_cnpj) ILIKE unaccent('%${filtro}%') 
+                OR unaccent(res.complemento) ILIKE unaccent('%${filtro}%'))` : ''}
             `)
         .then(resp => resp.rows[0].total)
     },

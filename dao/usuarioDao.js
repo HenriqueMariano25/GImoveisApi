@@ -22,10 +22,10 @@ module.exports = {
                     FROM usuario usu
                     LEFT OUTER JOIN permissao per ON per.id = usu.id_permissao
                    WHERE usu.deletado = ${false} AND usu.deletado_em IS NULL
-                   ${ filtro ? `AND ( LOWER(usu.nome) LIKE LOWER('%${filtro}%')
-                   OR LOWER(usu.email) LIKE LOWER('%${filtro}%')
-                   OR LOWER(usu.usuario) LIKE LOWER('%${filtro}%')
-                   OR LOWER(per.descricao) LIKE LOWER('%${filtro}%') )` : ""}
+                   ${ filtro ? `AND ( unaccent(usu.nome) ILIKE unaccent('%${filtro}%')
+                   OR unaccent(usu.email) ILIKE unaccent('%${filtro}%')
+                   OR unaccent(usu.usuario) ILIKE unaccent('%${filtro}%')
+                   OR unaccent(per.descricao) ILIKE unaccent('%${filtro}%') )` : ""}
                     ORDER BY nome
                     LIMIT ${itensPorPagina}
                     OFFSET ${(parseInt(pagina) - 1) * parseInt(itensPorPagina)}`
@@ -41,10 +41,11 @@ module.exports = {
     } ,
 
     contarUsuarios: async (filtro) => {
-        return await db.query(`SELECT COUNT(usu.id) total FROM usuario usu LEFT OUTER JOIN permissao per ON per.id = usu.id_permissao WHERE usu.deletado = ${false} AND usu.deletado_em IS NULL  ${ filtro ? `AND ( LOWER(usu.nome) LIKE LOWER('%${filtro}%')
-                   OR LOWER(usu.email) LIKE LOWER('%${filtro}%')
-                   OR LOWER(usu.usuario) LIKE LOWER('%${filtro}%')
-                   OR LOWER(per.descricao) LIKE LOWER('%${filtro}%') )` : ""}`).then(resp => resp.rows[0].total)
+        return await db.query(`SELECT COUNT(usu.id) total FROM usuario usu LEFT OUTER JOIN permissao per ON per.id = usu.id_permissao WHERE usu.deletado = ${false} 
+        AND usu.deletado_em IS NULL ${ filtro ? `AND ( unaccent(usu.nome) ILIKE unaccent('%${filtro}%')
+                   OR unaccent(usu.email) ILIKE unaccent('%${filtro}%')
+                   OR unaccent(usu.usuario) ILIKE unaccent('%${filtro}%')
+                   OR unaccent(per.descricao) ILIKE unaccent('%${filtro}%') )` : ""}`).then(resp => resp.rows[0].total)
     },
 
     cadastrar: async (usuario, idUsuario) => {

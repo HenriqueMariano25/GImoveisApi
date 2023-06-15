@@ -47,12 +47,10 @@ module.exports = {
                     LEFT JOIN pdf_aditivo_contrato pdfadt on pdfadt.id_contrato = con.id
                     LEFT JOIN fiador fia ON fia.id_contrato = con.id
                     WHERE deletado = 'false' ${filtro ? `AND
-                    (LOWER(cli.nome) LIKE LOWER('%${filtro}%')
-                    OR LOWER(imo.nome) LIKE LOWER('%${filtro}%')
-                    OR LOWER(res.nome) LIKE LOWER('%${filtro}%')
-                    OR LOWER(res.nome) LIKE LOWER('%${filtro}%')
-                    OR LOWER(sta_con.descricao) LIKE LOWER('%${filtro}%')
-                    OR LOWER(sta_con.descricao) LIKE LOWER('%${filtro}%')
+                    ( unaccent(cli.nome) ILIKE unaccent('%${filtro}%')
+                    OR unaccent(imo.nome) ILIKE unaccent('%${filtro}%')
+                    OR unaccent(res.nome) ILIKE unaccent('%${filtro}%')
+                    OR unaccent(sta_con.descricao) ILIKE unaccent('%${filtro}%')
                     OR con.id::varchar(255) LIKE LOWER('%${filtro}%')) ` : ""}
                     GROUP BY con.id, cli.nome, imo.nome, res.nome, pdf.url, pdf.nome, sta_con.descricao, con.data_inicio,
                     con.data_fim, con.data_vencimento, con.carencia,con.valor_boleto, pdfadt.url
@@ -85,12 +83,10 @@ module.exports = {
             WHERE 
                 con.deletado_em IS NULL AND con.deletado = 'false'
                 ${filtro ? `AND
-                    (LOWER(cli.nome) LIKE LOWER('%${filtro}%')
-                    OR LOWER(imo.nome) LIKE LOWER('%${filtro}%')
-                    OR LOWER(res.nome) LIKE LOWER('%${filtro}%')
-                    OR LOWER(res.nome) LIKE LOWER('%${filtro}%')
-                    OR LOWER(sta_con.descricao) LIKE LOWER('%${filtro}%')
-                    OR LOWER(sta_con.descricao) LIKE LOWER('%${filtro}%')
+                    (unaccent(cli.nome) ILIKE unaccent('%${filtro}%')
+                    OR unaccent(imo.nome) ILIKE unaccent('%${filtro}%')
+                    OR unaccent(res.nome) ILIKE unaccent('%${filtro}%')
+                    OR unaccent(sta_con.descricao) ILIKE unaccent('%${filtro}%')
                     OR con.id::varchar(255) LIKE LOWER('%${filtro}%')) ` : ""}
             `)
             .then(resp => resp.rows[0].total)

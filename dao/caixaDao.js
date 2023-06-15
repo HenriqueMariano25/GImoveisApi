@@ -118,10 +118,10 @@ module.exports = {
              LEFT JOIN imovel imo ON imo.id = cai.id_imovel
              LEFT JOIN conta con ON con.id = cai.id_conta
              LEFT JOIN historico his ON his.id = cai.id_historico
-             WHERE cai.deletado_em IS NULL ${filtro ? ` AND (LOWER(imo.nome) LIKE LOWER('%${filtro}%') OR
-               LOWER(his.descricao) LIKE LOWER('%${filtro}%') OR
-               LOWER(con.nome) LIKE LOWER('%${filtro}%') OR 
-               cai.id::varchar(255) LIKE LOWER('%${filtro}%'))` : ''} 
+             WHERE cai.deletado_em IS NULL ${filtro ? ` AND (unaccent(imo.nome) ILIKE unaccent('%${filtro}%') OR
+               unaccent(his.descricao) ILIKE unaccent('%${filtro}%') OR
+               unaccent(con.nome) ILIKE unaccent('%${filtro}%') OR 
+               cai.id::varchar(255) ILIKE unaccent('%${filtro}%'))` : ''} 
              ORDER BY cai.movimento DESC
              LIMIT ${itensPorPagina}
              OFFSET ${(parseInt(pagina) - 1) * parseInt(itensPorPagina)}`,
@@ -146,15 +146,17 @@ module.exports = {
              LEFT JOIN historico his ON his.id = cai.id_historico
             WHERE 
                 cai.deletado_em IS NULL
-                ${filtro ? `AND LOWER(imo.nome) LIKE LOWER('%${filtro}%') OR
-                 LOWER(his.descricao) LIKE LOWER('%${filtro}%') OR
-                 LOWER(con.nome) LIKE LOWER('%${filtro}%') OR 
-                 cai.id::varchar(255) LIKE LOWER('%${filtro}%') ` : ''} 
+                ${filtro ? ` AND (unaccent(imo.nome) ILIKE unaccent('%${filtro}%') OR
+               unaccent(his.descricao) ILIKE unaccent('%${filtro}%') OR
+               unaccent(con.nome) ILIKE unaccent('%${filtro}%') OR 
+               cai.id::varchar(255) ILIKE unaccent('%${filtro}%'))` : ''}
             `)
         .then(resp => resp.rows[0].total)
   },
 
     visualizarFiltroAvancado(pagina, itensPorPagina, filtro) {
+      console.log(filtro)
+
         return new Promise((resolve, reject) => {
             db.query(
                 `SELECT cai.id, cai.movimento, cai.id_debito_credito, cai.id_historico id_historico, cai.complemento_historico,

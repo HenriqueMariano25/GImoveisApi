@@ -40,8 +40,8 @@ module.exports = {
                 FULL OUTER JOIN cliente cli ON tel.id_cliente = cli.id
                 LEFT OUTER JOIN status_cliente sta ON sta.id = cli.id_status_cliente
                 LEFT OUTER JOIN tipo_telefone tip_tel ON tel.id_tipo_telefone = tip_tel.id 
-                WHERE cli.deletado_em IS NULL ${filtro ? `AND LOWER(cli.nome) LIKE LOWER('%${filtro}%') OR LOWER(sta.descricao) LIKE LOWER('%${filtro}%') 
-                OR LOWER(cli.cpf_cnpj) LIKE LOWER('%${filtro}%')` : ""}
+                WHERE cli.deletado_em IS NULL ${filtro ? `AND unaccent(cli.nome) ILIKE unaccent('%${filtro}%') OR unaccent(sta.descricao) ILIKE unaccent('%${filtro}%') 
+                OR unaccent(cli.cpf_cnpj) ILIKE unaccent('%${filtro}%')` : ""}
                 GROUP BY cli.nome, cli.email, cli.rua, cli.bairro, cli.cidade, cli.estado, cli.complemento, cli.cpf_cnpj,
                  cli.identidade, cli.data_nascimento, cli.referencia, cli.numero, cli.id, status, cli.observacao, cli.id
                  ORDER BY nome
@@ -62,8 +62,8 @@ module.exports = {
       FULL OUTER JOIN telefone tel ON tel.id_cliente = cli.id
                       LEFT OUTER JOIN status_cliente sta ON sta.id = cli.id_status_cliente
                       LEFT OUTER JOIN tipo_telefone tip_tel ON tel.id_tipo_telefone = tip_tel.id 
-        WHERE cli.deletado_em IS NULL ${filtro ? `AND LOWER(cli.nome) LIKE LOWER('%${filtro}%') OR LOWER(sta.descricao) LIKE LOWER('%${filtro}%') 
-                OR LOWER(cli.cpf_cnpj) LIKE LOWER('%${filtro}%')` : ""}`).then(resp => resp.rows[0].total)
+        WHERE cli.deletado_em IS NULL ${filtro ? `AND unaccent(cli.nome) ILIKE unaccent('%${filtro}%') OR unaccent(sta.descricao) ILIKE unaccent('%${filtro}%') 
+                OR unaccent(cli.cpf_cnpj) ILIKE unaccent('%${filtro}%')` : ""}`).then(resp => resp.rows[0].total)
   },
 
   visualizar: (idCliente) => {
