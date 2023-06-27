@@ -50,6 +50,11 @@ module.exports = app => {
     app.post('/contrato/boleto/editar', (req, res) => {
         ContratoController.editarBoleto(req,res)
     })
+
+    app.post('/contrato/boleto/editar_novo_padrao', (req, res) => {
+        ContratoController.editarBoletoNovoPadrao(req, res)
+    })
+
     app.post('/contrato/boleto/cadastrar', (req, res) => {
         ContratoController.cadastrarBoleto(req, res)
     })

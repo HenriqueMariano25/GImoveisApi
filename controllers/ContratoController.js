@@ -237,6 +237,21 @@ class ContratoController {
         })
     }
 
+    async editarBoletoNovoPadrao(req, res) {
+        let { boleto, usuario_id } = req.body
+
+        let boletoFormatado = limparDados(boleto);
+
+        try{
+            await contratoDao.editarBoletoNovoPadrao(boletoFormatado, usuario_id)
+
+            return res.status(200).json({ falha: false, dados: { boleto } })
+        }catch(error){
+            console.log(error)
+            return res.status(500).json({ falha: true, erro: error})
+        }
+    }
+
     async cadastrarBoleto(req, res) {
         let {boleto, idContrato, idUsuario} = req.body
         await contratoDao.cadastrarBoleto(boleto, idContrato, idUsuario).then(resp => {

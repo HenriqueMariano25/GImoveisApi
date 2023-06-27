@@ -550,6 +550,43 @@ module.exports = {
 
         return {boleto: select}
     },
+
+    editarBoletoNovoPadrao: async (boleto, usuario_id) => {
+        let agora = dayjs().format("DD/MM/YYYY HH:mm:ss")
+
+        let update = await db
+            .query(
+                `UPDATE boleto SET data_vencimento = ${boleto.data_vencimento}, data_quitacao = ${boleto.data_quitacao},
+            valor = ${boleto.valor}, id_status_boleto = ${boleto.id_status_boleto}, alterado_em = '${agora}', 
+            alterado_por = ${usuario_id} WHERE id = ${boleto.id} 
+            RETURNING id`
+            )
+            .then((resp) => {
+                return resp.rows[0]
+            })
+            .catch((e) => {
+                console.log(e)
+                return Promise.reject(e)
+            })
+
+        let select = await db
+            .query(
+                `
+            SELECT bol.id, bol.data_vencimento, sta.descricao status, bol.id_status_boleto, bol.valor, bol.data_quitacao, bol.valor_juros
+            FROM boleto bol
+            INNER JOIN status_boleto sta ON bol.id_status_boleto = sta.id WHERE bol.id = ${update.id} 
+            `
+            )
+            .then((resp) => {
+                return resp.rows[0]
+            })
+            .catch((e) => {
+                console.log(e)
+            })
+
+        return {boleto: select}
+    },
+
     cadastrarBoleto: async (boleto, idContrato, idUsuario) => {
         let agora = dayjs().format("DD/MM/YYYY HH:mm:ss")
 
