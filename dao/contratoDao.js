@@ -34,6 +34,8 @@ module.exports = {
 
     visualizarTodosNovoPadrao: (pagina, itensPorPagina, filtro) => {
 
+
+
         let sql = `SELECT con.id,cli.nome nome_cliente,imo.nome nome_imovel,
                     res.nome nome_responsavel, pdf.url, pdf.nome nome_pdf, sta_con.descricao status, con.data_inicio, 
                     con.data_fim, con.data_vencimento, ARRAY_AGG(fia.nome) fiadores, con.carencia, 

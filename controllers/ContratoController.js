@@ -28,6 +28,10 @@ class ContratoController {
         let filtro = req.query.filtro || null
 
         try {
+
+            if(filtro === null)
+                filtro = "ativo"
+
             let contratos = await contratoDao.visualizarTodosNovoPadrao(pagina, itensPorPagina, filtro)
             let total = await contratoDao.contarContratos(filtro)
 
