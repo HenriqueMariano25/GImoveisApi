@@ -5,8 +5,6 @@ dayjs.extend(relativeTime)
 
 class HomeController {
     async contratosVencendo(res) {
-        // console.log("Aqa")
-
         let diaVencimento = dayjs().add(60, 'day').format('YYYY-MM-DD')
         let diaAtual = dayjs().format('YYYY-MM-DD')
         await homeDao.contratosVencendo(diaVencimento, diaAtual).then(consulta => {

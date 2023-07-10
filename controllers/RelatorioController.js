@@ -4,9 +4,6 @@ class RelatorioController {
     async relatorioAlugueisPendentes(req, res){
         let { filtro } = req.query
 
-        console.log("Aqui")
-        console.log(filtro)
-
         try{
             let relatorio = await relatorioDao.alugueisPendentes(filtro)
 

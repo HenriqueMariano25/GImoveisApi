@@ -12,8 +12,6 @@ module.exports = {
                 INNER JOIN cliente cli ON cli.id = con.id_cliente
                 INNER JOIN status_boleto stabol ON stabol.id = bol.id_status_boleto
                 WHERE bol.valor NOT IN('undefined', 'NaN') AND bol.id_status_boleto IN (1, 2)${ filtro ? filtro : "" } `;
-            console.log("sql")
-            console.log(sql)
 
             return await db.query(sql).then(resp => resp.rows)
         }catch(error){

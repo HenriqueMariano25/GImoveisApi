@@ -42,9 +42,6 @@ class ResponsavelController {
         let filtro = req.query.filtro || null
 
         try{
-
-            console.log(filtro)
-
             let responsaveis = await responsavelDao.visualizarTodosNovoPadrao(pagina, itensPorPagina, filtro)
             let total = await responsavelDao.contarResponsaveis(filtro)
 
